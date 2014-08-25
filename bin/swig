@@ -35,7 +35,7 @@ var KNOWN_TOOLS = [
 // swig-init
 // 1. checks project type
 // 2. will short circuit if not an app or module
-// 3. create the symlink
+// 3. create the symlink for gupl pointing to nvm../current/../gulp
 // 4. dumps version and project type into package.json if app or module
 // 5. copy the gulpfile tempalte into the local dir, if not present
 // 5a. if gulpfile present, asks user if they want to override
