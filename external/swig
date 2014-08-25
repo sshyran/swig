@@ -6,6 +6,7 @@
   #
   # Asserts if NVM is installed.
   # Asserts Node v0.11 is installed.
+  # Assets Gulp is installed.
   # Clones gilt-swig if it doesn't exist.
   # Checks gilt-swig tags and updates /web/gilt-swig to current tag if needed.
   #
@@ -23,7 +24,7 @@ if [ -e $nvm_path ] ; then
 fi
 
 if [ "$nvm_latest" != "$nvm_installed" ] ; then
-  if [ $nvm_installed ] ; then
+  if [ -z "$nvm_installed" ] ; then
     echo "\033[36mUpdating NVM (Node Version Manager)...\033[0m\n"
   else
     echo "\033[36mInstalling NVM (Node Version Manager)...\033[0m\n"
@@ -36,6 +37,16 @@ fi
 
 nvm install 0.11 >/dev/null 2>&1
 nvm use v0.11 >/dev/null 2>&1
+
+# Assert that gulp is installed.
+
+gulp_version=`gulp -v >/dev/null 2>&1`
+if [ -z "$gulp_version" ] ; then
+  echo '\033[33mInstalling Gulp...\033[0m'
+  sudo npm install -g gulp --registry=https://registry.npmjs.org/ >/dev/null 2>&1
+else
+  sudo npm update -g gulp --registry=https://registry.npmjs.org/ >/dev/null 2>&1
+fi
 
   # This portion is the entry point for the gilt-swig repo. We will clone the
   # gilt-swig repo if it does not already exist and we will attempt to
