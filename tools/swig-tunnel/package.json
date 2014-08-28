@@ -1,5 +1,5 @@
 {
-  "name": "swig-cli",
+  "name": "swig-tunnel",
   "description": "",
   "version": "0.0.1",
   "homepage": "https://github.com/gilt/gilt-swig",
@@ -34,20 +34,15 @@
       "url": "http://github.com/gilt/gilt-swig/blob/master/LICENSE"
     }
   ],
-  "main": "src/package.js",
   "engines": {
-      "node": ">= 0.6.x"
+    "node": ">= 0.11.x"
   },
+  "preferGlobal" : "true",
   "dependencies": {
-      "fs-extra": "0.3.x",
-      "package-json-validator": "~0.5.6",
-      "async": "~0.2.10"
+
   },
   "devDependencies": {
-      "docco": "*"
+
   },
-  "private": true,
-  "scripts": {
-      "dist": "node dist; node node_modules/.bin/docco src/package.js"
-  }
-  }
+  "main": "index.js"
+}

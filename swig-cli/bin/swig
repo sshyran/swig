@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+#  ________  ___       __   ___  ________
+# |\   ____\|\  \     |\  \|\  \|\   ____\
+# \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+#  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+#   \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+#     ____\_\  \ \____________\ \__\ \_______\
+#    |\_________\|____________|\|__|\|_______|
+#    \|_________|
+
+#    It's delicious.
+#    Brought to you by the fine folks at Gilt (http://github.com/gilt)
+
+# source nvm for this session
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+# run node 0.11.n. allow errors to pass through to the user.
+nvm use v0.11 >/dev/null
+
+# pass control to gulp
+gulp "$@"
