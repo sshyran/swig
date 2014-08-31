@@ -14,7 +14,5 @@
 */
 
 module.exports = function (gulp, swig) {
-  console.log('install');
 
-  return {};
 };

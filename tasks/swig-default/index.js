@@ -14,7 +14,25 @@
 */
 
 module.exports = function (gulp, swig) {
-  console.log('default');
 
-  return {};
+  var _ = require('underscore'),
+    commands = [];
+
+  gulp.task('default', function () {
+    swig.log('Available Commands:');
+
+    _.each(_.extend(swig.tasks, swig.tools), function (module, name) {
+      commands.push({ name: name, module: module });
+    });
+
+    commands = _.sortBy(commands, function (command) {
+      return command.name;
+    });
+
+    _.each(commands, function (command) {
+      swig.log('  ' + command.name);
+    });
+
+    swig.log('');
+  });
 };

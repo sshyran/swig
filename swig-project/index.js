@@ -30,7 +30,7 @@ function load (moduleName) {
     console.log('Loading: ' + moduleName);
   }
 
-  var module = require(moduleName)(gulp, swig);
+  var module = require(moduleName)(gulp, swig) || {};
 
   module.path = path.dirname(require.resolve(moduleName));
   module.pkg = require(path.join(module.path, '/package.json'));
@@ -53,7 +53,7 @@ swig.log = require('swig-log')(swig);
 swig = _.extend(swig, {
   tools: {
     app: load('swig-app'),
-    init: load('swig-init'),
+    'app-registry': load('swig-app-registry'),
     tunnel: load('swig-tunnel')
   }
 });
@@ -68,6 +68,6 @@ swig = _.extend(swig, {
     'default': load('swig-default'),
     install: load('swig-install')
   }
-})
+});
 
 module.exports = swig;

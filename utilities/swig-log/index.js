@@ -15,13 +15,39 @@
 
 module.exports = function (swig) {
 
-  console.log('log');
+  var _ = require('underscore'),
+    hooker = require('hooker'),
+    readline = require('readline'),
+    thunkify = require('thunkify');
 
-  return {
+  require('colors');
 
-    puts: function (what) {
-      console.log(what);
-    }
-
+  function puts (what) {
+    console.log(what);
   }
+
+  puts = _.extend(puts, {
+
+    confirm: thunkify(function (question, callback) {
+      var iface = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        }),
+        result;
+
+      iface.question(question + ' ', function (answer) {
+        iface.close();
+
+        answer = answer || 'n';
+        answer = answer.toLowerCase();
+
+        result = answer.substring(0, 1) === 'y';
+
+        callback(null, result);
+      });
+    })
+
+  });
+
+  return puts;
 };

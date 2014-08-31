@@ -14,5 +14,15 @@
 */
 
 module.exports = function (swig) {
-  console.log('util')
+
+  var fs = require('fs'),
+    path = require('path'),
+    swigPath = path.join(process.env.HOME, '.swig');
+
+  if (!fs.existsSync(swigPath)) {
+    fs.mkdirSync(swigPath);
+  }
+
+  swig.home = swigPath;
+
 };
