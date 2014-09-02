@@ -15,14 +15,16 @@
 
 var _ = require('underscore'),
   path = require('path'),
+  os = require('os'),
+  fs = require('fs'),
   gulp = require('gulp'),
   argv = require('yargs').argv,
   taskName = argv._.length > 0 ? argv._[0] : 'default',
   swig = {
     gulp: gulp,
     argv: argv
-  };
-
+  },
+  tempDir = path.join(os.tmpdir(), 'swig');
 
 function load (moduleName) {
 
@@ -49,6 +51,12 @@ function load (moduleName) {
 
 swig.util = require('swig-util')(swig);
 swig.log = require('swig-log')(swig);
+swig.tempDir = tempDir;
+
+// create swigs's temporary directory;
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir);
+}
 
 swig = _.extend(swig, {
   tools: {
