@@ -54,7 +54,8 @@ swig = _.extend(swig, {
   tools: {
     app: load('swig-app'),
     'app-registry': load('swig-app-registry'),
-    tunnel: load('swig-tunnel')
+    tunnel: load('swig-tunnel'),
+    zk: load('swig-zk')
   }
 });
 
