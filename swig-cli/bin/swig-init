@@ -1,13 +1,75 @@
-#!/bin/sh
-#
-#  ________  ___       __   ___  ________
-# |\   ____\|\  \     |\  \|\  \|\   ____\
-# \ \  \___|\ \  \    \ \  \ \  \ \  \___|
-#  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
-#   \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
-#     ____\_\  \ \____________\ \__\ \_______\
-#    |\_________\|____________|\|__|\|_______|
-#    \|_________|
-#
-#    It's delicious.
-#    Brought to you by the fine folks at Gilt (http://github.com/gilt)
+#!/usr/bin/env node
+
+'use strict';
+/*
+   ________  ___       __   ___  ________
+  |\   ____\|\  \     |\  \|\  \|\   ____\
+  \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+   \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+    \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+      ____\_\  \ \____________\ \__\ \_______\
+     |\_________\|____________|\|__|\|_______|
+     \|_________|
+
+     It's delicious.
+     Brought to you by the fine folks at Gilt (http://github.com/gilt)
+*/
+
+var fs = require('fs'),
+  path = require('path'),
+  exec = require('child_process').exec,
+  templates = {
+    gulpfile: fs.readFileSync('/usr/local/lib/node_modules/swig-cli/templates/gulpfile.js'),
+    pkg: fs.readFileSync('/usr/local/lib/node_modules/swig-cli/templates/package.json')
+  },
+  paths = {
+    gulpfile: path.join(process.cwd(), 'gulpfile.js'),
+    pkg: path.join(process.cwd(), 'package.json')
+  },
+  pkg;
+
+require('colors');
+
+console.log('Swig is about to make your project funky fresh...'.red);
+
+if (fs.existsSync(paths.gulpfile)) {
+  console.log('You\'re already fresh. Get funky and add the following to your gulpfile.js:\n'.yellow);
+  console.log(templates.gulpfile + '\n');
+}
+else {
+  console.log('Creating a gulpfile for great justice.');
+  fs.writeFileSync(paths.gulpfile, templates.gulpfile);
+}
+
+if (fs.existsSync(paths.pkg)) {
+  console.log('I spy an existing project. Spicing up your package.json with the Swig deps...'.yellow);
+  pkg = require(paths.pkg);
+  if (!pkg.dependencies['swig-project']) {
+    pkg.dependencies['swig-project'] = '*';
+    fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
+  }
+}
+else {
+  console.log('Creating a package.json for great justice.');
+  fs.writeFileSync(paths.pkg, templates.pkg);
+}
+
+// run ui install
+var cp = exec('npm install', function (error, stdout, stderr){
+
+  if (error) {
+    console.log(error);
+  }
+
+  if (stderr) {
+    console.log(stderr);
+  }
+});
+
+(function capture (stdout) {
+  stdout.on('data', function (data) {
+    console.log(data);
+  });
+})(cp.stdout);
+
+console.log('Swig initialization is complete. Feel free to make loud animal noises.'.red);

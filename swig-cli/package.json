@@ -39,18 +39,17 @@
   },
   "preferGlobal" : "true",
   "dependencies": {
-
+    "colors" : "*"
   },
   "devDependencies": {
 
   },
   "bin": {
     "swig" : "bin/swig",
-    "swig-update" : "bin/swig-update"
+    "swig-update" : "bin/swig-update",
+    "swig-init" : "bin/swig-init"
   },
   "scripts": {
-    "preinstall": "",
-    "install": "touch $HOME/.swigrc",
-    "postinstall": ""
+    "postinstall": "touch $HOME/.swigrc",
   }
 }

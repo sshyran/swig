@@ -13,5 +13,4 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
 */
-
 var swig = require('swig-project');
