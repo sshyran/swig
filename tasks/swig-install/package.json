@@ -38,8 +38,11 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
+    "adm-zip" : "*",
     "co" : "*",
     "co-exec" : "*",
+    "glob" : "*",
+    "gulp-rimraf" : "*",
     "thunkify" : "*",
     "underscore" : "*"
   },

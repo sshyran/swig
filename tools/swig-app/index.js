@@ -23,7 +23,7 @@ module.exports = function (gulp, swig) {
     node = {
       command: 'GILT_ENV=development nvm run 0.11 --harmony app',
       valid: function () {
-        var pkg = require(path.join(process.cwd(), 'package.json')),
+        var pkg = swig.pkg,
           errors = [];
 
         if (!pkg) {

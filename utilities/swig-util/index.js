@@ -17,12 +17,75 @@ module.exports = function (swig) {
 
   var fs = require('fs'),
     path = require('path'),
-    swigPath = path.join(process.env.HOME, '.swig');
+    swigPath = path.join(process.env.HOME, '.swig'),
+    packagePath = path.join(process.cwd(), 'package.json');
 
   if (!fs.existsSync(swigPath)) {
     fs.mkdirSync(swigPath);
   }
 
   swig.home = swigPath;
+  swig.cwd = process.cwd();
+  swig.temp = tempDir = path.join(os.tmpdir(), 'swig');
+
+  if (fs.existsSync(packagePath)) {
+    swig.pkg = require(packagePath);
+  }
+
+  swig.fs = {
+
+    //https://raw.githubusercontent.com/substack/node-mkdirp/master/index.js
+    mkdir: function (p, mode, made) {
+      if (mode === undefined) {
+        mode = 0777 & (~process.umask());
+      }
+      if (!made) made = null;
+
+      if (typeof mode === 'string') mode = parseInt(mode, 8);
+      p = path.resolve(p);
+
+      try {
+        fs.mkdirSync(p, mode);
+        made = made || p;
+      }
+      catch (err0) {
+        switch (err0.code) {
+          case 'ENOENT' :
+          made = mkdir(path.dirname(p), mode, made);
+          mkdir(p, mode, made);
+          break;
+          default:
+          var stat;
+          try {
+            stat = fs.statSync(p);
+          }
+          catch (err1) {
+            throw err0;
+          }
+          if (!stat.isDirectory()) throw err0;
+          break;
+        }
+      }
+
+      return made;
+    },
+
+    copyAll: function (src, dest) {
+      var exists = fs.existsSync(src),
+        stats = exists && fs.statSync(src),
+        isDirectory = exists && stats.isDirectory();
+
+      if (exists && isDirectory) {
+        mkdir(dest);
+        fs.readdirSync(src).forEach(function (childItemName) {
+          copyAll(path.join(src, childItemName),
+            path.join(dest, childItemName));
+        });
+      } else {
+        fs.linkSync(src, dest);
+      }
+    }
+
+  };
 
 };

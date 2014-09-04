@@ -29,7 +29,7 @@ module.exports = function (gulp, swig) {
   }
 
   function * ui () {
-    var pkg = require(path.join(process.cwd, 'package.json')),
+    var pkg = swig.pkg,
       json = JSON.stringify(pkg, null, 2);
 
     if (!pkg) {
@@ -42,10 +42,10 @@ module.exports = function (gulp, swig) {
     }
 
     pkg.dependencies = pkg.uiDependencies;
-    fs.writeFileSync(path.join(swig.tempDir, 'package.json'), json);
+    fs.writeFileSync(path.join(swig.temp, 'package.json'), json);
 
     var commands = [
-      'cd ' + swig.tempDir,
+      'cd ' + swig.temp,
       'rm -rf node_modules',
       'npm install'
     ];
@@ -56,9 +56,16 @@ module.exports = function (gulp, swig) {
 
   gulp.task('install', co(function *() {
 
+    var processPublic = require('./lib/public-directory')(gulp, swig),
+      packageMerge = require('./lib/package-merge')(gulp, swig);
+      mergeModules = require('./lib/merge-modules')(gulp, swig);
+
     try {
+      packageMerge();
       yield local();
       yield ui();
+      mergeModules();
+      processPublic();
     }
     catch (e) {
       swig.log('error:');

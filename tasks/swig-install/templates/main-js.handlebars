@@ -1,0 +1,20 @@
+// grunt-spec-delimiter
+(function () {
+  var oldRequireCallback = require.callback;
+  require.callback = function () {
+    window.createConfig = function createConfig (key, value) {
+      (define || createModule)(key.replace(/\\./g, "/"), function () { return value; });
+    };
+    if (oldRequireCallback) { oldRequireCallback(); }
+  };
+}());
+{{files}}
+// grunt-spec-delimiter
+(function () {
+  var configs = {{configs}};
+  for (var key in configs) {
+    if (Object.prototype.hasOwnProperty.call(configs, key) && !requireModules.isLoaded(key)) {
+      createConfig(key, configs[key]);
+    }
+  }
+}());

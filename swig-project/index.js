@@ -23,8 +23,7 @@ var _ = require('underscore'),
   swig = {
     gulp: gulp,
     argv: argv
-  },
-  tempDir = path.join(os.tmpdir(), 'swig');
+  };
 
 function load (moduleName) {
 
@@ -51,7 +50,6 @@ function load (moduleName) {
 
 swig.util = require('swig-util')(swig);
 swig.log = require('swig-log')(swig);
-swig.tempDir = tempDir;
 
 // create swigs's temporary directory;
 if (!fs.existsSync(tempDir)) {
