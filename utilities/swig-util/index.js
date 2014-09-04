@@ -16,28 +16,16 @@
 module.exports = function (swig) {
 
   var fs = require('fs'),
-    path = require('path'),
-    swigPath = path.join(process.env.HOME, '.swig'),
-    packagePath = path.join(process.cwd(), 'package.json');
-
-  if (!fs.existsSync(swigPath)) {
-    fs.mkdirSync(swigPath);
-  }
-
-  swig.home = swigPath;
-  swig.cwd = process.cwd();
-  swig.temp = tempDir = path.join(os.tmpdir(), 'swig');
-
-  if (fs.existsSync(packagePath)) {
-    swig.pkg = require(packagePath);
-  }
+    path = require('path');
 
   swig.fs = {
+
+    findup: require('findup-sync'),
 
     //https://raw.githubusercontent.com/substack/node-mkdirp/master/index.js
     mkdir: function (p, mode, made) {
       if (mode === undefined) {
-        mode = 0777 & (~process.umask());
+        mode = 0o777 & (~process.umask());
       }
       if (!made) made = null;
 

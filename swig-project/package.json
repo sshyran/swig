@@ -53,7 +53,8 @@
     "swig-tunnel" : "*",
 
     "swig-default" : "*",
-    "swig-install" : "*"
+    "swig-install" : "*",
+    "swig-lint" : "*"
   },
   "devDependencies": {
 

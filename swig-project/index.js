@@ -22,7 +22,8 @@ var _ = require('underscore'),
   taskName = argv._.length > 0 ? argv._[0] : 'default',
   swig = {
     gulp: gulp,
-    argv: argv
+    argv: argv,
+    project: {}
   };
 
 function load (moduleName) {
@@ -48,12 +49,76 @@ function load (moduleName) {
   return module;
 }
 
+function setupPaths () {
+  var fs = require('fs'),
+    path = require('path'),
+    swigPath = path.join(process.env.HOME, '.swig');
+
+  if (!fs.existsSync(swigPath)) {
+    fs.mkdirSync(swigPath);
+  }
+
+  swig.home = swigPath;
+  swig.cwd = process.cwd();
+  swig.temp = path.join(os.tmpdir(), 'swig');
+}
+
+function findTarget () {
+
+  var target,
+    moduleName,
+    repo = swig.argv.repo || '';
+
+  if(swig.argv.module) {
+    target = path.join('src', swig.argv.module.replace(/\./g, '/'));
+
+    if (repo) {
+      target = path.join('/web/', repo, target);
+    }
+    else {
+      target = path.join(swig.cwd, target);
+    }
+
+    swig.project.type = 'module';
+  }
+  else {
+    target = repo ? path.join('/web/', repo) : swig.cwd;
+
+    swig.project.type = 'webapp';
+  }
+
+  swig.target = target;
+}
+
+function findPackage () {
+
+  var packagePath = path.join(swig.target, 'package.json')
+
+  if (fs.existsSync(packagePath)) {
+    swig.pkg = require(packagePath);
+  }
+  else {
+  //   packagePath = swig.fs.findup('package.json', {cwd: swig.target, nocase: true});
+  //   if (fs.existsSync(packagePath)) {
+  //     swig.pkg = require(packagePath);
+  //     swig.target = path.dirname(packagePath);
+  //   }
+    // else {
+      swig.log('swig.util: package.json not found at: ' + packagePath);
+    // }
+  }
+}
+
 swig.util = require('swig-util')(swig);
 swig.log = require('swig-log')(swig);
 
+setupPaths();
+findTarget();
+findPackage();
+
 // create swigs's temporary directory;
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
+if (!fs.existsSync(swig.temp)) {
+  fs.mkdirSync(swig.temp);
 }
 
 swig = _.extend(swig, {
@@ -73,7 +138,8 @@ if (_.has(swig.tools, taskName)) {
 swig = _.extend(swig, {
   tasks: {
     'default': load('swig-default'),
-    install: load('swig-install')
+    install: load('swig-install'),
+    lint: load('swig-lint')
   }
 });
 
