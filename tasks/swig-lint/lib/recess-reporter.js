@@ -55,12 +55,15 @@ module.exports = function (gulp, swig) {
         }
       });
 
-      cb(new gutil.PluginError('gulp-recess', file.relative + ': ' + recess.status + ' ' + recess.failureCount + ' failures', {
-        fileName: file.path,
-        showStack: false
-      }));
+      console.log('TODO: Make this pretty');
+      console.log(results);
 
-      return;
+      // cb(new gutil.PluginError('gulp-recess', file.relative + ': ' + recess.status + ' ' + recess.failureCount + ' failures', {
+      //   fileName: file.path,
+      //   showStack: false
+      // }));
+
+      // return;
     }
 
     cb(null, file);

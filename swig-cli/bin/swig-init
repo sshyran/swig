@@ -62,7 +62,7 @@ else {
 }
 
 // run ui install
-var cp = exec('npm install', function (error, stdout, stderr){
+var cp = exec('npm install --loglevel=info', function (error, stdout, stderr){
 
   if (error) {
     console.log(error);
@@ -73,10 +73,12 @@ var cp = exec('npm install', function (error, stdout, stderr){
   }
 });
 
+cp.on('exit', function () {
+  console.log('Swig initialization is complete. Feel free to make loud animal noises.'.red);
+});
+
 (function capture (stdout) {
   stdout.on('data', function (data) {
     console.log(data);
   });
 })(cp.stdout);
-
-console.log('Swig initialization is complete. Feel free to make loud animal noises.'.red);

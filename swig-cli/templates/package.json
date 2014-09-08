@@ -31,8 +31,6 @@
 
   },
   "scripts": {
-    "preinstall": "",
-    "install": "touch $HOME/.swigrc",
-    "postinstall": ""
+    "install": "touch $HOME/.swigrc"
   }
 }
