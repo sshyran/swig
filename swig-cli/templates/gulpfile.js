@@ -13,4 +13,5 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
 */
-var swig = require('swig-project');
+var gulp = require('gulp'),
+  swig = require('swig-project')(gulp);
