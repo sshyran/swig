@@ -19,51 +19,79 @@ module.exports = function (gulp, swig) {
     path = require('path'),
     jshint = require('gulp-jshint'),
     recess = require('gulp-recess'),
+    addsrc = require('gulp-add-src'),
+    mock = require('./lib/mock')(gulp, swig),
+    buffer = require('gulp-buffer'),
     baseName,
-    source,
+    baseSource,
     paths;
 
-  // setup our glob paths
-  if (swig.project.type === 'webapp') {
-    baseName = path.basename(swig.target);
-    source = path.join(swig.target, 'public/{type}/', baseName, '/src/**/*.{type}');
-  }
-  else {
-    source = path.join(swig.target, '/**/*.{type}');
+  function source(type, extension) {
+    return baseSource
+            .replace(/\{type\}/g, type)
+            .replace(/\{extension\}/g, extension);
   }
 
-  paths = {
-    js: source.replace(/\{type\}/g, 'js'),
-    css: source.replace(/\{type\}/g, 'css,*.less'),
-    templates: source.replace(/\{type\}/g, 'handlebars')
-  };
+  if (!swig.pkg) {
+    return;
+  }
 
-  gulp.task('lint', function () {
+  gulp.task('lint-setup', function () {
 
-    if (!swig.pkg) {
-      return;
+    if (paths) {
+      return true;
     }
 
-    var result,
-      recessOpts = {
-        strictPropertyOrder: false,
-        noOverqualifying: false
-      };
+    // setup our glob paths
+    if (swig.project.type === 'webapp') {
+      baseName = path.basename(swig.target);
+      baseSource = path.join(swig.target, 'public/{type}/', baseName, '/src/**/*.{extension}');
+    }
+    else {
+      baseSource = path.join(swig.target, '/**/*.{extension}');
+    }
 
-    recess = gulp.src(paths.js)
+    paths = {
+      js: source('js', 'js'),
+      css: source('css', '{css,less}'),
+      templates: source('templates', 'handlebars')
+    };
+
+    return true;
+  });
+
+  gulp.task('lint-script', ['lint-setup'], function () {
+    return gulp.src(paths.js)
       .pipe(jshint(path.join(__dirname, '.jshintrc')))
       .pipe(jshint.reporter('jshint-stylish'));
+  });
 
-    result = gulp.src(paths.css)
+  gulp.task('lint-css', ['lint-setup'], function () {
+
+    var recessOpts = {
+        strictPropertyOrder: false,
+        noOverqualifying: false
+      },
+      reporterOpts = {
+        fail: false,
+        minimal: false
+      };
+
+    return gulp.src(paths.css)
+      .pipe(buffer())
+      .pipe(mock())
       .pipe(recess(recessOpts))
-      .pipe(recess.reporter());
+      .pipe(recess.reporter(reporterOpts));
+  });
 
-    return result;
-    // handlebars
+  // handlebars
 
-    // module name
-    // special
-    // package version
-    // js and less dependencies
+  // module name
+  // special
+  // package version
+  // js and less dependencies
+
+  gulp.task('lint', ['lint-script', 'lint-css'], function () {
+    return true;
   });
 };

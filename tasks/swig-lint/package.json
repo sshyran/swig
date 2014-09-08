@@ -38,9 +38,14 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
+    "gulp-add-src" : "*",
+    "gulp-buffer" : "*",
+    "gulp-insert" : "*",
     "gulp-jshint" : "*",
     "gulp-recess" : "*",
+    "gulp-util" : "*",
     "jshint-stylish": "*",
+    "through2" : "*",
     "underscore" : "*"
   },
   "devDependencies": {
