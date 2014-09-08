@@ -24,7 +24,8 @@
 
   },
   "devDependencies": {
-
+    "gulp" : "*",
+    "swig-project" : "*"
   },
   "uiDependencies": {
 
