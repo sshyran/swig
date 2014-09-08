@@ -17,13 +17,17 @@ module.exports = function (gulp, swig) {
 
   var _ = require('underscore'),
     path = require('path'),
+
     jshint = require('gulp-jshint'),
     recess = require('gulp-recess'),
+    handlebars = require('gulp-handlebars'),
     addsrc = require('gulp-add-src'),
+    buffer = require('gulp-buffer'),
+
     mock = require('./lib/mock')(gulp, swig),
     recessReporter = require('./lib/recess-reporter')(gulp, swig),
     jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
-    buffer = require('gulp-buffer'),
+
     baseName,
     baseSource,
     paths;
@@ -85,14 +89,18 @@ module.exports = function (gulp, swig) {
       .pipe(recessReporter);
   });
 
-  // handlebars
+  gulp.task('lint-handlebars', ['lint-setup'], function () {
+    console.log(paths.templates);
+    return gulp.src(paths.templates)
+      .pipe(handlebars());
+  });
 
   // module name
   // special
   // package version
   // js and less dependencies
 
-  gulp.task('lint', ['lint-script', 'lint-css'], function () {
+  gulp.task('lint', ['lint-script', 'lint-css', 'lint-handlebars'], function () {
     return true;
   });
 };
