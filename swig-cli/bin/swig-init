@@ -44,8 +44,15 @@ else {
 if (fs.existsSync(paths.pkg)) {
   console.log('I spy an existing project. Spicing up your package.json with the Swig deps...'.yellow);
   pkg = require(paths.pkg);
-  if (!pkg.dependencies['swig-project']) {
-    pkg.dependencies['swig-project'] = '*';
+  if (!pkg.devDependencies) {
+    pkg.devDependencies = {};
+  }
+  if (!pkg.devDependencies['gulp']) {
+    pkg.devDependencies['gulp'] = '*';
+    fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
+  }
+  if (!pkg.devDependencies['swig-project']) {
+    pkg.devDependencies['swig-project'] = '*';
     fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
   }
 }

@@ -17,7 +17,6 @@ module.exports = function (gulp, swig) {
 
   var _ = require('underscore'),
     co = require('co'),
-    prompt = require('co-prompt'),
     thunkify = require('thunkify'),
     request = require('request'),
     path = require('path'),

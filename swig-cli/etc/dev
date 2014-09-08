@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+#  ________  ___       __   ___  ________
+# |\   ____\|\  \     |\  \|\  \|\   ____\
+# \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+#  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+#   \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+#     ____\_\  \ \____________\ \__\ \_______\
+#    |\_________\|____________|\|__|\|_______|
+#    \|_________|
+
+#    It's delicious.
+#    Brought to you by the fine folks at Gilt (http://github.com/gilt)
+
+cwd=$PWD
+
+cd /web
+git clone git@github.com:gilt/gilt-swig.git
+
+cd /web/gilt-swig/swig-cli
+npm link
+
+cd $cwd
+mkdir $cwd/node_modules
+cd $cwd/node_modules
+ln -s /web/gilt-swig/swig-project
+
+ln -s /web/gilt-swig/tasks/swig-default
+ln -s /web/gilt-swig/tasks/swig-install
+ln -s /web/gilt-swig/tasks/swig-lint
+
+ln -s /web/gilt-swig/tools/swig-app
+ln -s /web/gilt-swig/tools/swig-app-registry
+ln -s /web/gilt-swig/tools/swig-tunnel
+ln -s /web/gilt-swig/tools/swig-zk
+
+ln -s /web/gilt-swig/utilities/swig-log
+ln -s /web/gilt-swig/utilities/swig-util
+
+npm install co --save-dev
+npm install co-exec --save-dev
+npm install co-prompt --save-dev
+npm install co-read --save-dev
+npm install co-sh --save-dev
+npm install colors --save-dev
+npm install findup-sync --save-dev
+npm install glob --save-dev
+npm install gulp --save-dev
+npm install gulp-add-src --save-dev
+npm install gulp-buffer --save-dev
+npm install gulp-handlebars --save-dev
+npm install gulp-insert --save-dev
+npm install gulp-jshint --save-dev
+npm install gulp-recess --save-dev
+npm install gulp-rimraf --save-dev
+npm install gulp-util --save-dev
+npm install hooker --save-dev
+npm install jshint-stylish --save-dev
+npm install progress --save-dev
+npm install request --save-dev
+npm install through2 --save-dev
+npm install thunkify --save-dev
+npm install underscore --save-dev
+npm install yargs --save-dev

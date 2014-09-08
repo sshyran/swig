@@ -93,8 +93,11 @@ module.exports = function (gulp, swig) {
     console.log(paths.templates);
     return gulp.src(paths.templates)
       .pipe(handlebars());
+
+    // TODO: reporter - https://github.com/lazd/gulp-handlebars/issues/34
   });
 
+  // TODO:
   // module name
   // special
   // package version
