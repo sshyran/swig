@@ -95,7 +95,8 @@ module.exports = function (gulp, swig) {
       mixin += _.reduce(_.range(curlies), function (c) { return c + '}'; }, '');
 
       return mixin;
-    });
+    }),
+    mockLength;
 
     mock = mock.concat(_.map(data.variables, function (variable) {
       var value = 'none'; // default value -- acceptable in all CSS contexts (IIRC)
@@ -115,21 +116,15 @@ module.exports = function (gulp, swig) {
     }));
 
     mock = mock.join('\n').trim();
-    mock = '// mock-length: ' + (data.mixins.length + data.variables.length + 1) + '\n' + mock + '\n';
+    mockLength = (data.mixins.length + data.variables.length + 1);
+    mock = '// mock-length: ' + mockLength + '\n' + mock + '\n';
+    file.mockLength = mockLength;
 
     content = mock + content.replace(regex['import'], '');
     return content;
   }
 
   return function plugin () {
-
-    // var headerStream = header("${str}", {str: str});
-
-    // headerStream.once('data', function(newFile) {
-    //   file.contents = newFile.contents;
-    // });
-
-    // headerStream.write(file);
 
     var content,
       data;

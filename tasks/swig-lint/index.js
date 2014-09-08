@@ -21,6 +21,8 @@ module.exports = function (gulp, swig) {
     recess = require('gulp-recess'),
     addsrc = require('gulp-add-src'),
     mock = require('./lib/mock')(gulp, swig),
+    recessReporter = require('./lib/recess-reporter')(gulp, swig),
+    jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
     buffer = require('gulp-buffer'),
     baseName,
     baseSource,
@@ -61,9 +63,12 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('lint-script', ['lint-setup'], function () {
+    var jshintrc = path.join(__dirname, '.jshintrc');
+
     return gulp.src(paths.js)
-      .pipe(jshint(path.join(__dirname, '.jshintrc')))
-      .pipe(jshint.reporter('jshint-stylish'));
+      .pipe(jshint(jshintrc))
+      .pipe(jshint.reporter('jshint-stylish'))
+      .pipe(jsFailReporter());
   });
 
   gulp.task('lint-css', ['lint-setup'], function () {
@@ -71,17 +76,13 @@ module.exports = function (gulp, swig) {
     var recessOpts = {
         strictPropertyOrder: false,
         noOverqualifying: false
-      },
-      reporterOpts = {
-        fail: false,
-        minimal: false
       };
 
     return gulp.src(paths.css)
       .pipe(buffer())
       .pipe(mock())
       .pipe(recess(recessOpts))
-      .pipe(recess.reporter(reporterOpts));
+      .pipe(recessReporter);
   });
 
   // handlebars
