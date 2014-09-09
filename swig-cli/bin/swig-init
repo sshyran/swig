@@ -19,8 +19,8 @@ var fs = require('fs'),
   path = require('path'),
   exec = require('child_process').exec,
   templates = {
-    gulpfile: fs.readFileSync('/usr/local/lib/node_modules/swig-cli/templates/gulpfile.js'),
-    pkg: fs.readFileSync('/usr/local/lib/node_modules/swig-cli/templates/package.json')
+    gulpfile: fs.readFileSync(path.join(__dirname, '../templates/gulpfile.js')),
+    pkg: fs.readFileSync(path.join(__dirname, '../templates/package.json'))
   },
   paths = {
     gulpfile: path.join(process.cwd(), 'gulpfile.js'),
