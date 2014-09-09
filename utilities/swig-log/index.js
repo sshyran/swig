@@ -28,7 +28,7 @@ module.exports = function (swig) {
 
   puts = _.extend(puts, {
 
-    verbose: {
+    verbose: function (what) {
       if (swig.argv.verbose) {
         puts(what);
       }

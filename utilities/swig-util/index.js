@@ -39,8 +39,8 @@ module.exports = function (swig) {
       catch (err0) {
         switch (err0.code) {
           case 'ENOENT' :
-          made = mkdir(path.dirname(p), mode, made);
-          mkdir(p, mode, made);
+          made = swig.fs.mkdir(path.dirname(p), mode, made);
+          swig.fs.mkdir(p, mode, made);
           break;
           default:
           var stat;
@@ -64,9 +64,9 @@ module.exports = function (swig) {
         isDirectory = exists && stats.isDirectory();
 
       if (exists && isDirectory) {
-        mkdir(dest);
+        swig.fs.mkdir(dest);
         fs.readdirSync(src).forEach(function (childItemName) {
-          copyAll(path.join(src, childItemName),
+          swig.fs.copyAll(path.join(src, childItemName),
             path.join(dest, childItemName));
         });
       } else {

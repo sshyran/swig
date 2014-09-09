@@ -35,8 +35,11 @@ module.exports = function (gulp, swig) {
       ],
       files;
 
-    paths = _.map(paths, function (p) { return p.replace('{target}', swig.target.name); });
+    paths = _.map(paths, function (p) { return p.replace('{target}', swig.pkg.name); });
     files = glob.sync(paths);
+
+    swig.log.verbose('[clean] ' + files.length + ' files found at: ');
+    swig.log.verbose(paths);
 
     _.each(files, function (file) {
       swig.log.verbose('[clean] removing: ' + file);
@@ -49,15 +52,22 @@ module.exports = function (gulp, swig) {
 
     swig.log('Compiling module list...');
 
-    var modPaths = glob.sync(path.join(tempPath, '/**/node_modules')),
+    var modulesPath = path.join(swig.temp, '/**/node_modules'),
+      modPaths = glob.sync(modulesPath),
       dirs;
 
-    modPaths.forEach(function (path) {
-      dirs = fs.readdirSync(path);
-      dirs.forEach(function (file){
-        dirPath = path + '/' + file;
+    swig.log.verbose('[compile] searching: ' + modulesPath);
+    swig.log.verbose('[compile] found module directories: ' + modPaths.length);
+
+    modPaths.forEach(function (modPath) {
+      swig.log.verbose('[compile] compiling: ' + modPath);
+
+      dirs = fs.readdirSync(modPath);
+
+      _.each(dirs, function (dir){
+        var dirPath = path.join(modPath, dir);
         if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
-          azModules.push({ name: file, path: dirPath });
+          azModules.push({ name: dir, path: dirPath });
         }
       });
     });
@@ -67,11 +77,19 @@ module.exports = function (gulp, swig) {
     _.sortBy(azModules, function (mod) { return mod.name; }).forEach(function (mod) {
       modules[mod.name] = mod.path;
     });
+
+    swig.log.verbose('[compile] sorted modules: ');
+    swig.log.verbose(modules);
   }
 
-  function copy () {
+  function copy (paths) {
 
     swig.log('Copying modules to /public...');
+    swig.log.verbose('');
+
+    var destPath,
+      sourcePath,
+      modPathName;
 
     _.each(modules, function (modPath, name) {
       modPathName = name.replace(/\./g, '/');
@@ -79,16 +97,19 @@ module.exports = function (gulp, swig) {
       _.each(paths, function (p, pathName) {
         sourcePath = path.join(modPath, pathName);
 
+        swig.log.verbose('\n[copy] copying: ' + sourcePath);
+
         if (fs.existsSync(sourcePath)) {
           destPath = path.join(p, modPathName);
-          swig.fs.mkdir(dirPath);
+          swig.fs.mkdir(destPath);
           swig.fs.copyAll(sourcePath, destPath);
+          swig.log.verbose('[copy] copied: ' + destPath);
         }
       })
     });
   }
 
-  function manifest () {
+  function manifest (paths) {
     // re-prep the modules hash with version numbers instead of paths
     _.each(modules, function (mod, name) {
       pkg = require(path.join(mod, '/package.json'));
@@ -117,7 +138,7 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function vendor () {
+  function vendor (paths) {
     var destPath;
 
     swig.log('Copying internal modules to vendor/common');
@@ -148,15 +169,18 @@ module.exports = function (gulp, swig) {
           templates: path.join(paths.pub, '/templates/', pkg.name)
         };
       }
-
+      else {
+        swig.log('[install] package.json wasn\'t found or was missing the "name" property.');
+        return;
+      }
 
       clean();
-      // compile();
-      // copy();
-      // manifest();
+      compile();
+      copy(paths);
+      // manifest(paths);
       // require('./lib/less')(gulp, swig, paths, azModules);
       // replace();
-      // vendor();
+      // vendor(paths);
       // require('./lib/main-js')(gulp, swig, paths);
     }
     catch (e) {

@@ -66,10 +66,10 @@ module.exports = function (gulp, swig) {
       mergeModules = require('./lib/merge-modules')(gulp, swig);
 
     try {
-      // packageMerge();
+      packageMerge();
       // yield local();
-      // yield ui();
-      // mergeModules();
+      yield ui();
+      mergeModules();
       processPublic();
     }
     catch (e) {
