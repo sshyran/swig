@@ -36,7 +36,7 @@ cd /web/gilt-swig/tools/swig-tunnel && npm link
 cd /web/gilt-swig/tools/swig-zk && npm link
 
 # linking to all of the needed modules -> swig-project/node_modules
-cd /web/gilt-swig/swig-project && npm link
+cd /web/gilt-swig/swig-project
 npm link swig-util
 npm link swig-log
 npm link swig-default
@@ -46,6 +46,7 @@ npm link swig-app
 npm link swig-app-registry
 npm link swig-tunnel
 npm link swig-zk
+npm link
 
 # setup the current directory
 cd $cwd
