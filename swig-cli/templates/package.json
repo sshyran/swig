@@ -29,8 +29,5 @@
   },
   "uiDependencies": {
 
-  },
-  "scripts": {
-    "install": "touch $HOME/.swigrc"
   }
 }

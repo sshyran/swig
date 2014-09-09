@@ -14,7 +14,7 @@
 */
 
   // c) Given the list of all extracted package.json's and the file picked above:
-  // i) Extract the ggDependencies or dependencies hash from each file
+  // i) Extract the uiDependencies or dependencies hash from each file
   // ii) Merge with that, the lazyDependencies hash from the same file
   // NOTE) we build up an intermediate data structure, for error reporting purposes.
   // d) Iterate over each set of dependencies, merging them together intelligently, and look for conflicts
@@ -25,17 +25,20 @@
 module.exports = function (gulp, swig) {
 
   return function packageMerge () {
-    var util = require('./lib/merge-util')(gulp, swig),
-      node = require('./lib/merge-node')(gulp, swig, util),
-      jvm = require('./lib/merge-jvm')(gulp, swig, util),
+    var fs = require('fs'),
+      path = require('path'),
+      glob = require('glob'),
+      util = require('./merge-util')(gulp, swig),
+      node = require('./merge-node')(gulp, swig, util),
+      jvm = require('./merge-jvm')(gulp, swig, util),
       message,
       type;
 
     // figure out which type we're dealing with
-    if (fs.existsSync(path.join(cwd, 'app.js'))) { //node
+    if (fs.existsSync(path.join(swig.cwd, 'app.js'))) { //node
       node();
     }
-    else if (glob.sync(path.join(cwd, '/lib/**/*.jar')).length) {
+    else if (glob.sync(path.join(swig.cwd, '/lib/**/*.jar')).length) {
       jvm();
     }
     else {

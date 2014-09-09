@@ -17,7 +17,8 @@
 module.exports = function (gulp, swig, util) {
 
   return function node () {
-    var deps,
+    var path = require('path'),
+      deps,
       pkg;
 
     swig.log('Merging Node App Package(s):');
@@ -26,11 +27,11 @@ module.exports = function (gulp, swig, util) {
 
     swig.log('Extracting dependencies');
 
-    deps = util.extract(pkg, {}, path.basename(cwd));
+    deps = util.extract(pkg, {}, path.basename(swig.cwd));
     deps = util.iterate(deps);
 
     if (deps) {
-      until.generate(deps);
+      util.generate(deps);
     }
     else {
       swig.log('Node validation of dependencies failed.');

@@ -17,8 +17,11 @@
 module.exports = function (gulp, swig) {
 
   return function mergeModules () {
-    var
-      modulesPath = path.join(tempPath, '/node_modules'),
+    var _ = require('underscore'),
+      path = require('path'),
+      glob = require('glob'),
+      util = require('./merge-util')(gulp, swig),
+      modulesPath = path.join(swig.temp, '/node_modules'),
       packages = glob.sync(path.join(modulesPath, '/**/package.json')),
       deps;
 
@@ -26,12 +29,12 @@ module.exports = function (gulp, swig) {
 
     _.each(packages, function (pkg) {
       pkg = require(pkg);
-      deps = extract(pkg, deps, pkg.name);
+      deps = util.extract(pkg, deps, pkg.name);
     });
 
     swig.log('Extracting dependencies');
 
-    deps = iterate(deps);
+    deps = util.iterate(deps);
 
     if (!deps) {
       swig.log('Merge Modules: validation of module dependencies failed.');

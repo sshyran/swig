@@ -88,18 +88,21 @@ module.exports = function (gulp) {
       swig.project.type = 'webapp';
     }
 
-    swig.target = target;
+    swig.target = {
+      path: target,
+      name: path.basename(target)
+    };
   }
 
   function findPackage () {
 
-    var packagePath = path.join(swig.target, 'package.json')
+    var packagePath = path.join(swig.target.path, 'package.json')
 
     if (fs.existsSync(packagePath)) {
       swig.pkg = require(packagePath);
     }
     else {
-    //   packagePath = swig.fs.findup('package.json', {cwd: swig.target, nocase: true});
+    //   packagePath = swig.fs.findup('package.json', {cwd: swig.target.path, nocase: true});
     //   if (fs.existsSync(packagePath)) {
     //     swig.pkg = require(packagePath);
     //     swig.target = path.dirname(packagePath);

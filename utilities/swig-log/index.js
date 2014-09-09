@@ -28,6 +28,12 @@ module.exports = function (swig) {
 
   puts = _.extend(puts, {
 
+    verbose: {
+      if (swig.argv.verbose) {
+        puts(what);
+      }
+    },
+
     confirm: thunkify(function (question, callback) {
       var iface = readline.createInterface({
           input: process.stdin,

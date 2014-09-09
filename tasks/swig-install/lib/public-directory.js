@@ -16,18 +16,32 @@
 // handles building of the /public assets directory
 module.exports = function (gulp, swig) {
 
-  var glob = require('glob'),
+  var _ = require('underscore'),
+    fs = require('fs'),
+    glob = require('globby'),
+    rimraf = require('rimraf'),
+    path = require('path'),
     modules = {},
     azModules = [];
 
   // remove everything in /public except for /public/src and /public/main.less
   function clean () {
-    var rimraf = require('gulp-rimraf');
-
     swig.log('Cleaning the /public directory...');
 
-    gulp.src(['./public/**', '!./src/**', '!./**/main.less'], { read: false })
-      .pipe(rimraf({ force: true }));
+    var paths = [
+        './public/**/{target}/**/*',
+        '!./public/**/{target}/**/src',
+        '!./public/**/{target}/**/src/**/*'
+      ],
+      files;
+
+    paths = _.map(paths, function (p) { return p.replace('{target}', swig.target.name); });
+    files = glob.sync(paths);
+
+    _.each(files, function (file) {
+      swig.log.verbose('[clean] removing: ' + file);
+      rimraf.sync(path.normalize(file));
+    });
   }
 
   // find and compile a list of all unique modules, and their paths
@@ -121,26 +135,36 @@ module.exports = function (gulp, swig) {
 
   return function process () {
 
-    var pkg = swig.pkg,
-      paths = { pub: path.join(process.cwd(), '/public') };
+    try {
+      var path = require('path'),
+        pkg = swig.pkg,
+        paths = { pub: path.join(swig.cwd, '/public') };
 
-    if (pkg.name) {
-      paths = {
-        css: path.join(paths.pub, '/css/', pkg.name),
-        img: path.join(paths.pub, '/img/', pkg.name),
-        js: path.join(paths.pub, '/js/', pkg.name),
-        templates: path.join(paths.pub, '/templates/', pkg.name)
-      };
+      if (pkg.name) {
+        paths = {
+          css: path.join(paths.pub, '/css/', pkg.name),
+          img: path.join(paths.pub, '/img/', pkg.name),
+          js: path.join(paths.pub, '/js/', pkg.name),
+          templates: path.join(paths.pub, '/templates/', pkg.name)
+        };
+      }
+
+
+      clean();
+      // compile();
+      // copy();
+      // manifest();
+      // require('./lib/less')(gulp, swig, paths, azModules);
+      // replace();
+      // vendor();
+      // require('./lib/main-js')(gulp, swig, paths);
     }
-
-    clean();
-    compile();
-    copy();
-    manifest();
-    require('./lib/less')(gulp, swig, paths, azModules);
-    replace();
-    vendor();
-    require('./lib/main-js')(gulp, swig, paths);
+    catch (e) {
+      console.log('ERROR')
+      console.log(e);
+      console.log(e.stack);
+      console.log(e.lineNumber);
+    }
 
   };
 };

@@ -22,8 +22,6 @@ module.exports = function (gulp, swig) {
     fs = require('fs'),
     path = require('path'),
     glob = require('glob'),
-    cwd = grunt.config.get('grunt.workingDirectory'),
-    tempPath = path.join(grunt.config.get('grunt.tmpdir'), '/ui-install'),
     target;
 
   return {
@@ -37,7 +35,7 @@ module.exports = function (gulp, swig) {
         deps[name].push({ version: version, origin: origin });
       }
 
-      _.each(pkg.ggDependencies || pkg.dependencies, function (value, key) {
+      _.each(pkg.uiDependencies || pkg.dependencies, function (value, key) {
         push(key, value);
       });
 
@@ -48,7 +46,7 @@ module.exports = function (gulp, swig) {
       }
 
       return deps;
-    }
+    },
 
     iterate: function (depTree) {
       var results = {},
@@ -117,7 +115,7 @@ module.exports = function (gulp, swig) {
       }
 
       return results;
-    }
+    },
 
     generate: function (deps, key) {
       var packageTempPath = path.join(swig.temp, (key ? key + '-' : '') + 'package.json'),

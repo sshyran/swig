@@ -20,11 +20,17 @@ module.exports = function (gulp, swig) {
     fs = require('fs'),
     exec = require('co-exec'),
     co = require('co'),
+    installCommand = 'npm install --loglevel=info',
     buffer,
     errors;
 
   function * local() {
-    var output = yield exec('npm install');
+    swig.log(installCommand);
+
+    // TODO: this needs to be streamed so we can let the user
+    // know what's going on in real time.
+
+    var output = yield exec(installCommand);
     swig.log(output);
   }
 
@@ -41,15 +47,14 @@ module.exports = function (gulp, swig) {
       return;
     }
 
-    pkg.dependencies = pkg.uiDependencies;
-    fs.writeFileSync(path.join(swig.temp, 'package.json'), json);
-
     var commands = [
       'cd ' + swig.temp,
       'rm -rf node_modules',
-      'npm install'
+      'npm install --loglevel=info'
     ];
 
+    // TODO: this needs to be streamed so we can let the user
+    // know what's going on in real time.
     var output = yield exec(commands.join('; '));
     swig.log(output);
   }
@@ -57,14 +62,14 @@ module.exports = function (gulp, swig) {
   gulp.task('install', co(function *() {
 
     var processPublic = require('./lib/public-directory')(gulp, swig),
-      packageMerge = require('./lib/package-merge')(gulp, swig);
+      packageMerge = require('./lib/package-merge')(gulp, swig),
       mergeModules = require('./lib/merge-modules')(gulp, swig);
 
     try {
-      packageMerge();
-      yield local();
-      yield ui();
-      mergeModules();
+      // packageMerge();
+      // yield local();
+      // yield ui();
+      // mergeModules();
       processPublic();
     }
     catch (e) {

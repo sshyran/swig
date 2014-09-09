@@ -50,11 +50,11 @@ module.exports = function (gulp, swig) {
 
     // setup our glob paths
     if (swig.project.type === 'webapp') {
-      baseName = path.basename(swig.target);
-      baseSource = path.join(swig.target, 'public/{type}/', baseName, '/src/**/*.{extension}');
+      baseName = path.basename(swig.target.path);
+      baseSource = path.join(swig.target.path, 'public/{type}/', baseName, '/src/**/*.{extension}');
     }
     else {
-      baseSource = path.join(swig.target, '/**/*.{extension}');
+      baseSource = path.join(swig.target.path, '/**/*.{extension}');
     }
 
     paths = {

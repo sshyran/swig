@@ -42,7 +42,9 @@
     "co" : "*",
     "co-exec" : "*",
     "glob" : "*",
+    "globby" : "*",
     "gulp-rimraf" : "*",
+    "rimraf" : "*",
     "thunkify" : "*",
     "underscore" : "*"
   },
