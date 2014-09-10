@@ -17,9 +17,14 @@
 module.exports = function (gulp, swig, paths, azModules) {
 
   // dependencies.less should be in topoclogical order, not a-z
-  var glob = require('glob'),
+  var _ = require('underscore'),
+    fs = require('fs'),
+    glob = require('glob'),
     path = require('path'),
+    now = (new Date()).toString(),
     content = '/* Generated: ' + now + '\n   This file is auto-generated during ui:install\n   It is inadvisable to write to it directly */\n',
+    depsPath = path.join(paths.css, 'dependencies.less'),
+    mainCssPath = path.join(paths.css, 'main.less'),
     modPathName,
     sourcePath;
 
@@ -32,15 +37,18 @@ module.exports = function (gulp, swig, paths, azModules) {
       });
     });
 
-    fs.writeFileSync(path.join(paths.css, 'dependencies.less'), content);
+    swig.log('Writing dependencies.less to: ' + depsPath);
 
-    swig.log('Writing dependencies.less');
+    fs.writeFileSync(depsPath, content);
 
     if (!fs.existsSync(mainCssPath)) {
+      swig.log('Didn\'t find main.less, Writing main.less to: ' + mainCssPath);
+
       content += '\n@import "dependencies.less";'
       fs.writeFileSync(mainCssPath, content);
-
-      swig.log('Didn\'t find main.less, Writing main.less');
+    }
+    else {
+      swig.log('main.less already exists, skipping it.');
     }
 
 };

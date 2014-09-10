@@ -22,7 +22,8 @@ module.exports = function (gulp, swig) {
     rimraf = require('rimraf'),
     path = require('path'),
     modules = {},
-    azModules = [];
+    azModules = [], // alphabetically sorted
+    now;
 
   // remove everything in /public except for /public/src and /public/main.less
   function clean () {
@@ -30,8 +31,11 @@ module.exports = function (gulp, swig) {
 
     var paths = [
         './public/**/{target}/**/*',
+        '!./public/**/{target}/**/config',
+        '!./public/**/{target}/**/config/**/*',
         '!./public/**/{target}/**/src',
-        '!./public/**/{target}/**/src/**/*'
+        '!./public/**/{target}/**/src/**/*',
+        '!./public/css/{target}/main.less'
       ],
       files;
 
@@ -111,24 +115,26 @@ module.exports = function (gulp, swig) {
 
   function manifest (paths) {
     // re-prep the modules hash with version numbers instead of paths
+
+    var pkg,
+      manifestPath = path.join(paths.js, 'manifest.json');
+
     _.each(modules, function (mod, name) {
       pkg = require(path.join(mod, '/package.json'));
       modules[name] = pkg.version;
     });
 
-    fs.writeFileSync(path.join(paths.js, 'manifest.json'), JSON.stringify({ generated: now, dependencies: modules }, null, 2));
-    grunt.reporter.success('Writing manifest.json');
+    swig.log('Writing manifest.json to: ' + manifestPath);
+    fs.writeFileSync(manifestPath, JSON.stringify({ generated: now, dependencies: modules }, null, 2));
   }
 
-  function replace () {
-    var content;
+  function replace (paths) {
 
     swig.log('Replacing Public Repo Name in CSS');
 
     glob.sync(path.join(paths.css, '/**/*.css')).forEach(function (file) {
-      content = fs.readFileSync(file, { encoding: 'utf-8' });
-
-      var matches = content.match(/\$\$PUBLIC\_REPO\_NAME\$\$/g);
+      var content = fs.readFileSync(file, { encoding: 'utf-8' }),
+        matches = content.match(/\$\$PUBLIC\_REPO\_NAME\$\$/g);
 
       if (matches && matches.length) {
         content = content.replace(/\$\$PUBLIC\_REPO\_NAME\$\$/g, swig.pkg.name);
@@ -152,14 +158,30 @@ module.exports = function (gulp, swig) {
 
       fs.linkSync(file, destPath);
     });
+
+    swig.log('Copying less helpers common/helpers.');
+
+    glob.sync(path.join(paths.css, '/less/helpers/*.less')).forEach(function (file) {
+      destPath = path.join(paths.css, '/common/helpers/', path.basename(file));
+
+      if (!fs.existsSync(path.dirname(destPath))) {
+        swig.fs.mkdir(path.dirname(destPath));
+      }
+
+      fs.linkSync(file, destPath);
+    });
   }
 
   return function process () {
 
+    now = (new Date()).toString();
+
     try {
       var path = require('path'),
         pkg = swig.pkg,
-        paths = { pub: path.join(swig.cwd, '/public') };
+        paths = { pub: path.join(swig.target.path, '/public') },
+        less = require('./less'),
+        mainJs = require('./main-js');
 
       if (pkg.name) {
         paths = {
@@ -177,11 +199,11 @@ module.exports = function (gulp, swig) {
       clean();
       compile();
       copy(paths);
-      // manifest(paths);
-      // require('./lib/less')(gulp, swig, paths, azModules);
-      // replace();
-      // vendor(paths);
-      // require('./lib/main-js')(gulp, swig, paths);
+      manifest(paths);
+      less(gulp, swig, paths, azModules);
+      replace(paths);
+      vendor(paths);
+      mainJs(gulp, swig, paths);
     }
     catch (e) {
       console.log('ERROR')

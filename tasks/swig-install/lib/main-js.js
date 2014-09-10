@@ -17,20 +17,32 @@
 module.exports = function (gulp, swig, paths) {
 
   // main.js
-  var glob = require('glob'),
+  var _ = require('underscore'),
+    glob = require('glob'),
     path = require('path'),
     fs = require('fs'),
-    content = '/* Generated: ' + now + '\n   This file is auto-generated during ui:install\n   It is inadvisable to write to it directly */\n',
-      + require('swig-install/templates/main-js.handlebars'), //fs.readFileSync(path.join(grunt.config.get('grunt.basePath'), '/templates/main-js.handlebars'), { encoding: 'utf-8' });
+    now = (new Date()).toString(),
+    preamble = '/* Generated: '
+      + now
+      + '\n   This file is auto-generated during ui:install\n   It is inadvisable to write to it directly */\n',
+    templates = {
+      main: fs.readFileSync(path.join(__dirname, '../templates/main.js'), { encoding: 'utf-8' }),
+      config: fs.readFileSync(path.join(__dirname, '../templates/main-config.js'), { encoding: 'utf-8' })
+    },
     files = '',
     destPath,
     pkg,
-    configDeps;
+    configDeps,
+    config,
+    mainjs,
+    specjs;
 
+  // pull in raw file contents which need to be inserted into the template
   glob.sync(path.join(paths.js, '/vendor/common/{require,require_wrapper,json}.js')).forEach(function (file) {
     files += fs.readFileSync(file, { encoding: 'utf-8' }) + '\n';
   });
 
+  // load the config dependencies
   glob.sync(path.join(swig.temp, '/**/node_modules/**/package.json')).forEach(function (file) {
     pkg = JSON.parse(fs.readFileSync(file, { encoding: 'utf-8' }));
     if (pkg.configDependencies) {
@@ -39,26 +51,24 @@ module.exports = function (gulp, swig, paths) {
   });
 
   // TEMPORARY
-  configDeps['config.jsBasePath'] = '/a/js/' + appPackage.name + '/';
+  // configDeps['config.jsBasePath'] = '/a/js/' + appPackage.name + '/';
 
-  // yes I know we're not using handlebars here, but that's really overkill
-  content = content.replace('{{files}}', files);
-  content = content.replace('{{configs}}', JSON.stringify(configDeps, null, '  '));
+  // handlebars is overkill here, run with a simple replace.
+  templates.main = templates.main
+                    .replace('{{preamble}}', preamble)
+                    .replace('{{files}}', files);
 
-  fs.writeFileSync(path.join(paths.js, 'main.js'), content);
+  config = templates.config.replace('{{configs}}', JSON.stringify(configDeps || {}, null, '  '));
+  mainjs = templates.main.replace('{{config}}', config);
+
+  // create a js file separately that'll be used to run specs
+  specjs = templates.main.replace('{{config}}', '');
+  specjs = '/* This file is only used to run specs. */\n' + specjs;
 
   swig.log('Writing main.js.');
+  fs.writeFileSync(path.join(paths.js, 'main.js'), mainjs);
 
-  swig.log('Copying less helpers common/helpers.');
-
-  glob.sync(path.join(paths.css, '/less/helpers/*.less')).forEach(function (file) {
-    destPath = path.join(paths.css, '/common/helpers/', path.basename(file));
-
-    if (!fs.existsSync(path.dirname(destPath))) {
-      mkdir(path.dirname(destPath));
-    }
-
-    fs.linkSync(file, destPath);
-  });
+  swig.log('Writing main-spec.js.');
+  fs.writeFileSync(path.join(paths.js, 'main-spec.js'), specjs);
 
 };
