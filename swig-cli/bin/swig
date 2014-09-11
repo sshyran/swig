@@ -19,5 +19,8 @@ export NVM_DIR="$HOME/.nvm"
 # run node 0.11.n. allow errors to pass through to the user.
 nvm use v0.11 >/dev/null
 
+# TODO - check to see if swig is in this directory.
+#        if not, ask the user if they want to init.
+
 # pass control to gulp
 node --harmony `which gulp` "$@"
