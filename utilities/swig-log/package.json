@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "colors" : "*",
+    "log-symbols" : "*",
     "hooker" : "*",
     "thunkify" : "*",
     "underscore" : "*"

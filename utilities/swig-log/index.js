@@ -17,6 +17,7 @@ module.exports = function (swig) {
 
   var _ = require('underscore'),
     hooker = require('hooker'),
+    symbols = require('log-symbols'),
     readline = require('readline'),
     thunkify = require('thunkify');
 
