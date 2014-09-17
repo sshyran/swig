@@ -141,9 +141,13 @@ module.exports = function (gulp) {
 
   swig = _.extend(swig, {
     tasks: {
+      bundle: load('swig-bundle'),
       'default': load('swig-default'),
+      deploy: load('swig-deploy'),
       install: load('swig-install'),
-      lint: load('swig-lint')
+      lint: load('swig-lint'),
+      publish: load('swig-publish'),
+      spec: load('swig-spec')
     }
   });
 

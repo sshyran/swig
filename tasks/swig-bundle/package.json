@@ -38,6 +38,10 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
+    "co" : "*",
+    "co-exec" : "*",
+    "glob" : "*",
+    "globby" : "*",
     "underscore" : "*"
   },
   "devDependencies": {

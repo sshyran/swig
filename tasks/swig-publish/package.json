@@ -1,5 +1,5 @@
 {
-  "name": "swig-project",
+  "name": "swig-publish",
   "description": "",
   "version": "0.0.1",
   "homepage": "https://github.com/gilt/gilt-swig",
@@ -37,26 +37,14 @@
   "engines": {
     "node": ">= 0.11.x"
   },
-  "preferGlobal" : "true",
   "dependencies": {
     "co" : "*",
-    "thunkify" : "*",
-    "underscore" : "*",
-    "yargs" : "*",
-
-    "swig-log" : "*",
-    "swig-util" : "*",
-
-    "swig-app" : "*",
-    "swig-app-registry" : "*",
-    "swig-tunnel" : "*",
-
-    "swig-bundle" : "*",
-    "swig-default" : "*",
-    "swig-deploy" : "*",
-    "swig-install" : "*",
-    "swig-lint" : "*",
-    "swig-spec" : "*"
+    "co-exec" : "*",
+    "globby": "*",
+    "rimraf": "*",
+    "simple-git": "*",
+    "xattr" : "*",
+    "underscore" : "*"
   },
   "devDependencies": {
 
