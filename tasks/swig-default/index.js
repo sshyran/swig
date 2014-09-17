@@ -19,7 +19,6 @@ module.exports = function (gulp, swig) {
     commands = [];
 
   gulp.task('default', function () {
-    swig.log('Available Commands:');
 
     _.each(_.extend(swig.tasks, swig.tools), function (module, name) {
       commands.push({ name: name, module: module });
@@ -29,10 +28,12 @@ module.exports = function (gulp, swig) {
       return command.name;
     });
 
+    var tasks = [];
+
     _.each(commands, function (command) {
-      swig.log('  ' + command.name);
+      tasks.push('  ' + command.name);
     });
 
-    swig.log('');
+    swig.log('Available Commands:\n' + tasks.join('\n') + '\n');
   });
 };

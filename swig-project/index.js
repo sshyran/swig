@@ -22,6 +22,7 @@ module.exports = function (gulp) {
     argv = require('yargs').argv,
     taskName = argv._.length > 0 ? argv._[0] : 'default',
     swig = {
+      pkg: {},
       gulp: gulp,
       argv: argv,
       project: {}
@@ -108,12 +109,12 @@ module.exports = function (gulp) {
     //     swig.target = path.dirname(packagePath);
     //   }
       // else {
-        swig.log('swig.util: package.json not found at: ' + packagePath);
+        swig.log('[swig-project]'.yellow + ' package.json not found at: ' + packagePath.grey);
       // }
     }
   }
 
-  swig.util = require('swig-util')(swig);
+  swig.util = require('swig-util')(swig, gulp);
   swig.log = require('swig-log')(swig);
 
   setupPaths();
@@ -152,5 +153,4 @@ module.exports = function (gulp) {
   });
 
   return swig;
-
 };

@@ -15,7 +15,7 @@
 
 module.exports = function (gulp, swig) {
 
-  gulp.task('spec', ['install', 'lint'], function () {
+  gulp.task('spec', function () {
     swig.log('Running Specs... (currently disabled)');
   });
 

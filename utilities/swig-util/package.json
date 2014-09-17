@@ -38,7 +38,11 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
-    "findup-sync" : "*"
+    "chalk": "*",
+    "findup-sync" : "*",
+    "gulp-util": "*",
+    "run-sequence": "*",
+    "underscore": "*"
   },
   "devDependencies": {
 

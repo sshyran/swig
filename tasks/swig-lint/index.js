@@ -42,10 +42,11 @@ module.exports = function (gulp, swig) {
     return;
   }
 
-  gulp.task('lint-setup', function () {
+  gulp.task('lint-setup', function (cb) {
 
     if (paths) {
-      return true;
+      cb();
+      return;
     }
 
     // setup our glob paths
@@ -63,7 +64,7 @@ module.exports = function (gulp, swig) {
       templates: source('templates', 'handlebars')
     };
 
-    return true;
+    cb();
   });
 
   gulp.task('lint-script', ['lint-setup'], function () {
@@ -89,8 +90,7 @@ module.exports = function (gulp, swig) {
       .pipe(recessReporter);
   });
 
-  gulp.task('lint-handlebars', ['lint-setup'], function () {
-    console.log(paths.templates);
+  gulp.task('lint-handlebars', ['lint-setup'], function (cb) {
     return gulp.src(paths.templates)
       .pipe(handlebars());
 
@@ -103,7 +103,7 @@ module.exports = function (gulp, swig) {
   // package version
   // js and less dependencies
 
-  gulp.task('lint', ['lint-script', 'lint-css', 'lint-handlebars'], function () {
-    return true;
+  gulp.task('lint', function (cb) {
+    swig.seq('lint-script', 'lint-css', 'lint-handlebars', cb);
   });
 };

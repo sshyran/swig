@@ -23,15 +23,29 @@ module.exports = function (swig) {
 
   require('colors');
 
-  function puts (what) {
-    console.log(what);
+  function puts (what, prefix) {
+
+    what = what || '';
+
+    if (prefix) {
+      prefix = 'swig:'.cyan + prefix.grey;
+    }
+    else {
+      prefix = 'swig'.cyan;
+    }
+
+    if (what.indexOf('\n') > 0 && what.indexOf('\n') < what.length - 1) {
+      what = '\n\n' + what;
+    }
+
+    console.log('[' + prefix + '] ' + what);
   }
 
   puts = _.extend(puts, {
 
-    verbose: function (what) {
+    verbose: function (what, prefix) {
       if (swig.argv.verbose) {
-        puts(what);
+        puts(what, prefix);
       }
     },
 

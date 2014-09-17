@@ -39,11 +39,9 @@
   },
   "dependencies": {
     "co" : "*",
-    "co-exec" : "*",
     "globby": "*",
     "rimraf": "*",
     "simple-git": "*",
-    "xattr" : "*",
     "underscore" : "*"
   },
   "devDependencies": {

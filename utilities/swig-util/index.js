@@ -13,67 +13,15 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function (swig) {
+module.exports = function (swig, gulp) {
 
-  var fs = require('fs'),
-    path = require('path');
+  require('./lib/error')(swig);
+  require('./lib/exec')(swig);
+  require('./lib/fs')(swig);
 
-  swig.fs = {
-
-    findup: require('findup-sync'),
-
-    //https://raw.githubusercontent.com/substack/node-mkdirp/master/index.js
-    mkdir: function (p, mode, made) {
-      if (mode === undefined) {
-        mode = 0o777 & (~process.umask());
-      }
-      if (!made) made = null;
-
-      if (typeof mode === 'string') mode = parseInt(mode, 8);
-      p = path.resolve(p);
-
-      try {
-        fs.mkdirSync(p, mode);
-        made = made || p;
-      }
-      catch (err0) {
-        switch (err0.code) {
-          case 'ENOENT' :
-          made = swig.fs.mkdir(path.dirname(p), mode, made);
-          swig.fs.mkdir(p, mode, made);
-          break;
-          default:
-          var stat;
-          try {
-            stat = fs.statSync(p);
-          }
-          catch (err1) {
-            throw err0;
-          }
-          if (!stat.isDirectory()) throw err0;
-          break;
-        }
-      }
-
-      return made;
-    },
-
-    copyAll: function (src, dest) {
-      var exists = fs.existsSync(src),
-        stats = exists && fs.statSync(src),
-        isDirectory = exists && stats.isDirectory();
-
-      if (exists && isDirectory) {
-        swig.fs.mkdir(dest);
-        fs.readdirSync(src).forEach(function (childItemName) {
-          swig.fs.copyAll(path.join(src, childItemName),
-            path.join(dest, childItemName));
-        });
-      } else {
-        fs.linkSync(src, dest);
-      }
-    }
-
-  };
-
+  // a utility to allow us to run tasks in a series, non-paralell order.
+  // we're loading this local, modded copy until the author merges a PR
+  // chalk is a dep in package.json required for this. remove that
+  // when we go back to using the npm module (if).
+  swig.seq = require('./lib/run-sequence')(gulp);
 };

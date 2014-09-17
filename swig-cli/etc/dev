@@ -26,9 +26,13 @@ cd /web/gilt-swig/swig-cli && npm link
 cd /web/gilt-swig/utilities/swig-log && npm link
 cd /web/gilt-swig/utilities/swig-util && npm link
 
+cd /web/gilt-swig/tasks/swig-bundle && npm link
 cd /web/gilt-swig/tasks/swig-default && npm link
+cd /web/gilt-swig/tasks/swig-deploy && npm link
 cd /web/gilt-swig/tasks/swig-install && npm link
-cd ln -s /web/gilt-swig/tasks/swig-lint && npm link
+cd /web/gilt-swig/tasks/swig-lint && npm link
+cd /web/gilt-swig/tasks/swig-publish && npm link
+cd /web/gilt-swig/tasks/swig-spec && npm link
 
 cd /web/gilt-swig/tools/swig-app && npm link
 cd /web/gilt-swig/tools/swig-app-registry && npm link
@@ -39,9 +43,15 @@ cd /web/gilt-swig/tools/swig-zk && npm link
 cd /web/gilt-swig/swig-project
 npm link swig-util
 npm link swig-log
+
+npm link swig-bundle
 npm link swig-default
+npm link swig-deploy
 npm link swig-install
 npm link swig-lint
+npm link swig-publish
+npm link swig-spec
+
 npm link swig-app
 npm link swig-app-registry
 npm link swig-tunnel
@@ -50,5 +60,6 @@ npm link
 
 # setup the current directory
 cd $cwd
+sudo npm install gulp -g --loglevel=info
 npm link swig-project
 swig-init
