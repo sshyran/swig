@@ -65,6 +65,15 @@ module.exports = function (gulp) {
     swig.temp = path.join(os.tmpdir(), 'swig');
   }
 
+  function findSwigRc() {
+    if (!fs.existsSync('~/.swigrc')) {
+      swig.log('[swig-project]'.yellow + ' .swigrc not found at: ' + '~/.swigrc'.grey + '.\nPlease grab a copy from /web/tools/config');
+    }
+    else {
+      swig.rc = require('~/.swigrc');
+    }
+  }
+
   function findTarget () {
 
     var target,
@@ -103,14 +112,7 @@ module.exports = function (gulp) {
       swig.pkg = require(packagePath);
     }
     else {
-    //   packagePath = swig.fs.findup('package.json', {cwd: swig.target.path, nocase: true});
-    //   if (fs.existsSync(packagePath)) {
-    //     swig.pkg = require(packagePath);
-    //     swig.target = path.dirname(packagePath);
-    //   }
-      // else {
-        swig.log('[swig-project]'.yellow + ' package.json not found at: ' + packagePath.grey);
-      // }
+      swig.log('[swig-project]'.yellow + ' package.json not found at: ' + packagePath.grey);
     }
   }
 
@@ -120,6 +122,7 @@ module.exports = function (gulp) {
   setupPaths();
   findTarget();
   findPackage();
+  findSwigRc();
 
   // create swigs's temporary directory;
   if (!fs.existsSync(swig.temp)) {

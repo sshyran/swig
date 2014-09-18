@@ -19,6 +19,8 @@ module.exports = function (swig) {
     hooker = require('hooker'),
     symbols = require('log-symbols'),
     readline = require('readline'),
+    sprintf = require('sprintf').sprintf,
+    strip = require('strip-ansi'),
     thunkify = require('thunkify');
 
   require('colors');
@@ -34,11 +36,16 @@ module.exports = function (swig) {
       prefix = 'swig'.cyan;
     }
 
-    if (what.indexOf('\n') > 0 && what.indexOf('\n') < what.length - 1) {
-      what = '\n\n' + what;
+    prefix = '[' + prefix + '] ';
+
+    var parts = what.split('\n'),
+      padding = sprintf('%-' + (strip(prefix).length) + 's', '');
+
+    if (parts.length > 1) {
+      what = parts.join('\n' + padding)
     }
 
-    console.log('[' + prefix + '] ' + what);
+    console.log(prefix + what);
   }
 
   puts = _.extend(puts, {

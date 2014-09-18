@@ -41,6 +41,8 @@
     "colors" : "*",
     "log-symbols" : "*",
     "hooker" : "*",
+    "sprintf": "*",
+    "strip-ansi": "*",
     "thunkify" : "*",
     "underscore" : "*"
   },

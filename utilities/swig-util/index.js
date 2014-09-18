@@ -23,5 +23,5 @@ module.exports = function (swig, gulp) {
   // we're loading this local, modded copy until the author merges a PR
   // chalk is a dep in package.json required for this. remove that
   // when we go back to using the npm module (if).
-  swig.seq = require('./lib/run-sequence')(gulp);
+  swig.seq = require('run-sequence').use(gulp);
 };

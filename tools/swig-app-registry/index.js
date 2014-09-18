@@ -31,9 +31,13 @@ module.exports = function (gulp, swig) {
     var response,
       json;
 
+    if(!swig.rc || !swig.rc.appRegistry) {
+      swig.error('[swig-app-registry] '.red + '.swigrc doesn\'t exist, or is missing appRegistry settings.\nPlease resolve this to continue.');
+    }
+
     try {
       swig.log('Downloading the Application Registry...');
-      response = yield get('http://application-registry.gilt.com/application_registry/1.0');
+      response = yield get(swig.rc.appRegistry.url);
       json = response.length ? response[0].body : null;
 
       fs.writeFileSync(registryPath, json);
