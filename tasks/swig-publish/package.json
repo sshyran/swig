@@ -42,6 +42,7 @@
     "globby": "*",
     "rimraf": "*",
     "simple-git": "*",
+    "thunkify": "*",
     "underscore" : "*"
   },
   "devDependencies": {

@@ -16,6 +16,8 @@
 
 module.exports = function (gulp, swig) {
 
+  var maxWarnings = 10;
+
   return function reporter () {
 
     var through = require('through2'),
@@ -54,16 +56,15 @@ module.exports = function (gulp, swig) {
     function flush (cb) {
 
       if (hasErrors) {
-        cb(new gutil.PluginError('gulp-jshint', {
-          message: 'Please take care of those errors before proceeding.',
-          showStack: false
-        }));
+        swig.log('[swig-lint:jshint]'.red + ' Please correct errors in ' + 'red'.red + ' before proceeding.');
+        process.exit(0);
       }
-      else if (total > 50) {
-        cb(new gutil.PluginError('gulp-jshint', {
-          message: 'Well you didnn\'t have any errors, but you\'ve got ' + total + ' warnings. Please do some cleanup.',
-          showStack: false
-        }));
+      else if (total > maxWarnings) {
+        swig.log('[swig-lint:jshint]'.yellow + ' You\'ve got ' + total.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
+        process.exit(0);
+      }
+      else {
+        cb();
       }
 
     });

@@ -22,12 +22,44 @@ module.exports = function (swig) {
 
   var exec = require('child_process').exec;
 
+  function capture (process, outHandler, errHandler) {
+    var stdout = process.stdout,
+      stderr = process.stderr,
+      outBuff = '',
+      errBuff = '';
+
+    if (outHandler) {
+      stdout.on('data', function (data) {
+        outBuff += data.toString('utf8');
+
+        if (outBuff.indexOf('\n') > -1) {
+          outHandler(outBuff);
+          outBuff = '';
+        }
+      });
+    }
+
+    if (errHandler) {
+      stderr.on('data', function (data) {
+        errBuff += data.toString('utf8');
+
+        if (errBuff.indexOf('\n') > -1) {
+          errHandler(errBuff);
+          errBuff = '';
+        }
+      });
+    }
+  }
+
   // return a thunk for yield/generator functionality
-  swig.exec = function swigExec (cmd, opts) {
+  swig.exec = function swigExec (cmd, opts, options) {
     return function swigExecThunk (done){
-      exec(cmd, opts, function execCb (err, stdout, stderr){
+      var process = exec(cmd, opts, function execCb (err, stdout, stderr){
         done(err, { stdout: stdout, stderr: stderr });
       });
+      if (options && (options.stdout || options.stderr)) {
+        capture(process, options.stdout, options.stderr);
+      }
     };
   };
 };

@@ -45,7 +45,6 @@
     "gulp-jshint" : "*",
     "gulp-recess" : "*",
     "gulp-util" : "*",
-    "jshint-stylish": "*",
     "through2" : "*",
     "underscore" : "*"
   },
