@@ -24,25 +24,47 @@ module.exports = function (swig) {
     thunkify = require('thunkify');
 
   require('colors');
+  '┤├';
 
-  function puts (what, prefix) {
+  symbols.connector = ' ▸ ';
+
+  if (swig.env === 'production' || swig.argv.pretty === false) {
+    symbols.info = '[info]';
+    symbols.warning = '[warn]';
+    symbols.error = '[err ]';
+    symbols.connector = ' : ';
+  }
+
+  if (swig.env === 'development' && !swig.argv.poolparty) {
+    var oldLog = console.log;
+
+    // gulp-util.log always starts each log with [00:00:00]
+    // we're suppressing that output if on a dev machine.
+    console.log = function () {
+      var args = Array.prototype.slice.call(arguments);
+
+      if (/^\[\d\d\:\d\d:\d\d\]/.test(strip(args[0]))) {
+        return;
+      }
+
+      oldLog.apply(console, args);
+    }
+  }
+
+  function puts (what) {
+
+    var prefix = '  ';
 
     what = what || '';
 
-    if (prefix) {
-      prefix = 'swig:'.cyan + prefix.grey;
-    }
-    else {
-      prefix = 'swig'.cyan;
-    }
-
-    prefix = '[' + prefix + '] ';
-
-    var parts = what.split('\n'),
-      padding = sprintf('%-' + (strip(prefix).length) + 's', '');
+    var parts = what.split('\n');
 
     if (parts.length > 1) {
-      what = parts.join('\n' + padding)
+      what = parts.join('\n' + prefix)
+    }
+
+    if (swig.env === 'production' || swig.argv.pretty === false) {
+      what = strip(what);
     }
 
     console.log(prefix + what);
@@ -50,10 +72,25 @@ module.exports = function (swig) {
 
   puts = _.extend(puts, {
 
-    verbose: function (what, prefix) {
+    verbose: function (prefix, what) {
       if (swig.argv.verbose) {
-        puts(what, prefix);
+        puts(what);
       }
+    },
+
+    info: function (prefix, what) {
+      prefix = ' ' + prefix + symbols.connector;
+      puts(strip(symbols.info).cyan + prefix.cyan + what);
+    },
+
+    warn: function (prefix, what) {
+      prefix = '  ' + prefix + symbols.connector;
+      puts(symbols.warning + prefix.yellow + what);
+    },
+
+    error: function (prefix, what) {
+      prefix = ' ' + prefix + symbols.connector;
+      puts(symbols.error + prefix.red + what);
     },
 
     confirm: thunkify(function (question, callback) {
