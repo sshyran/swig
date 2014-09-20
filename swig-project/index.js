@@ -21,12 +21,18 @@ module.exports = function (gulp) {
     fs = require('fs'),
     argv = require('yargs').argv,
     taskName = argv._.length > 0 ? argv._[0] : 'default',
+    thisPkg = require('./package.json'),
     swig = {
       pkg: {},
       gulp: gulp,
       argv: argv,
-      project: {}
+      project: {},
+      env: process.env.GILT_ENV || 'development'
     };
+
+  require('colors');
+  console.log('·  ' + 'swig-project'.red + ' v' + thisPkg.version + '\n·');
+  console.log('·  ' + 'gulpfile: '.blue + module.parent.id.replace(process.env.HOME, '~').grey + '\n');
 
   function load (moduleName) {
 
@@ -67,7 +73,7 @@ module.exports = function (gulp) {
 
   function findSwigRc() {
     if (!fs.existsSync('~/.swigrc')) {
-      swig.log('[swig-project]'.yellow + ' .swigrc not found at: ' + '~/.swigrc'.grey + '.\nPlease grab a copy from /web/tools/config');
+      swig.log.warn('swig-project', '.swigrc not found at: ' + '~/.swigrc'.grey + '. Please grab a copy from ' + '/web/tools/config.\n'.grey);
     }
     else {
       swig.rc = require('~/.swigrc');
@@ -123,6 +129,9 @@ module.exports = function (gulp) {
   findTarget();
   findPackage();
   findSwigRc();
+
+  swig.log.info('swig-test', 'This is a test info message.\n');
+  swig.log.error('swig-test', 'This is a test error message.\n');
 
   // create swigs's temporary directory;
   if (!fs.existsSync(swig.temp)) {

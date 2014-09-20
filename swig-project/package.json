@@ -40,6 +40,7 @@
   "preferGlobal" : "true",
   "dependencies": {
     "co" : "*",
+    "colors": "*",
     "thunkify" : "*",
     "underscore" : "*",
     "yargs" : "*",
