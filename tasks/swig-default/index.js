@@ -34,6 +34,6 @@ module.exports = function (gulp, swig) {
       tasks.push('  ' + command.name);
     });
 
-    swig.log('Swig Taks:\n'.yellow + tasks.join('\n') + '\n');
+    swig.log('Available Swig Tasks:\n'.green + tasks.join('\n') + '\n');
   });
 };
