@@ -30,7 +30,7 @@ module.exports = function (swig) {
   require('colors');
   '┤├';
 
-  symbols.connector = ' : ';
+  symbols.connector = ': ';
   symbols.start = '▸';
 
   if (swig.env === 'production' || swig.argv.pretty === false) {
@@ -55,7 +55,7 @@ module.exports = function (swig) {
 
         // if gulp is reporting an error, let that through.
         _.each(args, function (arg) {
-          if (arg && arg.toLowerCase().indexOf('error') > -1) {
+          if (arg && (!_.isString(arg) || arg.toLowerCase().indexOf('error') > -1)) {
             suppress = false;
           }
         });

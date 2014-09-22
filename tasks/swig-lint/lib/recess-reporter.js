@@ -19,9 +19,10 @@ module.exports = function (swig) {
     through = require('through2'),
     gutil = require('gulp-util'),
     success = true,
-    filecount = 0;
+    filecount = 0,
+    res;
 
-  return through.obj(function (file, enc, cb) {
+  res = through.obj(function (file, enc, cb) {
 
     if (file.isNull()) {
       cb(null, file);
@@ -86,4 +87,20 @@ module.exports = function (swig) {
     }
     cb();
   });
+
+  res.fail = function recessFailure (e) {
+
+    var recess = e.recess;
+
+    swig.log();
+    swig.log.error(null, e.fileName);
+
+    swig.log(swig.log.padding + swig.log.padding + (' line ' + recess.line + ' col ' + recess.col).grey + ' ' + recess.message.blue);
+
+    swig.log();
+    swig.log.error('lint-css', 'Please correct the error(s) shown before proceeding.');
+    process.exit(0);
+  };
+
+  return res;
 };

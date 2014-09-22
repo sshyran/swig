@@ -23,10 +23,12 @@ module.exports = function (gulp, swig) {
     handlebars = require('gulp-handlebars'),
     addsrc = require('gulp-add-src'),
     buffer = require('gulp-buffer'),
+    gutil = require('gulp-util'),
 
     mock = require('./lib/mock')(gulp, swig),
     recessReporter = require('./lib/recess-reporter')(swig),
     jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
+    handlebarsReporter = require('./lib/handlebars-reporter')(swig),
 
     baseName,
     baseSource,
@@ -93,8 +95,9 @@ module.exports = function (gulp, swig) {
 
     return gulp.src(paths.css)
       .pipe(buffer())
-      .pipe(mock())
+      // .pipe(mock())
       .pipe(recess(recessOpts))
+      .on('error', recessReporter.fail)
       .pipe(recessReporter);
   });
 
@@ -102,9 +105,9 @@ module.exports = function (gulp, swig) {
     swig.log.task('Linting Handlebars Templates');
 
     return gulp.src(paths.templates)
-      .pipe(handlebars());
-
-    // TODO: reporter - https://github.com/lazd/gulp-handlebars/issues/34
+      .pipe(handlebars())
+      .on('error', handlebarsReporter.fail)
+      .pipe(handlebarsReporter);
   });
 
   // TODO:
