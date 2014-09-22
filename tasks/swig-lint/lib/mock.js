@@ -18,9 +18,7 @@ module.exports = function (gulp, swig) {
   var _ = require('underscore'),
     fs = require('fs'),
     path = require('path'),
-    insert = require('gulp-insert'),
     through = require('through2'),
-    gutil = require('gulp-util'),
     regex = require('./mock-regex');
 
   if (!String.prototype.scan) {

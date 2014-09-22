@@ -26,6 +26,7 @@ module.exports = function (gulp, swig) {
     gutil = require('gulp-util'),
 
     mock = require('./lib/mock')(gulp, swig),
+    packageVersion = require('./lib/package-version')(gulp, swig),
     recessReporter = require('./lib/recess-reporter')(swig),
     jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
     handlebarsReporter = require('./lib/handlebars-reporter')(swig),
@@ -95,7 +96,7 @@ module.exports = function (gulp, swig) {
 
     return gulp.src(paths.css)
       .pipe(buffer())
-      // .pipe(mock())
+      .pipe(mock())
       .pipe(recess(recessOpts))
       .on('error', recessReporter.fail)
       .pipe(recessReporter);
@@ -110,13 +111,18 @@ module.exports = function (gulp, swig) {
       .pipe(handlebarsReporter);
   });
 
+  gulp.task('lint-misc', ['lint-setup'], function () {
+    swig.log.task('Linting Other Bits');
+    return gulp.src(paths.js)
+      .pipe(packageVersion());
+  });
+
   // TODO:
   // module name
   // special
-  // package version
   // js and less dependencies
 
   gulp.task('lint', function (cb) {
-    swig.seq('lint-script', 'lint-css', 'lint-handlebars', cb);
+    swig.seq('lint-script', 'lint-misc', 'lint-css', 'lint-handlebars', cb);
   });
 };
