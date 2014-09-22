@@ -130,9 +130,6 @@ module.exports = function (gulp) {
   findPackage();
   findSwigRc();
 
-  swig.log.info('swig-test', 'This is a test info message.\n');
-  swig.log.error('swig-test', 'This is a test error message.\n');
-
   // create swigs's temporary directory;
   if (!fs.existsSync(swig.temp)) {
     fs.mkdirSync(swig.temp);

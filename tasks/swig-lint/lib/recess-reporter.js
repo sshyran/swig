@@ -17,9 +17,12 @@ module.exports = function (gulp, swig) {
 
   var _ = require('underscore'),
     through = require('through2'),
-    gutil = require('gulp-util');
+    gutil = require('gulp-util'),
+    success = true,
+    filecount = 0;
 
   return through.obj(function (file, enc, cb) {
+
     if (file.isNull()) {
       cb(null, file);
       return;
@@ -30,6 +33,8 @@ module.exports = function (gulp, swig) {
       return;
     }
 
+    filecount++;
+
     var recess = file.recess,
       liner = /^([0-9]+)(\.\s)(.+)$/i,
       lines,
@@ -38,6 +43,8 @@ module.exports = function (gulp, swig) {
       results = [];
 
     if (recess && !recess.success) {
+
+      success = false;
 
       lines = _.reject(recess.results, function (line) { return !line.trim(); });
       _.each(lines, function (line) {
@@ -58,14 +65,14 @@ module.exports = function (gulp, swig) {
       console.log('TODO: Make this pretty');
       console.log(results);
 
-      // cb(new gutil.PluginError('gulp-recess', file.relative + ': ' + recess.status + ' ' + recess.failureCount + ' failures', {
-      //   fileName: file.path,
-      //   showStack: false
-      // }));
-
-      // return;
     }
 
     cb(null, file);
+  }, function (cb) {
+    if (filecount === 0 || success) {
+      swig.log.write('  ');
+      swig.log.success(null, '  ' + filecount + ' file(s), success.\n');
+    }
+    cb();
   });
 };

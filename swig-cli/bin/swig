@@ -12,8 +12,6 @@
 #    It's delicious.
 #    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
-#cat ../etc/figlet
-
 bold=$(tput bold)
 underline=$(tput sgr 0 1)
 reset=$(tput sgr0)
@@ -24,7 +22,6 @@ white=$(tput setaf 7)
 
 bin=`readlink -f $0`
 dir=`dirname $bin`
-figlet=$(cat $dir/../etc/figlet)
 pkg=$(cat $dir/../package.json)
 
 function version {

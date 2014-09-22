@@ -31,9 +31,10 @@ module.exports = function (gulp, swig) {
     var tasks = [];
 
     _.each(commands, function (command) {
-      tasks.push('  ' + command.name);
+      tasks.push(swig.log.padding + command.name);
     });
 
-    swig.log('Available Swig Tasks:\n'.green + tasks.join('\n') + '\n');
+    swig.log.task('Available Swig Tasks');
+    swig.log(tasks.join('\n') + '\n');
   });
 };

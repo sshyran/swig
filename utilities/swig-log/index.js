@@ -21,18 +21,23 @@ module.exports = function (swig) {
     readline = require('readline'),
     sprintf = require('sprintf').sprintf,
     strip = require('strip-ansi'),
-    thunkify = require('thunkify');
+    thunkify = require('thunkify'),
+
+    linePrefix = '  ';
 
   require('colors');
   '┤├';
 
-  symbols.connector = ' ▸ ';
+  symbols.connector = ' : ';
+  symbols.start = '▸';
 
   if (swig.env === 'production' || swig.argv.pretty === false) {
-    symbols.info = '[info]';
-    symbols.warning = '[warn]';
-    symbols.error = '[err ]';
+    symbols.info =    '[ info  ]';
+    symbols.warning = '[warning]';
+    symbols.error =   '[ error ]';
+    symbols.success = '[success]'
     symbols.connector = ' : ';
+    symbols.start = '>'
   }
 
   if (swig.env === 'development' && !swig.argv.poolparty) {
@@ -41,10 +46,21 @@ module.exports = function (swig) {
     // gulp-util.log always starts each log with [00:00:00]
     // we're suppressing that output if on a dev machine.
     console.log = function () {
-      var args = Array.prototype.slice.call(arguments);
+      var args = Array.prototype.slice.call(arguments),
+        suppress = true;
 
       if (/^\[\d\d\:\d\d:\d\d\]/.test(strip(args[0]))) {
-        return;
+
+        // if gulp is reporting an error, let that through.
+        _.each(args, function (arg) {
+          if (arg && arg.toLowerCase().indexOf('error') > -1) {
+            suppress = false;
+          }
+        });
+
+        if (suppress) {
+          return;
+        }
       }
 
       oldLog.apply(console, args);
@@ -53,24 +69,45 @@ module.exports = function (swig) {
 
   function puts (what) {
 
-    var prefix = '  ';
-
     what = what || '';
 
-    var parts = what.split('\n');
+    var newline = '\n',
+      raw = strip(what),
+      trailing = (raw.indexOf(newline) === raw.length - 1),
+      lastIndex,
+      lines;
 
-    if (parts.length > 1) {
-      what = parts.join('\n' + prefix)
+    // remove any trailing newlines. they suck.
+    if (trailing) {
+      lastIndex = what.lastIndexOf(newline);
+      what = what.substr(0, lastIndex) + what.substr(lastIndex + 1);
+    }
+
+    lines = what.split(newline);
+
+    if (lines.length > 1) {
+      lines = _.each(lines, function (line, index) {
+        lines[index] = (index > 0 ? linePrefix : '') + ' ' + line;
+      });
+
+      what = lines.join('\n');
     }
 
     if (swig.env === 'production' || swig.argv.pretty === false) {
       what = strip(what);
     }
 
-    console.log(prefix + what);
+    console.log(linePrefix + what + (trailing ? newline : ''));
   }
 
   puts = _.extend(puts, {
+
+    symbols: symbols,
+    padding: linePrefix,
+
+    write: function (what) {
+      process.stdout.write(what || '');
+    },
 
     verbose: function (prefix, what) {
       if (swig.argv.verbose) {
@@ -79,18 +116,35 @@ module.exports = function (swig) {
     },
 
     info: function (prefix, what) {
-      prefix = ' ' + prefix + symbols.connector;
-      puts(strip(symbols.info).cyan + prefix.cyan + what);
+      puts.status(prefix, what, strip(symbols.info).cyan, 'cyan');
     },
 
     warn: function (prefix, what) {
-      prefix = '  ' + prefix + symbols.connector;
-      puts(symbols.warning + prefix.yellow + what);
+      puts.status(prefix, what, symbols.warning, 'yellow');
     },
 
     error: function (prefix, what) {
-      prefix = ' ' + prefix + symbols.connector;
-      puts(symbols.error + prefix.red + what);
+      puts.status(prefix, what, symbols.error, 'red');
+    },
+
+    success: function (prefix, what) {
+      puts.status(prefix, what, symbols.success, 'green');
+    },
+
+    status: function (prefix, what, symbol, color) {
+      what = what || '';
+      prefix = prefix || '';
+      symbol = symbol || '';
+
+      if (prefix) {
+        prefix = linePrefix + prefix + symbols.connector;
+      }
+
+      puts(symbol + prefix[color] + what);
+    },
+
+    task: function (name) {
+      puts(symbols.start.white + linePrefix + name.cyan + ':');
     },
 
     confirm: thunkify(function (question, callback) {

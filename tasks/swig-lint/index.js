@@ -49,6 +49,8 @@ module.exports = function (gulp, swig) {
       return;
     }
 
+    swig.log.task('Preparing to Lint');
+
     // setup our glob paths
     if (swig.project.type === 'webapp') {
       baseName = path.basename(swig.target.path);
@@ -64,11 +66,16 @@ module.exports = function (gulp, swig) {
       templates: source('templates', 'handlebars')
     };
 
+    swig.log.write('  ');
+    swig.log.success(null, '  success\n');
+
     cb();
   });
 
   gulp.task('lint-script', ['lint-setup'], function () {
     var jshintrc = path.join(__dirname, '.jshintrc');
+
+    swig.log.task('Linting Javascript');
 
     return gulp.src(paths.js)
       .pipe(jshint(jshintrc))
@@ -77,6 +84,8 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('lint-css', ['lint-setup'], function () {
+
+    swig.log.task('Linting CSS and LESS');
 
     var recessOpts = {
         strictPropertyOrder: false,
@@ -91,6 +100,8 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('lint-handlebars', ['lint-setup'], function (cb) {
+    swig.log.task('Linting Handlebars Templates');
+
     return gulp.src(paths.templates)
       .pipe(handlebars());
 
