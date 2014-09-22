@@ -25,7 +25,7 @@ module.exports = function (gulp, swig) {
     buffer = require('gulp-buffer'),
 
     mock = require('./lib/mock')(gulp, swig),
-    recessReporter = require('./lib/recess-reporter')(gulp, swig),
+    recessReporter = require('./lib/recess-reporter')(swig),
     jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
 
     baseName,
@@ -66,8 +66,7 @@ module.exports = function (gulp, swig) {
       templates: source('templates', 'handlebars')
     };
 
-    swig.log.write('  ');
-    swig.log.success(null, '  success\n');
+    swig.log.success('Complete\n');
 
     cb();
   });

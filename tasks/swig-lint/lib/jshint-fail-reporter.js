@@ -56,11 +56,11 @@ module.exports = function (gulp, swig) {
     function flush (cb) {
 
       if (hasErrors) {
-        swig.log('[swig-lint:jshint]'.red + ' Please correct errors in ' + 'red'.red + ' before proceeding.');
+        swig.log.error('lint-script', 'Please correct errors in ' + 'red'.red + ' before proceeding.');
         process.exit(0);
       }
       else if (total > maxWarnings) {
-        swig.log('[swig-lint:jshint]'.yellow + ' You\'ve got ' + total.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
+        swig.log.error('lint-script', 'You\'ve got ' + total.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
         process.exit(0);
       }
       else {

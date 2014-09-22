@@ -31,7 +31,7 @@ module.exports = function (gulp, swig) {
     var tasks = [];
 
     _.each(commands, function (command) {
-      tasks.push(swig.log.padding + command.name);
+      tasks.push(command.name);
     });
 
     swig.log.task('Available Swig Tasks');

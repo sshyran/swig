@@ -23,7 +23,9 @@ module.exports = function (swig) {
     strip = require('strip-ansi'),
     thunkify = require('thunkify'),
 
-    linePrefix = '  ';
+    linePrefix = '  ',
+    lastLine = '',
+    lastLineLength = 0;
 
   require('colors');
   '┤├';
@@ -36,7 +38,7 @@ module.exports = function (swig) {
     symbols.warning = '[warning]';
     symbols.error =   '[ error ]';
     symbols.success = '[success]'
-    symbols.connector = ' : ';
+    symbols.connector = ': ';
     symbols.start = '>'
   }
 
@@ -77,6 +79,10 @@ module.exports = function (swig) {
       lastIndex,
       lines;
 
+    if (what.length === 0) {
+      trailing = false;
+    }
+
     // remove any trailing newlines. they suck.
     if (trailing) {
       lastIndex = what.lastIndexOf(newline);
@@ -87,7 +93,7 @@ module.exports = function (swig) {
 
     if (lines.length > 1) {
       lines = _.each(lines, function (line, index) {
-        lines[index] = (index > 0 ? linePrefix : '') + ' ' + line;
+        lines[index] = (index > 0 ? linePrefix : '') + line;
       });
 
       what = lines.join('\n');
@@ -97,13 +103,17 @@ module.exports = function (swig) {
       what = strip(what);
     }
 
-    console.log(linePrefix + what + (trailing ? newline : ''));
+    lastLine = linePrefix + what;
+    lastLineLength = strip(lastLine).length;
+
+    console.log(lastLine  + (trailing ? newline : ''));
   }
 
   puts = _.extend(puts, {
 
     symbols: symbols,
     padding: linePrefix,
+    strip: strip,
 
     write: function (what) {
       process.stdout.write(what || '');
@@ -137,10 +147,14 @@ module.exports = function (swig) {
       symbol = symbol || '';
 
       if (prefix) {
-        prefix = linePrefix + prefix + symbols.connector;
+        prefix = (linePrefix + prefix)[color] + (what ? symbols.connector.white : '');
       }
 
-      puts(symbol + prefix[color] + what);
+      if (!prefix && what) {
+        prefix = linePrefix;
+      }
+
+      puts(symbol + prefix + what);
     },
 
     task: function (name) {

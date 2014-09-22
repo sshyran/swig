@@ -13,7 +13,7 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function (gulp, swig) {
+module.exports = function (swig) {
 
   var _ = require('underscore'),
     through = require('through2'),
@@ -39,35 +39,46 @@ module.exports = function (gulp, swig) {
       liner = /^([0-9]+)(\.\s)(.+)$/i,
       lines,
       matches,
-      result = {},
-      results = [];
+      lineNumber,
+      target,
+      desc;
 
     if (recess && !recess.success) {
+
+      swig.log('');
+      swig.log.warn(null, file.path.underline);
+      // swig.log(recess.opt.contents);
 
       success = false;
 
       lines = _.reject(recess.results, function (line) { return !line.trim(); });
+
       _.each(lines, function (line) {
         line = gutil.colors.stripColor(line).trim();
 
-        if (!result.desc) {
-          result.desc = line;
+        if (!desc) {
+          desc = line;
         }
         else {
           matches = liner.exec(line);
-          result.line = matches[1];
-          result.target = matches[3];
-          results.push(result);
-          result = {};
+          lineNumber = parseInt(matches[1]); // + file.mockLength;
+          target = matches[3];
+
+          swig.log(swig.log.padding + desc.cyan);
+          swig.log(swig.log.padding + swig.log.padding + ('line ' + lineNumber).grey + ' ' + target.blue);
+          desc = null;
         }
       });
 
-      console.log('TODO: Make this pretty');
-      console.log(results);
+      swig.log();
 
+    }
+    else {
+      swig.log.success(null, file.path);
     }
 
     cb(null, file);
+
   }, function (cb) {
     if (filecount === 0 || success) {
       swig.log.write('  ');

@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "colors" : "*",
-    "log-symbols" : "*",
     "hooker" : "*",
+    "log-symbols" : "*",
     "sprintf": "*",
     "strip-ansi": "*",
     "thunkify" : "*",
