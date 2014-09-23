@@ -15,6 +15,10 @@
 
 module.exports = function (gulp, swig) {
 
+  if (!swig.pkg) {
+    return;
+  }
+
   var _ = require('underscore'),
     path = require('path'),
 
@@ -26,7 +30,6 @@ module.exports = function (gulp, swig) {
     gutil = require('gulp-util'),
 
     mock = require('./lib/mock')(gulp, swig),
-    packageVersion = require('./lib/package-version')(gulp, swig),
     recessReporter = require('./lib/recess-reporter')(swig),
     jsFailReporter = require('./lib/jshint-fail-reporter')(gulp, swig),
     handlebarsReporter = require('./lib/handlebars-reporter')(swig),
@@ -41,40 +44,27 @@ module.exports = function (gulp, swig) {
             .replace(/\{extension\}/g, extension);
   }
 
-  if (!swig.pkg) {
-    return;
+  // setup our glob paths
+  if (swig.project.type === 'webapp') {
+    baseName = path.basename(swig.target.path);
+    baseSource = path.join(swig.target.path, 'public/{type}/', baseName, '/src/**/*.{extension}');
+  }
+  else {
+    baseSource = path.join(swig.target.path, '/**/*.{extension}');
   }
 
-  gulp.task('lint-setup', function (cb) {
+  paths = {
+    js: source('js', 'js'),
+    css: source('css', '{css,less}'),
+    templates: source('templates', 'handlebars')
+  };
 
-    if (paths) {
-      cb();
-      return;
-    }
+  // load some of our misc linting tasks
+  require('./lib/package-version')(gulp, swig, paths);
+  require('./lib/unicode')(gulp, swig, paths);
 
-    swig.log.task('Preparing to Lint');
-
-    // setup our glob paths
-    if (swig.project.type === 'webapp') {
-      baseName = path.basename(swig.target.path);
-      baseSource = path.join(swig.target.path, 'public/{type}/', baseName, '/src/**/*.{extension}');
-    }
-    else {
-      baseSource = path.join(swig.target.path, '/**/*.{extension}');
-    }
-
-    paths = {
-      js: source('js', 'js'),
-      css: source('css', '{css,less}'),
-      templates: source('templates', 'handlebars')
-    };
-
-    swig.log.success('Complete\n');
-
-    cb();
-  });
-
-  gulp.task('lint-script', ['lint-setup'], function () {
+  // load the major linting tasks
+  gulp.task('lint-script', function () {
     var jshintrc = path.join(__dirname, '.jshintrc');
 
     swig.log.task('Linting Javascript');
@@ -85,7 +75,7 @@ module.exports = function (gulp, swig) {
       .pipe(jsFailReporter());
   });
 
-  gulp.task('lint-css', ['lint-setup'], function () {
+  gulp.task('lint-css', function () {
 
     swig.log.task('Linting CSS and LESS');
 
@@ -102,7 +92,7 @@ module.exports = function (gulp, swig) {
       .pipe(recessReporter);
   });
 
-  gulp.task('lint-handlebars', ['lint-setup'], function (cb) {
+  gulp.task('lint-handlebars', function (cb) {
     swig.log.task('Linting Handlebars Templates');
 
     return gulp.src(paths.templates)
@@ -111,18 +101,18 @@ module.exports = function (gulp, swig) {
       .pipe(handlebarsReporter);
   });
 
-  gulp.task('lint-misc', ['lint-setup'], function () {
-    swig.log.task('Linting Other Bits');
-    return gulp.src(paths.js)
-      .pipe(packageVersion());
-  });
-
   // TODO:
   // module name
   // special
   // js and less dependencies
 
   gulp.task('lint', function (cb) {
-    swig.seq('lint-script', 'lint-misc', 'lint-css', 'lint-handlebars', cb);
+    swig.seq(
+      'lint-script',
+      'lint-package-version',
+      'lint-unicode',
+      'lint-css',
+      'lint-handlebars',
+    cb);
   });
 };
