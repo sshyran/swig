@@ -65,10 +65,18 @@ module.exports = function (gulp, swig, paths) {
   specjs = templates.main.replace('{{config}}', '');
   specjs = '/* This file is only used to run specs. */\n' + specjs;
 
-  swig.log('Writing main.js.');
-  fs.writeFileSync(path.join(paths.js, 'main.js'), mainjs);
+  swig.log.task('Writing main.js');
 
-  swig.log('Writing main-spec.js.');
-  fs.writeFileSync(path.join(paths.js, 'main-spec.js'), specjs);
+  destPath = path.join(paths.js, 'main.js');
+  fs.writeFileSync(destPath, mainjs);
+
+  swig.log(swig.log.padLeft(' main.js: ' + destPath.grey + '\n', 1));
+
+  swig.log.task('Writing main-spec.js');
+
+  destPath = path.join(paths.js, 'main-spec.js');
+  fs.writeFileSync(destPath, specjs);
+
+  swig.log(swig.log.padLeft(' main-spec.js: ' + destPath.grey + '\n', 1));
 
 };

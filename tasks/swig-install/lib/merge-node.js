@@ -21,20 +21,21 @@ module.exports = function (gulp, swig, util) {
       deps,
       pkg;
 
-    swig.log('Merging Node App Package(s):');
+    swig.log.task('Merging Node App Package(s)');
 
     pkg = swig.pkg;
 
-    swig.log('Extracting dependencies');
+    swig.log.task('Extracting dependencies');
 
     deps = util.extract(pkg, {}, path.basename(swig.cwd));
+
     deps = util.iterate(deps);
 
     if (deps) {
       util.generate(deps);
     }
     else {
-      swig.log('Node validation of dependencies failed.');
+      swig.log.error('merge-node', 'Node validation of dependencies failed.');
     }
   };
 };

@@ -13,6 +13,32 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
+  // TODO:
+  // module name
+  // js and less dependencies
+  // merge conflict markers /^[<>=]{7}/ + file names snake_case, no hypens
+  // console.log /console\.(log|debug|info|warn|error)\(/
+
+  // /
+  //   createModule
+  //   \s*\(\s*      # begin method params
+  //   (?:
+  //     \{\s*
+  //       (?:global\s*:\s*["'][\w\$]+["']\s*,\s*)?
+  //       amd\s*:\s*
+  //         ("|')         # open quote around module name
+  //           ([\w\.\/]+) # module name
+  //         \1            # close quote
+  //       (?:\s*,\s*global\s*:\s*["'][\w\$]+["'])?
+  //     \s*\}
+  //   |
+  //     ("|')         # open quote around module name
+  //       ([\w\.\/]+) # module name
+  //     \3            # close quote
+  //   )
+  //   \s*,\s*
+  // /x
+
 module.exports = function (gulp, swig) {
 
   if (!swig.pkg) {
@@ -100,11 +126,6 @@ module.exports = function (gulp, swig) {
       .on('error', handlebarsReporter.fail)
       .pipe(handlebarsReporter);
   });
-
-  // TODO:
-  // module name
-  // special
-  // js and less dependencies
 
   gulp.task('lint', function (cb) {
     swig.seq(

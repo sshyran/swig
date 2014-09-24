@@ -27,7 +27,7 @@ module.exports = function (gulp, swig) {
 
   // remove everything in /public except for /public/src and /public/main.less
   function clean () {
-    swig.log('Cleaning the /public directory...');
+    swig.log.task('Cleaning the /public directory...');
 
     var paths = [
         './public/**/{target}/**/*',
@@ -54,7 +54,7 @@ module.exports = function (gulp, swig) {
   // find and compile a list of all unique modules, and their paths
   function compile () {
 
-    swig.log('Compiling module list...');
+    swig.log.task('Compiling module list...');
 
     var modulesPath = path.join(swig.temp, '/**/node_modules'),
       modPaths = glob.sync(modulesPath),
@@ -88,7 +88,7 @@ module.exports = function (gulp, swig) {
 
   function copy (paths) {
 
-    swig.log('Copying modules to /public...');
+    swig.log.task('Copying modules to /public...');
     swig.log.verbose('');
 
     var destPath,
@@ -124,13 +124,15 @@ module.exports = function (gulp, swig) {
       modules[name] = pkg.version;
     });
 
-    swig.log('Writing manifest.json to: ' + manifestPath);
+    swig.log.task('Writing manifest.json to');
+    swig.log(swig.log.padLeft(' manifest.json: ' + manifestPath.grey + '\n', 1));
+
     fs.writeFileSync(manifestPath, JSON.stringify({ generated: now, dependencies: modules }, null, 2));
   }
 
   function replace (paths) {
 
-    swig.log('Replacing Public Repo Name in CSS');
+    swig.log.task('Replacing Public Repo Name in CSS');
 
     glob.sync(path.join(paths.css, '/**/*.css')).forEach(function (file) {
       var content = fs.readFileSync(file, { encoding: 'utf-8' }),
@@ -139,7 +141,7 @@ module.exports = function (gulp, swig) {
       if (matches && matches.length) {
         content = content.replace(/\$\$PUBLIC\_REPO\_NAME\$\$/g, swig.pkg.name);
         fs.writeFileSync(file, content);
-        swig.log('  Writing: ' + file.grey);
+        swig.log.success(null, ' ' + file.grey);
       }
     });
   }
@@ -147,7 +149,7 @@ module.exports = function (gulp, swig) {
   function vendor (paths) {
     var destPath;
 
-    swig.log('Copying internal modules to vendor/common');
+    swig.log.task('Copying internal modules to vendor/common');
 
     glob.sync(path.join(paths.js, '/internal/**/*.js')).forEach(function (file) {
       destPath = path.join(paths.js, '/vendor/common/', path.basename(file));
@@ -159,7 +161,7 @@ module.exports = function (gulp, swig) {
       fs.linkSync(file, destPath);
     });
 
-    swig.log('Copying less helpers common/helpers.');
+    swig.log.task('Copying less helpers common/helpers');
 
     glob.sync(path.join(paths.css, '/less/helpers/*.less')).forEach(function (file) {
       destPath = path.join(paths.css, '/common/helpers/', path.basename(file));
@@ -176,41 +178,32 @@ module.exports = function (gulp, swig) {
 
     now = (new Date()).toString();
 
-    try {
-      var path = require('path'),
-        pkg = swig.pkg,
-        paths = { pub: path.join(swig.target.path, '/public') },
-        less = require('./less'),
-        mainJs = require('./main-js');
+    var path = require('path'),
+      pkg = swig.pkg,
+      paths = { pub: path.join(swig.target.path, '/public') },
+      less = require('./less'),
+      mainJs = require('./main-js');
 
-      if (pkg.name) {
-        paths = {
-          css: path.join(paths.pub, '/css/', pkg.name),
-          img: path.join(paths.pub, '/img/', pkg.name),
-          js: path.join(paths.pub, '/js/', pkg.name),
-          templates: path.join(paths.pub, '/templates/', pkg.name)
-        };
-      }
-      else {
-        swig.log('[install] package.json wasn\'t found or was missing the "name" property.');
-        return;
-      }
-
-      clean();
-      compile();
-      copy(paths);
-      manifest(paths);
-      less(gulp, swig, paths, azModules);
-      replace(paths);
-      vendor(paths);
-      mainJs(gulp, swig, paths);
+    if (pkg.name) {
+      paths = {
+        css: path.join(paths.pub, '/css/', pkg.name),
+        img: path.join(paths.pub, '/img/', pkg.name),
+        js: path.join(paths.pub, '/js/', pkg.name),
+        templates: path.join(paths.pub, '/templates/', pkg.name)
+      };
     }
-    catch (e) {
-      console.log('ERROR')
-      console.log(e);
-      console.log(e.stack);
-      console.log(e.lineNumber);
+    else {
+      swig.log.error('install:public-directory', 'package.json is missing the "name" property.');
+      return;
     }
 
+    clean();
+    compile();
+    copy(paths);
+    manifest(paths);
+    less(gulp, swig, paths, azModules);
+    replace(paths);
+    vendor(paths);
+    mainJs(gulp, swig, paths);
   };
 };

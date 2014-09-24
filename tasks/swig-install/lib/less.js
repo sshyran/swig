@@ -37,18 +37,22 @@ module.exports = function (gulp, swig, paths, azModules) {
       });
     });
 
-    swig.log('Writing dependencies.less to: ' + depsPath);
+    swig.log.task('Writing dependencies.less to');
 
     fs.writeFileSync(depsPath, content);
 
-    if (!fs.existsSync(mainCssPath)) {
-      swig.log('Didn\'t find main.less, Writing main.less to: ' + mainCssPath);
+    swig.log(swig.log.padLeft(' dependencies.less: ' + depsPath.grey + '\n', 1));
 
-      content += '\n@import "dependencies.less";'
+    if (!fs.existsSync(mainCssPath)) {
+      swig.log.task('Didn\'t find main.less, Writing main.less to');
+
+      content = '// Generated: ' + now + '\n@import "dependencies.less";';
       fs.writeFileSync(mainCssPath, content);
+
+      swig.log(swig.log.padLeft(' main.less: ' + mainCssPath.grey + '\n', 1));
     }
     else {
-      swig.log('main.less already exists, skipping it.');
+      swig.log.warn('main.less', 'already exists, skipping it.');
     }
 
 };

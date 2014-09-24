@@ -35,7 +35,7 @@ module.exports = function (gulp, swig) {
         deps[name].push({ version: version, origin: origin });
       }
 
-      _.each(pkg.uiDependencies || pkg.dependencies, function (value, key) {
+      _.each((pkg.gilt && pkg.gilt.uiDependencies) || pkg.dependencies, function (value, key) {
         push(key, value);
       });
 
@@ -50,12 +50,10 @@ module.exports = function (gulp, swig) {
 
     iterate: function (depTree) {
       var results = {},
-        conflictFound = false;
+        conflictFound = false,
+        message;
 
-      swig.log('Checking for dependency conflicts');
-      swig.log('\nModule List:');
-
-      //console.log('depTree', depTree);
+      swig.log.task('Checking for dependency conflicts');
 
       _.each(depTree, function (versions, name) {
         var ver = _.reduce(_.pluck(versions, 'version'), function (memo, version) {
@@ -94,30 +92,37 @@ module.exports = function (gulp, swig) {
         }, null);
 
         if (!ver) {
-          swig.log(name.red);
-          swig.log(('Please resolve multiple versions of ' + name + ':').red, 3);
+          swig.log();
+          message = 'Please resolve multiple versions of ' + name.red + ':\n';
 
           _.each(versions, function (version) {
-            swig.log((version.version + ' (in ' + version.origin + ')').red, 4);
+            message += swig.log.padLeft(version.version + ' (in ' + version.origin.bold + ')\n', 3);
           });
+
+          swig.log.error(null, message);
 
           conflictFound = true;
         }
         else {
-          swig.log(name + ' : ' + ver);
+          swig.log(swig.log.padLeft(swig.log.symbols.success + '  ' + name + ' v' + ver, 2));
           results[name] = ver;
         }
 
       });
 
       if (conflictFound) {
-        swig.log('Package Merge: module version conflict found (scroll up if you can\'t see the conflict).');
+        swig.log.error('install:package-merge', 'Package Merge: module version conflict found (scroll up if you can\'t see the conflict).');
+        process.exit(0);
       }
+
+      swig.log();
 
       return results;
     },
 
     generate: function (deps, key) {
+      swig.log.task('Writing merged package.json');
+
       var packageTempPath = path.join(swig.temp, (key ? key + '-' : '') + 'package.json'),
         pkg = { dependencies: deps },
         internalModules = {
@@ -139,7 +144,7 @@ module.exports = function (gulp, swig) {
 
       fs.writeFileSync(packageTempPath, JSON.stringify(pkg, null, 2));
 
-      swig.log('Writing merged package.json: ' + packageTempPath.grey);
+      swig.log(swig.log.padLeft(' package.json: ' + packageTempPath.grey + '\n', 1));
     }
   };
 

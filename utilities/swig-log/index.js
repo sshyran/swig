@@ -19,7 +19,7 @@ module.exports = function (swig) {
     hooker = require('hooker'),
     symbols = require('log-symbols'),
     readline = require('readline'),
-    sprintf = require('sprintf').sprintf,
+    sprintf = require('sprintf-js').sprintf,
     strip = require('strip-ansi'),
     thunkify = require('thunkify'),
 
@@ -34,10 +34,10 @@ module.exports = function (swig) {
   symbols.start = '▸';
 
   if (swig.env === 'production' || swig.argv.pretty === false) {
-    symbols.info =    '[ info  ]';
-    symbols.warning = '[warning]';
-    symbols.error =   '[ error ]';
-    symbols.success = '[success]'
+    symbols.info =    '[ i ]';
+    symbols.warning = '[ w ]';
+    symbols.error =   '[ x ]';
+    symbols.success = '[ o ]'
     symbols.connector = ': ';
     symbols.start = '>'
   }
@@ -72,6 +72,11 @@ module.exports = function (swig) {
   function puts (what) {
 
     what = what || '';
+
+    if (_.isObject(what)) {
+      console.log(what);
+      return;
+    }
 
     var newline = '\n',
       raw = strip(what),
@@ -119,7 +124,7 @@ module.exports = function (swig) {
       process.stdout.write(what || '');
     },
 
-    verbose: function (prefix, what) {
+    verbose: function (what) {
       if (swig.argv.verbose) {
         puts(what);
       }
@@ -159,6 +164,14 @@ module.exports = function (swig) {
 
     task: function (name) {
       puts(symbols.start.white + linePrefix + name.cyan + ':');
+    },
+
+    padLeft: function (what, howMany) {
+      return sprintf('%' + (howMany * linePrefix.length) + 's%s', '', what);
+    },
+
+    padRight: function (what) {
+      return sprintf('%s%' + (howMany * linePrefix.length) + 's', what, '');
     },
 
     confirm: thunkify(function (question, callback) {

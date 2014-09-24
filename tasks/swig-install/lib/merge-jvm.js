@@ -21,7 +21,7 @@ module.exports = function (gulp, swig, util) {
       glob = require('glob'),
       deps;
 
-    swig.log('Merging JVM App Package(s):');
+    swig.log.task('Merging JVM App Package(s)');
 
     deps = util.extract(swig.pkg, {}, path.basename(swig.cwd));
 
@@ -38,7 +38,7 @@ module.exports = function (gulp, swig, util) {
         }
 
         if (pkg) {
-          swig.log('Extracting dependencies from ' + jarName);
+          swig.log.task('Extracting dependencies from ' + jarName.bold);
 
           deps = extract(JSON.parse(jar.readAsText(pkg)), deps, jarName);
         }
@@ -51,7 +51,8 @@ module.exports = function (gulp, swig, util) {
       util.generate(deps);
     }
     else {
-      swig.log('JVM validation of dependencies failed.');
+      swig.log.error('install:merge-jvm', 'JVM validation of dependencies failed.');
+      process.exit(0);
     }
   };
 };

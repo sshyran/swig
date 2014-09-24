@@ -41,7 +41,7 @@
     "colors" : "*",
     "hooker" : "*",
     "log-symbols" : "*",
-    "sprintf": "*",
+    "sprintf-js": "*",
     "strip-ansi": "*",
     "thunkify" : "*",
     "underscore" : "*"

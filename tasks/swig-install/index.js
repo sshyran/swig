@@ -18,64 +18,115 @@ module.exports = function (gulp, swig) {
   var _ = require('underscore'),
     path = require('path'),
     fs = require('fs'),
-    exec = require('co-exec'),
     co = require('co'),
-    installCommand = 'npm install --loglevel=info',
+    installCommand = 'npm install --loglevel=info 2>&1',
     buffer,
-    errors;
+    errors,
+    regex = {
+      requested: /npm\shttp[s]?\s([\d]+|GET)\s(.+)/,
+      installed: /npm\sinfo\sinstall\s((.+)\@([\d|\.]+))$/
+    },
+    downloaded = [];
+
+  // processes output from npm install commands
+  function process (line) {
+
+    line = swig.log.strip(line).trim();
+
+    var matches,
+      moduleName;
+
+    if (regex.requested.test(line)) {
+      matches = line.match(regex.requested);
+      moduleName = matches[2].substring(matches[2].lastIndexOf('/') + 1);
+
+      swig.log.verbose(swig.log.padding + swig.log.padding + '→'.white + '  ' + moduleName);
+    }
+    else if (regex.installed.test(line)) {
+      matches = line.match(regex.installed);
+      moduleName = matches[1].replace('@', ' v');
+
+      if (_.indexOf(downloaded, moduleName) === -1) {
+        downloaded.push(moduleName);
+
+        swig.log(swig.log.padding + swig.log.padding + swig.log.symbols.success + '  ' + moduleName);
+      }
+    }
+  }
 
   function * local() {
-    swig.log(installCommand);
+    var pkg = swig.pkg;
 
-    // TODO: this needs to be streamed so we can let the user
-    // know what's going on in real time.
+    swig.log.task('Installing Local Node Modules');
 
-    var output = yield exec(installCommand);
-    swig.log(output);
+    if (!pkg.dependencies || _.isEmpty(pkg.dependencies)) {
+      swig.log.warn(null, 'package.json doesn\'t contain any dependencies, nothing to install.\n');
+      return;
+    }
+
+    var output = yield swig.exec(installCommand, null, {
+      stdout: function (data) {
+        process(data);
+      }
+    });
+
+    if (output.stdout.indexOf('not ok') > -1){
+      swig.log.error('install:local', 'One or more modules failed to install from npm.\n ' +
+        swig.log.padLeft('For more info, look here: ' + path.join(swig.temp, 'npm_debug.log').grey, 7));
+    }
+
+    swig.log();
   }
 
   function * ui () {
-    var pkg = swig.pkg,
-      json = JSON.stringify(pkg, null, 2);
+    var pkg = swig.pkg;
 
-    if (!pkg) {
-      swig.log('Could\nt find package.json, not installing uiDependencies.');
-      return;
-    }
-    else if (!pkg.uiDependencies) {
-      swig.log('package.json doens\'nt contain any uiDependencies.');
+    swig.log.task('Installing Gilt UI Dependencies');
+
+    if (!pkg.gilt || !pkg.gilt.uiDependencies) {
+      swig.log.warn(null, 'package.json doesn\'t contain any uiDependencies, nothing to install.\n');
       return;
     }
 
     var commands = [
       'cd ' + swig.temp,
       'rm -rf node_modules',
-      'npm install --loglevel=info'
+      installCommand
     ];
 
-    // TODO: this needs to be streamed so we can let the user
-    // know what's going on in real time.
-    var output = yield exec(commands.join('; '));
-    swig.log(output);
+    var output = yield swig.exec(commands.join('; '), null, {
+      stdout: function (data) {
+        process(data);
+      }
+    });
+
+    if (output.stdout.indexOf('not ok') > -1){
+      swig.log.error('install:ui', 'One or more modules failed to install from npm.\n ' +
+        swig.log.padLeft('For more info, look here: ' + path.join(swig.temp, 'npm_debug.log').grey, 7));
+    }
+
+    swig.log();
   }
 
   gulp.task('install', co(function *() {
+
+    if (!swig.pkg) {
+      swig.log.error('install', 'Couldn\'t find package.json, not installing anything.');
+      return;
+    }
 
     var processPublic = require('./lib/public-directory')(gulp, swig),
       packageMerge = require('./lib/package-merge')(gulp, swig),
       mergeModules = require('./lib/merge-modules')(gulp, swig);
 
-    try {
-      packageMerge();
-      // yield local();
-      yield ui();
-      mergeModules();
-      processPublic();
-    }
-    catch (e) {
-      swig.log('error:');
-      swig.log(e);
-    }
+    packageMerge();
+    yield local();
+    yield ui();
+    mergeModules();
+    processPublic();
+
+    swig.log();
+    swig.log.success('Linting Complete');
 
   }));
 };

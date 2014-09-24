@@ -25,19 +25,20 @@ module.exports = function (gulp, swig) {
       packages = glob.sync(path.join(modulesPath, '/**/package.json')),
       deps;
 
-    swig.log('Merging Node Modules Package(s):');
+    swig.log.task('Merging Node Modules Package(s)');
 
     _.each(packages, function (pkg) {
       pkg = require(pkg);
       deps = util.extract(pkg, deps, pkg.name);
     });
 
-    swig.log('Extracting dependencies');
+    swig.log.task('Extracting dependencies');
 
     deps = util.iterate(deps);
 
     if (!deps) {
-      swig.log('Merge Modules: validation of module dependencies failed.');
+      swig.log.error('install:merge-modules', 'Validation of module dependencies failed.');
+      process.exit(0);
     }
   };
 };

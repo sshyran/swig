@@ -20,14 +20,15 @@
   },
   "contributors": [
   ],
+  "gilt": {
+    "uiDependencies": {
+    }
+  },
   "dependencies": {
 
   },
   "devDependencies": {
     "gulp" : "*",
     "swig-project" : "*"
-  },
-  "uiDependencies": {
-
   }
 }
