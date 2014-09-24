@@ -126,7 +126,7 @@ module.exports = function (gulp, swig) {
     processPublic();
 
     swig.log();
-    swig.log.success('Linting Complete');
+    swig.log.success('Install Complete');
 
   }));
 };
