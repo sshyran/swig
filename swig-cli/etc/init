@@ -30,7 +30,7 @@ var fs = require('fs'),
 
 require('colors');
 
-console.log('Swig is about to make your project funky fresh...'.red);
+console.log('\nSwig is about to make your project funky fresh...'.cyan);
 
 if (fs.existsSync(paths.gulpfile)) {
   console.log('You\'re already fresh. Get funky and add the following to your gulpfile.js:\n'.yellow);
@@ -61,24 +61,27 @@ else {
   fs.writeFileSync(paths.pkg, templates.pkg);
 }
 
-// run ui install
-var cp = exec('npm install --loglevel=info', function (error, stdout, stderr){
+console.log('Running npm install...'.yellow);
 
+// run ui install
+var cp = exec('npm install --loglevel=http 2>&1', function (error, stdout, stderr){
   if (error) {
     console.log(error);
-  }
-
-  if (stderr) {
-    console.log(stderr);
   }
 });
 
 cp.on('exit', function () {
-  console.log('Swig initialization is complete. Feel free to make loud animal noises.'.red);
+  console.log('Swig initialization is complete. Feel free to make loud animal noises.'.green);
 });
 
 (function capture (stdout) {
+  var buff = '';
   stdout.on('data', function (data) {
-    console.log(data);
+    buff += data.toString('utf8');
+
+    if (buff.indexOf('\n') > -1) {
+      console.log('  ' + buff.trim());
+      buff = '';
+    }
   });
 })(cp.stdout);
