@@ -32,7 +32,7 @@ module.exports = function (gulp, swig, paths) {
     files = '',
     destPath,
     pkg,
-    configDeps,
+    configDeps = {},
     config,
     mainjs,
     specjs;
@@ -51,7 +51,7 @@ module.exports = function (gulp, swig, paths) {
   });
 
   // TEMPORARY
-  // configDeps['config.jsBasePath'] = '/a/js/' + appPackage.name + '/';
+  configDeps['config.jsBasePath'] = '/a/js/' + swig.pkg.name + '/';
 
   // handlebars is overkill here, run with a simple replace.
   templates.main = templates.main
