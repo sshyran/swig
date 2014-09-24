@@ -45,12 +45,6 @@
 
   },
   "bin": {
-    "swig" : "bin/swig",
-    "swig-update" : "bin/swig-update",
-    "swig-init" : "bin/swig-init",
-    "swig-dev" : "etc/dev"
-  },
-  "scripts": {
-    "postinstall": "touch $HOME/.swigrc"
+    "swig" : "bin/swig"
   }
 }
