@@ -57,8 +57,14 @@ module.exports = function (swig) {
       var process = exec(cmd, opts, function execCb (err, stdout, stderr){
         done(err, { stdout: stdout, stderr: stderr });
       });
-      if (options && (options.stdout || options.stderr)) {
-        capture(process, options.stdout, options.stderr);
+      if (options) {
+        if (options.stdout || options.stderr)) {
+          capture(process, options.stdout, options.stderr);
+        }
+
+        if (options.start) {
+          start(process);
+        }
       }
     };
   };
