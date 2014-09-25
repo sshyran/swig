@@ -65,13 +65,13 @@ module.exports = function (gulp, swig) {
       }
 
       if (stderr) {
-        swig.log(stderr);
+        swig.log(stderr.trim());
       }
     });
 
     (function capture (stdout) {
       stdout.on('data', function (data) {
-        swig.log(data);
+        process.stdout.write(data);
       });
     })(cp.stdout);
 
