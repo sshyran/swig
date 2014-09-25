@@ -89,7 +89,8 @@ module.exports = function (gulp, swig) {
 
     var errors;
 
-    swig.log('NOTE: Currently this tool is limited to node.js apps.');
+    swig.log();
+    swig.log('NOTE:'.yellow + ' Currently this tool is limited to node.js apps.\n'.);
 
     if (node.exists()) {
       errors = node.valid();
