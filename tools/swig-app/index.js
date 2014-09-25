@@ -21,7 +21,7 @@ module.exports = function (gulp, swig) {
     _ = require('underscore'),
 
     node = {
-      command: 'GILT_ENV=development nvm run 0.11 --harmony app',
+      command: 'GILT_ENV=development; source ~/.nvm/nvm.sh; nvm run 0.11 --harmony app',
       valid: function () {
         var pkg = swig.pkg,
           errors = [];
@@ -46,29 +46,46 @@ module.exports = function (gulp, swig) {
         return errors;
       },
       exists: function () {
-        swig.log('Looking for app.js...');
+        swig.log.task('Looking for app.js');
         return fs.existsSync(path.join(process.cwd(), 'app.js'));
       }
     };
 
-  function run () {
-    var output = swig.exec(command, {
-      stdout: function (data) {
-        console.log(data);
-      },
-      stderr: function (data) {
-        console.log(data);
-      },
-      start: function (childProcess) {
-        // handles CTL+C so that only the node.js instance is exited and not gulp.
-        process.on('SIGINT', function() {
-          cp.kill();
-        });
+  function run (cb) {
+    var cp = exec(node.command, function (error, stdout, stderr){
+
+      if (error) {
+        if (error.signal && error.signal === 'SIGTERM') {
+          swig.log.success(null, 'Terminating App');
+        }
+        else {
+          swig.log.error('swig-app', 'Error:');
+          swig.log(error);
+        }
       }
+
+      if (stderr) {
+        swig.log(stderr);
+      }
+    });
+
+    (function capture (stdout) {
+      stdout.on('data', function (data) {
+        swig.log(data);
+      });
+    })(cp.stdout);
+
+    // handles CTL+C so that only the node.js instance is exited and not gulp.
+    process.on('SIGINT', function () {
+      cp.kill();
+    });
+
+    process.on('exit', function () {
+      cb();
     });
   }
 
-  gulp.task('app', ['zk'], function () {
+  gulp.task('app', ['zk'], function (cb) {
 
     var errors;
 
@@ -77,14 +94,14 @@ module.exports = function (gulp, swig) {
     if (node.exists()) {
       errors = node.valid();
       if (!errors.length) {
-        run();
+        run(cb);
       }
       else {
-        swig.log('Couldn\'nt start your app due to the following:\n' + errors.join('\n'));
+        swig.log.error('swig-app', 'Couldn\'nt start your app due to the following:\n' + errors.join('\n'));
       }
     }
     else {
-      swig.log('No node.js apps found in this directory.');
+      swig.log.error('swig-app', 'No node.js apps found in this directory.');
     }
 
   });
