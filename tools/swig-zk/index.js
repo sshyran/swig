@@ -30,19 +30,19 @@ module.exports = function (gulp, swig) {
 
     if (!fs.existsSync(zkDir)) {
       var message = 'Zookeeper doesn\'nt exist at ' + zkDir + '! Please clone it and try again.';
-      swig.log(message);
+      swig.log.error(null, message);
       return false;
     }
 
     if (fs.existsSync(zkPid)) {
       if (command === 'start') {
-        swig.log('Zookeeper is already running.')
+        swig.log('Zookeeper is already running.'.grey)
         return false;
       }
     }
     else {
       if (command === 'stop') {
-        swig.log('Zookeeper isn\'t running.')
+        swig.log('Zookeeper isn\'t running.'.grey)
         return false;
       }
     }
@@ -55,7 +55,7 @@ module.exports = function (gulp, swig) {
     var command = swig.argv.stop ? 'stop' : 'start',
       buffer;
 
-    swig.log('Zookeeper: Attempting ' + command.toUpperCase());
+    swig.log.task('Zookeeper - Attempting ' + command.toUpperCase());
 
     if (!check(command)){
       return;
@@ -64,7 +64,7 @@ module.exports = function (gulp, swig) {
     var proc = yield sh[zkSh + ' ' + command]();
 
     while (buffer = yield read(proc.stdout)) {
-      console.log(buffer.toString());
+      swig.log(buffer.toString().grey);
     }
   }));
 
