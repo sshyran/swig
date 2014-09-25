@@ -36,13 +36,13 @@ module.exports = function (gulp, swig) {
 
     if (fs.existsSync(zkPid)) {
       if (command === 'start') {
-        swig.log('Zookeeper is already running.'.grey)
+        swig.log(swig.log.padding + ' Zookeeper is already running.'.grey)
         return false;
       }
     }
     else {
       if (command === 'stop') {
-        swig.log('Zookeeper isn\'t running.'.grey)
+        swig.log(swig.log.padding + ' Zookeeper isn\'t running.'.grey)
         return false;
       }
     }
@@ -64,7 +64,7 @@ module.exports = function (gulp, swig) {
     var proc = yield sh[zkSh + ' ' + command]();
 
     while (buffer = yield read(proc.stdout)) {
-      swig.log(buffer.toString().grey);
+      swig.log(swig.log.padding + ' ' + buffer.toString().grey);
     }
   }));
 
