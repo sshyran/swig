@@ -90,7 +90,7 @@ module.exports = function (gulp, swig) {
     var errors;
 
     swig.log();
-    swig.log('NOTE:'.yellow + ' Currently this tool is limited to node.js apps.\n'.);
+    swig.log('NOTE:'.yellow + ' Currently this tool is limited to node.js apps.\n');
 
     if (node.exists()) {
       errors = node.valid();
