@@ -52,27 +52,19 @@ module.exports = function (gulp, swig) {
     };
 
   function run () {
-    var cp = exec(command, function (error, stdout, stderr){
-
-      if (error) {
-        swig.log('swig-app Error:\n');
-        swig.log(error);
+    var output = swig.exec(command, {
+      stdout: function (data) {
+        console.log(data);
+      },
+      stderr: function (data) {
+        console.log(data);
+      },
+      start: function (childProcess) {
+        // handles CTL+C so that only the node.js instance is exited and not gulp.
+        process.on('SIGINT', function() {
+          cp.kill();
+        });
       }
-
-      if (stderr) {
-        swig.log(stderr);
-      }
-    });
-
-    (function capture (stdout) {
-      stdout.on('data', function (data) {
-        swig.log(data);
-      });
-    })(cp.stdout);
-
-    // handles CTL+C so that only the node.js instance is exited and not gulp.
-    process.on('SIGINT', function() {
-      cp.kill();
     });
   }
 
