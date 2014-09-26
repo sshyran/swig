@@ -38,8 +38,15 @@ echo "·  ${bold}${red}Swig${reset}         v`version`"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# run node 0.11.n. allow errors to pass through to the user.
-nvm use v0.11 >/dev/null
+# run node 0.11.13. allow errors to pass through to the user.
+# we need 0.11.13 because 0.11.14 ships with npm 2.0.0, which breaks our auth.
+
+if [ ! -e "$NVM_DIR/v0.11.13" ]; then
+  echo ".  ${gray}You don't have node v0.11.13 installed, doing that now:${reset}"
+  nvm install 0.11.13
+fi
+
+nvm use v0.11.13 >/dev/null
 
 if [ "$1" == "init" ]; then
   node --harmony "$dir/../etc/init"
@@ -55,6 +62,15 @@ if [ "$1" == "dev" ]; then
   /bin/sh "$dir/../etc/dev"
   exit
 fi
+
+gulp_version=`gulp -v >/dev/null 2>&1`
+
+if [ -z "$gulp_version" ]; then
+  echo ".  ${gray}You don't have gulp installed, doing that now:${reset}"
+  sudo npm install -g gulp --registry=https://registry.npmjs.org/ >/dev/null 2>&1
+  echo ".  ${gray}Global gulp installed.${reset}"
+fi
+
 
 # pass control to gulp
 node --harmony `which gulp` "$@"
