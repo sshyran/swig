@@ -13,8 +13,8 @@
 #    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
 cwd=$PWD
-nvm install 0.11 >/dev/null
 source ~/.nvm/nvm.sh
+nvm install 0.11 >/dev/null
 nvm use 0.11
 
 # clone the repo if somehow this is being run after an npm install
