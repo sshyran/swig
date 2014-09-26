@@ -20,8 +20,9 @@ red=$(tput setaf 1)
 gray=$(tput setaf 8)
 white=$(tput setaf 7)
 
-bin=`readlink -f $0`
-dir=`dirname $bin`
+dir=`dirname $0`
+bin=`perl -e "print readlink '$0'"`
+dir=`dirname $dir/$bin`
 pkg=$(cat $dir/../package.json)
 
 function version {

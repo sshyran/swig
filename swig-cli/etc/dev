@@ -62,4 +62,4 @@ npm link
 cd $cwd
 sudo npm install gulp -g --loglevel=info
 npm link swig-project
-swig-init
+swig init
