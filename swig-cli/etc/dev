@@ -12,39 +12,76 @@
 #    It's delicious.
 #    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
+cyan=$(tput setaf 6)
+reset=$(tput sgr0)
+
+echo "\n${cyan}${reset}\n"
+
 cwd=$PWD
 source ~/.nvm/nvm.sh
-nvm install 0.11 >/dev/null
-nvm use 0.11
+nvm install 0.11.13 >/dev/null
+nvm use 0.11.13
 
 # clone the repo if somehow this is being run after an npm install
+echo "\n→ ${cyan}Cloning gilt-swig (if it doesn't exist). Errors are OK.${reset}\n"
 cd /web
 git clone git@github.com:gilt/gilt-swig.git
 
+echo "\n→ ${cyan}Clearing npm cache${reset}:\n"
+npm cache clear
+
+echo "→ ${cyan}Linking Swig Modules (npm link)${reset}:\n"
+
 # link everything we'll need.
-cd /web/gilt-swig/swig-cli && npm link
+echo "→ ${cyan}swig-cli${reset}:\n"
+cd /web/gilt-swig/swig-cli
+rm -rf node_modules
+npm install
+npm link
 
-cd /web/gilt-swig/utilities/swig-log && npm link
-cd /web/gilt-swig/utilities/swig-util && npm link
+utils=("swig-log" "swig-log")
 
-cd /web/gilt-swig/tasks/swig-bundle && npm link
-cd /web/gilt-swig/tasks/swig-default && npm link
-cd /web/gilt-swig/tasks/swig-deploy && npm link
-cd /web/gilt-swig/tasks/swig-install && npm link
-cd /web/gilt-swig/tasks/swig-lint && npm link
-cd /web/gilt-swig/tasks/swig-publish && npm link
-cd /web/gilt-swig/tasks/swig-spec && npm link
+for i in "${utils[@]}"
+do
+  echo "\n→ ${cyan}utilities/$i${reset}:\n"
+  cd "/web/gilt-swig/utilities/$i"
+  rm -rf node_modules
+  npm install
+  npm link
+done
 
-cd /web/gilt-swig/tools/swig-app && npm link
-cd /web/gilt-swig/tools/swig-app-registry && npm link
-cd /web/gilt-swig/tools/swig-tunnel && npm link
-cd /web/gilt-swig/tools/swig-zk && npm link
+tasks=("swig-bundle" "swig-default" "swig-deploy" "swig-install" "swig-lint" "swig-publish" "swig-spec")
+
+for i in "${tasks[@]}"
+do
+  echo "\n→ ${cyan}tasks/$i${reset}:\n"
+  cd "/web/gilt-swig/tasks/$i"
+  rm -rf node_modules
+  npm install
+  npm link
+done
+
+utils=("swig-app" "swig-app-registry" "swig-tunnel" "swig-zk")
+
+for i in "${tools[@]}"
+do
+  echo "\n→ ${cyan}tools/$i${reset}:\n"
+  cd "/web/gilt-swig/tools/$i"
+  rm -rf node_modules
+  npm install
+  npm link
+done
 
 # linking to all of the needed modules -> swig-project/node_modules
+echo "\n→ ${cyan}Linking Utilities, Tasks, and Tools to swig-project${reset}:\n"
 cd /web/gilt-swig/swig-project
+rm -rf node_modules
+
+echo "→ ${cyan}Linking Utilities${reset}:\n"
 npm link swig-util
 npm link swig-log
 
+echo "\n→ ${cyan}Linking Tasks${reset}:\n"
 npm link swig-bundle
 npm link swig-default
 npm link swig-deploy
@@ -53,14 +90,23 @@ npm link swig-lint
 npm link swig-publish
 npm link swig-spec
 
+echo "\n→ ${cyan}Linking Tools${reset}:\n"
 npm link swig-app
 npm link swig-app-registry
 npm link swig-tunnel
 npm link swig-zk
+
+echo "\n→ ${cyan}swig-project${reset}:\n"
+npm install
 npm link
 
 # setup the current directory
 cd $cwd
+echo "\n→ ${cyan}Installing Global Gulp${reset}:\n"
 sudo npm install gulp -g --loglevel=info
+
+echo "\n→ ${cyan}Linking swig-project in $cwd${reset}:\n"
 npm link swig-project
+
+echo "\n→ ${cyan}Starting \`swig init\`${reset}:\n"
 swig init
