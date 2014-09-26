@@ -72,11 +72,13 @@ module.exports = function (gulp) {
   }
 
   function findSwigRc() {
-    if (!fs.existsSync('~/.swigrc')) {
+    var rcPath = path.join(process.env.HOME, '/.swigrc');
+
+    if (!fs.existsSync(rcPath)) {
       swig.log.warn('swig-project', '.swigrc not found at: ' + '~/.swigrc'.grey + '. Please grab a copy from ' + '/web/tools/config.\n'.grey);
     }
     else {
-      swig.rc = require('~/.swigrc');
+      swig.rc = require(rcPath);
     }
   }
 
