@@ -63,11 +63,9 @@ if [ "$1" == "dev" ]; then
   exit
 fi
 
-gulp_version=`gulp -v >/dev/null 2>&1`
-
-if [ -z "$gulp_version" ]; then
+if [ ! -e "`which gulp`" ]; then
   echo ".  ${gray}You don't have gulp installed, doing that now:${reset}"
-  sudo npm install -g gulp --registry=https://registry.npmjs.org/ >/dev/null 2>&1
+  sudo npm install -g gulp --registry=https://registry.npmjs.org/ --loglevel=http
   echo ".  ${gray}Global gulp installed.${reset}"
 fi
 
