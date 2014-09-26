@@ -58,7 +58,7 @@ module.exports = function (swig) {
         done(err, { stdout: stdout, stderr: stderr });
       });
       if (options) {
-        if (options.stdout || options.stderr)) {
+        if (options.stdout || options.stderr) {
           capture(process, options.stdout, options.stderr);
         }
 
