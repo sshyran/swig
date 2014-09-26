@@ -93,8 +93,11 @@ module.exports = function (gulp, swig) {
     swig.log('NOTE:'.yellow + ' Currently this tool is limited to node.js apps.\n');
 
     if (node.exists()) {
+      swig.log.task('Checking validity of the app');
       errors = node.valid();
       if (!errors.length) {
+        swig.log.task('Running app');
+        swig.log();
         run(cb);
       }
       else {
