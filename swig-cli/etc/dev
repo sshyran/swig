@@ -13,6 +13,7 @@
 #    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
 cwd=$PWD
+nvm install 0.11 >/dev/null
 source ~/.nvm/nvm.sh
 nvm use 0.11
 
