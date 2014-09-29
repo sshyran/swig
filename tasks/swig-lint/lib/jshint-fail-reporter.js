@@ -64,6 +64,7 @@ module.exports = function (gulp, swig) {
         process.exit(0);
       }
       else {
+        swig.log.success(null, 'Complete\n');
         cb();
       }
 

@@ -48,8 +48,6 @@ module.exports = function (swig) {
 
     if (recess && !recess.success) {
 
-      problems++;
-
       swig.log('');
       swig.log.warn(null, file.path.underline);
 
@@ -71,6 +69,7 @@ module.exports = function (swig) {
           swig.log(swig.log.padding + desc.cyan);
           swig.log(swig.log.padding + swig.log.padding + ('line ' + lineNumber).grey + ' ' + target.blue);
           desc = null;
+          problems++;
         }
       });
 
@@ -88,8 +87,8 @@ module.exports = function (swig) {
       swig.log.write('  ');
       swig.log.success(null, '  ' + filecount + ' file(s), success.\n');
     }
-    else if (problems > maxProblems) {
-      swig.log.error('lint-less', 'You\'ve got ' + problems.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
+    else if (filecount > maxProblems || problems > maxProblems) {
+      swig.log.error('lint-less', 'You\'ve got ' + problems.toString().magenta + ' warnings. Please do some cleanup before proceeding.');
       process.exit(0);
     }
 

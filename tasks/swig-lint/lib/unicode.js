@@ -59,6 +59,10 @@ module.exports = function (gulp, swig, paths) {
         swig.log();
         swig.log.warn('Please clean up any unicode characters, they can cause problems.');
       }
+      else {
+        swig.log.success(null, 'Complete\n');
+      }
+
       cb();
     });
   }

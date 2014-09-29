@@ -45,7 +45,7 @@ module.exports = function (gulp, swig, paths) {
         swig.log.warn('Please make sure you\'re retuning an object containing ' + '"version: \'$$PACKAGE_VERSION$$\'"'.bold);
       }
       else {
-        swig.log.success('Complete');
+        swig.log.success(null, 'Complete\n');
       }
       cb();
     });

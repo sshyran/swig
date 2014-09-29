@@ -18,7 +18,8 @@ module.exports = function (swig) {
   var _ = require('underscore'),
     through = require('through2'),
     gutil = require('gulp-util'),
-    res;
+    res,
+    errors = false;
 
   res = through.obj(function (file, enc, cb) {
 
@@ -36,6 +37,12 @@ module.exports = function (swig) {
 
     cb(null, file);
 
+  },
+  function flush (cb) {
+    if (!errors) {
+      swig.log.success(null, 'Complete');
+    }
+    cb();
   });
 
   res.fail = function handlebarsFailure (e) {
@@ -44,6 +51,8 @@ module.exports = function (swig) {
     // ...></section>{{/if}}
     // ---------------------^
     // Expecting 'INVERSE', 'OPEN_ENDBLOCK', got 'EOF'
+
+    errors = true;
 
     var message = e.message,
       file = e.fileName.underline,
