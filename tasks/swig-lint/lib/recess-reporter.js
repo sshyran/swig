@@ -20,6 +20,8 @@ module.exports = function (swig) {
     gutil = require('gulp-util'),
     success = true,
     filecount = 0,
+    problems = 0,
+    maxProblems = 10,
     res;
 
   res = through.obj(function (file, enc, cb) {
@@ -46,9 +48,10 @@ module.exports = function (swig) {
 
     if (recess && !recess.success) {
 
+      problems++;
+
       swig.log('');
       swig.log.warn(null, file.path.underline);
-      // swig.log(recess.opt.contents);
 
       success = false;
 
@@ -62,7 +65,7 @@ module.exports = function (swig) {
         }
         else {
           matches = liner.exec(line);
-          lineNumber = parseInt(matches[1]); // + file.mockLength;
+          lineNumber = parseInt(matches[1]);
           target = matches[3];
 
           swig.log(swig.log.padding + desc.cyan);
@@ -85,6 +88,11 @@ module.exports = function (swig) {
       swig.log.write('  ');
       swig.log.success(null, '  ' + filecount + ' file(s), success.\n');
     }
+    else if (problems > maxProblems) {
+      swig.log.error('lint-less', 'You\'ve got ' + problems.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
+      process.exit(0);
+    }
+
     cb();
   });
 
