@@ -48,8 +48,8 @@
     "swig-log" : "*",
     "swig-util" : "*",
 
-    "swig-app" : "*",
     "swig-app-registry" : "*",
+    "swig-run" : "*",
     "swig-tunnel" : "*",
     "swig-zk" : "*",
 

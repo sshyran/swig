@@ -43,10 +43,10 @@ module.exports = function (gulp, swig) {
       fs.writeFileSync(registryPath, json);
       updated = true;
 
-      swig.log('DONE');
+      swig.log.success(null, 'DONE');
     }
     catch (e) {
-      swig.log('FAILURE');
+      swig.log.error(null, 'FAILURE');
       swig.log(e);
     }
   }

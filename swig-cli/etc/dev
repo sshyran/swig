@@ -61,7 +61,7 @@ do
   npm link
 done
 
-utils=("swig-app" "swig-app-registry" "swig-tunnel" "swig-zk")
+utils=("swig-run" "swig-app-registry" "swig-tunnel" "swig-zk")
 
 for i in "${tools[@]}"
 do
@@ -91,7 +91,7 @@ npm link swig-publish
 npm link swig-spec
 
 echo "\n→ ${cyan}Linking Tools${reset}:\n"
-npm link swig-app
+npm link swig-run
 npm link swig-app-registry
 npm link swig-tunnel
 npm link swig-zk

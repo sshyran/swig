@@ -85,7 +85,7 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  gulp.task('app', ['zk'], function (cb) {
+  gulp.task('run', ['zk'], function (cb) {
 
     var errors;
 
@@ -101,7 +101,7 @@ module.exports = function (gulp, swig) {
         run(cb);
       }
       else {
-        swig.log.error('swig-app', 'Couldn\'nt start your app due to the following:\n' + errors.join('\n'));
+        swig.log.error('swig-app', 'Couldn\'t start your app due to the following:\n' + errors.join('\n'));
       }
     }
     else {

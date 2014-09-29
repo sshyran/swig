@@ -139,7 +139,7 @@ module.exports = function (gulp) {
 
   swig = _.extend(swig, {
     tools: {
-      app: load('swig-app'),
+      run: load('swig-run'),
       'app-registry': load('swig-app-registry'),
       tunnel: load('swig-tunnel'),
       zk: load('swig-zk')
