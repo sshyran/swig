@@ -55,7 +55,9 @@ module.exports = function (swig) {
 
         // if gulp is reporting an error, let that through.
         _.each(args, function (arg) {
-          if (arg && (!_.isString(arg) || arg.toLowerCase().indexOf('error') > -1)) {
+          if (arg && (!_.isString(arg) ||
+              arg.toLowerCase().indexOf('error') > -1) ||
+              /Task \'(.+)\' is not in your gulpfile/.test(arg)) {
             suppress = false;
           }
         });
