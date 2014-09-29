@@ -20,7 +20,8 @@ module.exports = function (swig) {
   *  since they don't support returning stderr just yet.
   */
 
-  var exec = require('child_process').exec;
+  var _ = require('underscore'),
+    exec = require('child_process').exec;
 
   function capture (process, outHandler, errHandler) {
     var stdout = process.stdout,
@@ -53,6 +54,8 @@ module.exports = function (swig) {
 
   // return a thunk for yield/generator functionality
   swig.exec = function swigExec (cmd, opts, options) {
+    opts = _.extend(opts || {}, { maxBuffer: 1024 * 500 * 2 }); // increase max buffer to 1mb
+
     return function swigExecThunk (done){
       var process = exec(cmd, opts, function execCb (err, stdout, stderr){
         done(err, { stdout: stdout, stderr: stderr });
