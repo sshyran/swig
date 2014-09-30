@@ -41,9 +41,10 @@ module.exports = function (gulp, swig, paths, azModules) {
 
     fs.writeFileSync(depsPath, content);
 
-    swig.log(swig.log.padLeft(' dependencies.less: ' + depsPath.grey + '\n', 1));
+    swig.log(swig.log.padLeft(' dependencies.less: ' + depsPath.grey, 1));
 
     if (!fs.existsSync(mainCssPath)) {
+      swig.log();
       swig.log.task('Didn\'t find main.less, Writing main.less to');
 
       content = '// Generated: ' + now + '\n@import "dependencies.less";';
@@ -52,7 +53,7 @@ module.exports = function (gulp, swig, paths, azModules) {
       swig.log(swig.log.padLeft(' main.less: ' + mainCssPath.grey + '\n', 1));
     }
     else {
-      swig.log.warn('main.less', 'already exists, skipping it.');
+      swig.log.info('main.less', 'already exists, skipping it.\n');
     }
 
 };

@@ -25,9 +25,12 @@ module.exports = function (gulp, swig, util) {
 
     pkg = swig.pkg;
 
+    swig.log.success(null, 'Done\n');
     swig.log.task('Extracting dependencies');
 
     deps = util.extract(pkg, {}, path.basename(swig.cwd));
+
+    swig.log.success(null, 'Done\n');
 
     deps = util.iterate(deps);
 
@@ -36,6 +39,7 @@ module.exports = function (gulp, swig, util) {
     }
     else {
       swig.log.error('merge-node', 'Node validation of dependencies failed.');
+      process.exit(0);
     }
   };
 };

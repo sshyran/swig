@@ -24,7 +24,8 @@ module.exports = function (gulp, swig) {
     errors,
     regex = {
       requested: /npm\shttp[s]?\s([\d]+|GET)\s(.+)/,
-      installed: /npm\sinfo\sinstall\s((.+)\@([\d|\.]+))$/
+      installed: /npm\sinfo\sinstall\s((.+)\@([\d|\.]+))$/,
+      error: /npm\sERR\!\sError\:\s(.+)/
     },
     downloaded = [];
 
@@ -32,6 +33,8 @@ module.exports = function (gulp, swig) {
   function process (line) {
 
     line = swig.log.strip(line).trim();
+
+    swig.log.verbose(line);
 
     var matches,
       moduleName;
@@ -50,6 +53,16 @@ module.exports = function (gulp, swig) {
         downloaded.push(moduleName);
 
         swig.log(swig.log.padding + swig.log.padding + swig.log.symbols.success + '  ' + moduleName);
+      }
+    }
+    else if (regex.error.test(line)) {
+      matches = line.match(regex.error);
+
+      swig.log();
+      swig.log.error('install', matches[1]);
+
+      if (matches[1].indexOf('@') > -1) {
+        swig.log('\nTry specifying a different version. use `npm info <module>` to display available versions for a module.\n');
       }
     }
   }

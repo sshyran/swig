@@ -49,6 +49,8 @@ module.exports = function (gulp, swig) {
       swig.log.verbose('[clean] removing: ' + file);
       rimraf.sync(path.normalize(file));
     });
+
+    swig.log.success(null, 'Done\n');
   }
 
   // find and compile a list of all unique modules, and their paths
@@ -84,6 +86,7 @@ module.exports = function (gulp, swig) {
 
     swig.log.verbose('[compile] sorted modules: ');
     swig.log.verbose(modules);
+    swig.log.success(null, 'Done\n');
   }
 
   function copy (paths) {
@@ -111,6 +114,8 @@ module.exports = function (gulp, swig) {
         }
       })
     });
+
+    swig.log.success(null, 'Done\n');
   }
 
   function manifest (paths) {
@@ -144,6 +149,8 @@ module.exports = function (gulp, swig) {
         swig.log.success(null, ' ' + file.grey);
       }
     });
+
+    swig.log.success(null, 'Done\n');
   }
 
   function vendor (paths) {
@@ -161,6 +168,7 @@ module.exports = function (gulp, swig) {
       fs.linkSync(file, destPath);
     });
 
+    swig.log.success(null, 'Done\n');
     swig.log.task('Copying less helpers common/helpers');
 
     glob.sync(path.join(paths.css, '/less/helpers/*.less')).forEach(function (file) {
@@ -172,6 +180,8 @@ module.exports = function (gulp, swig) {
 
       fs.linkSync(file, destPath);
     });
+
+    swig.log.success(null, 'Done\n');
   }
 
   return function process () {
