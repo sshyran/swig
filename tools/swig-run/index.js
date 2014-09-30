@@ -21,7 +21,7 @@ module.exports = function (gulp, swig) {
     _ = require('underscore'),
 
     node = {
-      command: 'GILT_ENV=development; source ~/.nvm/nvm.sh; nvm run 0.11 --harmony app',
+      command: 'export GILT_ENV=development; source ~/.nvm/nvm.sh; nvm run 0.11 --harmony app',
       valid: function () {
         var pkg = swig.pkg,
           errors = [];
