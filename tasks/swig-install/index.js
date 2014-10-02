@@ -19,7 +19,7 @@ module.exports = function (gulp, swig) {
     path = require('path'),
     fs = require('fs'),
     co = require('co'),
-    installCommand = 'npm install --loglevel=info 2>&1',
+    installCommand = 'npm install --tag=null --loglevel=info 2>&1',
     buffer,
     errors,
     regex = {
