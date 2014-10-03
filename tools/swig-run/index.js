@@ -16,12 +16,14 @@
 module.exports = function (gulp, swig) {
 
   var path = require('path'),
-    exec = require('child_process').exec,
+    spawn = require('child_process').spawn,
     fs = require('fs'),
     _ = require('underscore'),
 
     node = {
-      command: 'export GILT_ENV=development; source ~/.nvm/nvm.sh; nvm run 0.11 --harmony app',
+      command: path.join(__dirname, '/lib/command-node'),
+      args: [],
+      env: {},
       valid: function () {
         var pkg = swig.pkg,
           errors = [];
@@ -52,36 +54,27 @@ module.exports = function (gulp, swig) {
     };
 
   function run (cb) {
-    var cp = exec(node.command, function (error, stdout, stderr){
 
-      if (error) {
-        if (error.signal && error.signal === 'SIGTERM') {
-          swig.log.success(null, 'Terminating App');
-        }
-        else {
-          swig.log.error('swig-app', 'Error:');
-          swig.log(error);
-        }
-      }
+    var env = _.extend(process.env, node.env || {}),
+      cp = spawn(node.command, node.args, env);
 
-      if (stderr) {
-        swig.log(stderr.trim());
-      }
+    cp.stdout.pipe(process.stdout);
+    cp.stderr.pipe(process.stderr);
+
+    cp.on('error', function (err) {
+      swig.log.error('swig-app', 'Error:');
+      swig.log(err);
     });
 
-    (function capture (stdout) {
-      stdout.on('data', function (data) {
-        process.stdout.write(data);
-      });
-    })(cp.stdout);
+    cp.on('exit', function (code) {
+      cb();
+    });
 
     // handles CTL+C so that only the node.js instance is exited and not gulp.
     process.on('SIGINT', function () {
       cp.kill();
-    });
-
-    process.on('exit', function () {
-      cb();
+      swig.log();
+      swig.log.success(null, 'Terminating App');
     });
   }
 
