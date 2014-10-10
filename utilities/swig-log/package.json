@@ -1,6 +1,7 @@
 {
   "name": "swig-log",
-  "description": "",
+  "description": "Provides logging mechanisms to swig modules.",
+  "readme": "README.md",
   "version": "0.0.2",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
