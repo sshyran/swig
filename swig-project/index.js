@@ -159,7 +159,8 @@ module.exports = function (gulp) {
       install: load('swig-install'),
       lint: load('swig-lint'),
       publish: load('swig-publish'),
-      spec: load('swig-spec')
+      spec: load('swig-spec'),
+      stub: load('swig-stub')
     }
   });
 

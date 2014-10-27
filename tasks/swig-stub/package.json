@@ -1,7 +1,7 @@
 {
-  "name": "swig-project",
-  "description": "Launching point for the Swig framework.",
-  "version": "0.0.6",
+  "name": "swig-stub",
+  "description": "Stubs out a new module",
+  "version": "0.0.1",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -26,6 +26,11 @@
       "name": "Andrew Powell",
       "email": "powella@gilt.com",
       "url": "https://github.com/shellscape/"
+    },
+    {
+      "name": "Eric Shepherd",
+      "email": "eshepherd@gilt.com",
+      "url": "https://github.com/arkitrave"
     }
   ],
   "licenses": [
@@ -37,30 +42,8 @@
   "engines": {
     "node": ">= 0.11.x"
   },
-  "preferGlobal" : "true",
   "dependencies": {
-    "co" : "*",
-    "colors": "*",
-    "thunkify" : "*",
-    "underscore" : "*",
-    "yargs" : "*",
-
-    "swig-log" : "*",
-    "swig-util" : "*",
-
-    "swig-app-registry" : "*",
-    "swig-run" : "*",
-    "swig-tunnel" : "*",
-    "swig-zk" : "*",
-
-    "swig-bundle" : "*",
-    "swig-default" : "*",
-    "swig-deploy" : "*",
-    "swig-install" : "*",
-    "swig-lint" : "*",
-    "swig-publish" : "*",
-    "swig-spec" : "*",
-    "swig-stub" : "*"
+    "underscore" : "*"
   },
   "devDependencies": {
 
