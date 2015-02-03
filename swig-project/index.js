@@ -20,6 +20,7 @@ module.exports = function (gulp) {
     os = require('os'),
     fs = require('fs'),
     argv = require('yargs').argv,
+    target,
     taskName = argv._.length > 0 ? argv._[0] : 'default',
     thisPkg = require('./package.json'),
     swig = {
@@ -32,7 +33,6 @@ module.exports = function (gulp) {
 
   require('colors');
   console.log('·  ' + 'swig-project'.red + ' v' + thisPkg.version + '\n·');
-  console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
 
   function load (moduleName) {
 
@@ -110,7 +110,8 @@ module.exports = function (gulp) {
 
     swig.target = {
       path: target,
-      name: path.basename(target)
+      name: path.basename(target),
+      repo: swig.argv.repo || path.basename(swig.cwd)
     };
   }
 
@@ -122,19 +123,22 @@ module.exports = function (gulp) {
       swig.pkg = require(packagePath);
     }
     else {
-      swig.log('[swig-project]'.yellow + ' package.json not found at: ' + packagePath.grey);
+      console.log('.  ' + 'warning!    '.yellow.bold + ' package.json not found at: ' + packagePath.grey);
     }
   }
 
-  swig.util = require('swig-util')(swig, gulp);
   swig.log = require('swig-log')(swig);
+  swig.util = require('swig-util')(swig, gulp);
 
   setupPaths();
   findTarget();
   findPackage();
   findSwigRc();
 
-  console.log('·  ' + 'target:      '.blue + (swig.argv.module || swig.pkg.name).grey);
+  target = (swig.argv.module || swig.pkg.name);
+
+  console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
+  console.log('·  ' + 'target:      '.blue + (target ? (target || '').grey : 'NO TARGET'.yellow.bold));
   console.log('·  ' + 'target-path: '.blue + swig.target.path.grey + '\n');
 
   // create swigs's temporary directory;
@@ -144,8 +148,9 @@ module.exports = function (gulp) {
 
   swig = _.extend(swig, {
     tools: {
-      run: load('swig-run'),
       'app-registry': load('swig-app-registry'),
+      'relase-email': load('swig-release-email'),
+      run: load('swig-run'),
       stub: load('swig-stub'),
       tunnel: load('swig-tunnel'),
       zk: load('swig-zk')

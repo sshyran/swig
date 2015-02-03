@@ -1,7 +1,7 @@
 {
   "name": "swig-project",
   "description": "Launching point for the Swig framework.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -49,6 +49,7 @@
     "swig-util" : "*",
 
     "swig-app-registry" : "*",
+    "swig-release-email" : "*",
     "swig-run" : "*",
     "swig-tunnel" : "*",
     "swig-zk" : "*",
