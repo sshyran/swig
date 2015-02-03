@@ -8,7 +8,8 @@ module.exports = function (gulp, swig) {
     mustache = require('mustache'),
     gutil = require('gulp-util'),
     thunkify = require('thunkify'),
-    inline = thunkify(require('inline-css'));
+    inline = thunkify(require('inline-css')),
+    Minimize = require('minimize');
 
   function * gitDiff (previousTag) {
 
@@ -43,16 +44,28 @@ module.exports = function (gulp, swig) {
       results = yield git(command, { cwd: swig.target.path }),
       bits = results.split('\n'),
       prev = bits.length > 1 ? bits[1] : null,
-      current = bits.length > 0 ? bits[0] : 'HEAD';
+      current = bits.length > 0 ? bits[0] : 'HEAD',
+      isNewModule = false;
 
     if (!prev) {
       // git describe --abbrev=0 --tags tracking_api.signal_direct-0.1.1^
       command = 'git describe --abbrev=0 --tags ' + current + '^';
       results = yield git(command, { cwd: swig.target.path });
       prev = results;
+      isNewModule = true;
     }
 
-    return { previous: prev, current: current };
+    return { previous: prev, current: current, isNewModule: isNewModule };
+  }
+
+  function * gitEmail () {
+
+    swig.log.info('', 'Fetching Author\'s Email Address');
+
+    var command = 'git config --get user.email',
+      result = yield git(command, { cwd: swig.target.path });
+
+    return result.trim();
   }
 
   function fill (slots) {
@@ -122,6 +135,14 @@ module.exports = function (gulp, swig) {
     var tags = yield gitTag(),
       log = yield gitLog(tags.previous, tags.current),
       rawDiff = yield gitDiff(tags.previous),
+      sender = yield gitEmail(),
+      minimize = new Minimize({
+        empty: false,
+        spare: false,
+        quotes: true
+      }),
+      recipients = [], //'federal-ui-alerts@gilt.com'
+      result,
       diff,
       html;
 
@@ -141,12 +162,54 @@ module.exports = function (gulp, swig) {
       html = render(diff);
 
       fs.writeFileSync(path.join(__dirname, 'email.html'), html);
-      // fs.writeFileSync(path.join(swig.target.path, 'email.html'), html);
-
 
       //https://github.com/jonkemp/inline-css
-      // html = yield inline(html, {});
+      html = yield inline(html, {
+        applyStyleTags: true,
+        removeStyleTags: true
+      });
 
+      // remove class="" attributes since we no longer need them.
+      html = html.replace(/\s*(?:\s+class)\s*=\s*"[^"]*"/g, '');
+
+      // replace other annoying things to make the html smaller.
+      html = html.replace(/\&apos\;/g, '\'');
+      html = html.replace(/\&quote\;/g, '"');
+      html = html.replace(/\&\#x25A0\;/g, '■'); // the inliner replaces these
+
+      fs.writeFileSync(path.join(__dirname, 'email-inlined.html'), html);
+
+      // gmail has a 102k limit on html content before it starts "clipping" it.
+      // shelving this until they stop replacing whitespace in the code
+      // minimize.parse = thunkify(minimize.parse);
+      // html = yield minimize.parse(html);
+
+      fs.writeFileSync(path.join(__dirname, 'email-min.html'), html);
+
+      swig.log.info('', 'Sending Email');
+
+      if (swig.pkg.maintainers && _.isArray(swig.pkg.maintainers)) {
+        swig.pkg.maintainers.forEach(function (maint) {
+          if (maint.email) {
+            recipients.push();
+          }
+        });
+      }
+
+      try {
+        result = yield swig.email({
+          from: 'swig-noreply@gilt.com',
+          to: sender,
+          replyTo: recipients,
+          subject: '[module][' + swig.target.repo + '] ' + (tags.isNewModule ? 'New ' : '') +
+                   diff.moduleName + ' v' + diff.fromVersion + ' → v' + diff.toVersion,
+          text: '',
+          html: html
+        });
+      }
+      catch (e) {
+        swig.log.error('', 'Unable to send the release email. You can retry using the `swig release-email` command.');
+      }
   }));
 
 };
