@@ -15,9 +15,11 @@
 
 module.exports = function (swig, gulp) {
 
+  require('./lib/email')(swig);
   require('./lib/error')(swig);
   require('./lib/exec')(swig);
   require('./lib/fs')(swig);
+  require('./lib/diff')(swig);
 
   // a utility to allow us to run tasks in a series, non-paralell order.
   // we're loading this local, modded copy until the author merges a PR
