@@ -22,13 +22,14 @@ module.exports = function (gulp, swig) {
     var regex = /\$\$PACKAGE_VERSION\$\$/,
       success = true,
       fileCount = 0,
+      skippedCount = 0,
       content;
 
     return through.obj(function (file, enc, cb) {
 
       if (file.isBuffer()) {
         content = file.contents.toString();
-        if (content.indexOf('createModule') > -1) {
+        if (content.indexOf('createModule') > -1 || content.indexOf('gilt.define') > -1) {
 
           fileCount++;
 
@@ -43,6 +44,9 @@ module.exports = function (gulp, swig) {
             }
           }
         }
+        else {
+          skippedCount++;
+        }
       }
 
       cb();
@@ -52,11 +56,15 @@ module.exports = function (gulp, swig) {
         swig.log.warn('Please make sure you\'re retuning an object containing ' + '"version: \'$$PACKAGE_VERSION$$\'"'.bold);
       }
       else {
-        if (fileCount){
-          swig.log('   ' + fileCount + ' files lint-free\n');
+        if (skippedCount > 0) {
+          swig.log('   Skipped ' + skippedCount + ' file(s).\n');
         }
-        else {
-          swig.log('    No files to lint.\n');
+
+        if (fileCount){
+          swig.log('   ' + fileCount + ' file(s) lint-free\n');
+        }
+        else if (skippedCount < fileCount) {
+          swig.log('   No files to lint.\n');
         }
       }
       cb();
