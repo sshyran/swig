@@ -2,7 +2,7 @@
   "name": "swig-log",
   "description": "Provides logging mechanisms to swig modules.",
   "readme": "README.md",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -39,16 +39,15 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
-    "colors" : "*",
-    "hooker" : "*",
-    "log-symbols" : "*",
+    "cli-table": "^0.3.1",
+    "colors": "*",
+    "hooker": "*",
+    "log-symbols": "*",
     "sprintf-js": "*",
     "strip-ansi": "*",
-    "thunkify" : "*",
-    "underscore" : "*"
+    "thunkify": "*",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "main": "index.js"
 }

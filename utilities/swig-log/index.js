@@ -22,6 +22,7 @@ module.exports = function (swig) {
     sprintf = require('sprintf-js').sprintf,
     strip = require('strip-ansi'),
     thunkify = require('thunkify'),
+    Table = require('cli-table'),
 
     linePrefix = '  ',
     lastLine = '',
@@ -168,6 +169,31 @@ module.exports = function (swig) {
       }
 
       puts(symbol + prefix + what);
+    },
+
+    table: function (rows) {
+
+      var table = new Table({
+        chars: {
+          'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
+          'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' ,
+          'bottom-right': '', 'left': '' , 'left-mid': '' , 'mid': '' ,
+          'mid-mid': '', 'right': '' , 'right-mid': '' , 'middle': ''
+        },
+        style: { 'padding-left': 1, 'padding-right': 1 }
+      });
+
+      rows.forEach(function (row) {
+        table.push(row);
+      });
+
+      // example usage:
+      // table.push(
+      //   ['foo', 'bar', 'baz'],
+      //   ['frobnicate', 'bar', 'quuz']
+      // );
+
+      console.log(table.toString());
     },
 
     task: function (name) {
