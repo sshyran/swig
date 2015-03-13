@@ -37,7 +37,7 @@ echo "·  ${bold}${red}Swig${reset}         v`version`"
 # NVM is used here as a convenience and an assertion that we're using the right
 # version of node. It's not required in production, as production should be using
 # the right version of node (v11) natively.
-if [ "$NODE_ENV" = "production" ]; then
+if [ "$NODE_ENV" != "production" ]; then
 
   # source nvm for this session
   export NVM_DIR="$HOME/.nvm"
