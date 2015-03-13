@@ -34,19 +34,26 @@ function version {
 echo "·\n· ${bold}${white}hey guys! oh big gulps eh? - ${underline}${grey}http://youtu.be/praFGD51ih8${reset}\n·"
 echo "·  ${bold}${red}Swig${reset}         v`version`"
 
-# source nvm for this session
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+# NVM is used here as a convenience and an assertion that we're using the right
+# version of node. It's not required in production, as production should be using
+# the right version of node (v11) natively.
+if [ "$NODE_ENV" = "production" ]; then
 
-# run node 0.11.13. allow errors to pass through to the user.
-# we need 0.11.13 because 0.11.14 ships with npm 2.0.0, which breaks our auth.
+  # source nvm for this session
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-if [ ! -e "$NVM_DIR/v0.11.13" ]; then
-  echo ".  ${gray}You don't have node v0.11.13 installed, doing that now:${reset}"
-  nvm install 0.11.13
+  # run node 0.11.13. allow errors to pass through to the user.
+  # we need 0.11.13 because 0.11.14 ships with npm 2.0.0, which breaks our auth.
+
+  if [ ! -e "$NVM_DIR/v0.11.13" ]; then
+    echo ".  ${gray}You don't have node v0.11.13 installed, doing that now:${reset}"
+    nvm install 0.11.13
+  fi
+
+  nvm use v0.11.13 >/dev/null
+
 fi
-
-nvm use v0.11.13 >/dev/null
 
 if [ "$1" == "init" ]; then
   node --harmony "$dir/../etc/init"
