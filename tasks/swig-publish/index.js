@@ -24,32 +24,62 @@ module.exports = function (gulp, swig) {
     co = require('co'),
 
     npmCommand,
+    tagName,
     targetPath,
     files;
 
-  gulp.task('publish-verify', function publishVerifyTask (cb) {
+  gulp.task('publish-verify', function publishVerifyTask (done) {
+
+    swig.log.task('Verifying before Publishing');
+
+    var git = require('simple-git')(swig.target.path),
+      result;
+
+    git.exec = thunkify(git._run);
+    tagName = swig.pkg.name + '-' + swig.pkg.version;
 
     if (!swig.argv.module) {
       swig.error('publish-verify', 'You must define a module to publish.');
+      process.exit(1);
     }
 
     targetPath = swig.target.path;
 
     if (!fs.existsSync(targetPath)) {
       swig.error('publish-verify', 'The module specified doesn\'t exist here.');
+      process.exit(1);
     }
 
     var pkgPath = path.join(targetPath, '/package.json');
 
     if (!fs.existsSync(pkgPath)) {
       swig.error('publish-verify', 'You cannot publish a module without a package.json file.');
+      process.exit(1);
     }
 
-    cb();
+    co(function * () {
+      swig.log.info('', 'Checking Tags\n');
+      result = yield git.exec('tag');
+      result = result.split('\n');
 
+      if (_.contains(result, tagName)) {
+        swig.log.error('publish-verify',
+          'It looks like you\'ve already published this module.\n   The tag: ' + tagName + ', already exists.\n' +
+          '   If you believe that was in error, you can delete the tag and try again, but tread carefully!'
+        );
+        process.exit(1);
+      }
+
+    })(function (err) {
+      if (err) {
+        swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta);
+        process.exit(1);
+      }
+      done();
+    });
   });
 
-  gulp.task('publish-npm', function publisNpmTask (cb) {
+  gulp.task('publish-npm', function publisNpmTask (done) {
 
     var tempPath = path.join(swig.temp, '/publish/', swig.argv.module),
       result,
@@ -96,58 +126,58 @@ module.exports = function (gulp, swig) {
         swig.log('[swig-publish]'.red + ' npm publish failed.');
       }
 
-      cb();
     })(function (err, res) {
       if (err) {
         swig.log('[stdout] '.blue + streamResult);
         swig.log('[swig-publish]'.red + ' npm publish failed.');
-        cb();
+        process.exit(1);
       }
+      done();
     });
 
   });
 
-  gulp.task('publish-tag', function publishTagTask (cb) {
+  gulp.task('publish-tag', function publishTagTask (done) {
 
-    var tempPath = path.join(swig.temp, '/publish/', swig.argv.module),
-      pkg = require(path.join(tempPath, '/package.json')),
-      git = require('simple-git')(tempPath),
-      tagName = pkg.name + '-' + pkg.version,
+    swig.log('');
+    swig.log.task('Publishing Tags');
+
+    var git = require('simple-git')(swig.target.path),
+      tagName = swig.pkg.name + '-' + swig.pkg.version,
       result;
 
     git.exec = thunkify(git._run);
 
     co(function * () {
-      swig.log('[swig-publish:publish-tag]'.yellow + ' fetching tags...');
+      swig.log.info('', 'Fetching Tags');
       result = yield git.exec('fetch --tags');
 
-      swig.log('[swig-publish:publish-tag]'.yellow + ' tagging: ' + tagName);
+      swig.log.info('', 'Tagging: ' + tagName);
       result = yield git.exec('tag ' + tagName);
 
-      swig.log('[swig-publish:publish-tag]'.yellow + ' pushing tags...');
+      swig.log.info('', 'Pushing Tags');
       result = yield git.exec('push --tags');
+
     })(function (err) {
       if (err) {
-        swig.log('[swig-publish:publish-tag]'.red + ' failed to tag: ' + (pkg.name + '@' + pkg.version).magenta);
+        swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta);
+        process.exit(1);
       }
-      cb();
+      done();
     });
 
   });
 
-  gulp.task('publish-email', function publishEmailTask (cb) {
-    cb();
-  });
-
-  gulp.task('publish', function (cb) {
+  gulp.task('publish', function (done) {
     swig.seq(
       'publish-verify',
-      'lint',
+
+      // spec lints before running specs
       'spec',
-      'publish-npm',
+      // 'publish-npm',
       'publish-tag',
-      'publish-email',
-      cb);
+      // 'release-email',
+      done);
   });
 
 };

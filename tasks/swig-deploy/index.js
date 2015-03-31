@@ -19,6 +19,24 @@ module.exports = function (gulp, swig) {
     return true;
   });
 
+  gulp.task('create-revision', function (done) {
+    // is_sbt_project = File.exists?('./build.sbt')
+
+    // UICommons::Environment.env(args[:environment])
+
+    // if is_sbt_project && UICommons::Environment.env != :dev
+    //   if File.exists?(UICommons::Config.assets_version_file)
+    //     File.open(UICommons::Config.assets_version_file, 'rb') { |file|
+    //       @revision = file.read.strip
+    //     }
+    //   end
+    // end
+
+    // @revision ||= "#{Time.now.strftime('%Y%m%d%H%M')}-#{%x{cd #{UICommons::Config.repo_root} && git rev-parse HEAD}.strip[0..9]}"
+    // UICommons::Config.revision = @revision
+    done();
+  });
+
   gulp.task('deploy-nfs', function () {
     // UICommons::Environment.env(args[:environment])
     // quit UICommons::EXIT_CODES::TASK_FAILED unless UICommons::Results.continuous :title => "Deploying #{UICommons::Config.public_repo_name} Assets #{@revision} to NFS" do |result|

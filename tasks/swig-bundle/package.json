@@ -38,14 +38,18 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
-    "co" : "3.x",
-    "co-exec" : "*",
-    "glob" : "*",
-    "globby" : "*",
-    "underscore" : "*"
+    "co": "3.x",
+    "co-exec": "*",
+    "concat-with-sourcemaps": "^1.0.0",
+    "glob": "*",
+    "globby": "*",
+    "gulp-sourcemaps": "^1.1.4",
+    "gulp-util": "^3.0.1",
+    "merge-stream": "*",
+    "sprintf-js": "^1.0.2",
+    "through2": "^0.6.3",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "main": "index.js"
 }

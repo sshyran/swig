@@ -11,6 +11,49 @@
 
    It's delicious.
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
+
+  BUNDLING RULES
+  - targetExperiences: ['intermediate', 'full']
+    - only shows up in intermediate or full
+  - everything goes into flat files
+
+  main.[exp].[src|min].js
+  - modules are scanned for target experiences
+  - if they are part of a bundle, skip
+  - modules (and their deps) with target exps are placed into the corresponding main.[exp] file
+  - modules without are placed in all three target exps
+
+  [module].[exp].[src|min].js
+  - modules which declare a bundle
+  - the root declaring module, and it's deps are placed into [module].[exp] file.
+  - if a dependency already exists in the main.**.js file, skip the dep.
+
+  NOTES
+  - this is going to require setting up objects first:
+  - produce dependency graph
+  - populate main.all
+
+  main: {
+    full: [],
+    intermediate: [],
+    minimum: [],
+    all: [],
+    bundled: []
+  }
+
+  main.all will be populated first.
+  main.bundled will be populated second, iterating through main.all.
+  main.all will remove anything which is also in main.bundled
+  main.[exp] populated based on main.all
+    - anything without a target exp will be in all three exps.
+
+  [bundle]: {
+    full: [],
+    intermediate: [],
+    minimum: []
+  }
+
+  bundle created based on main.bundled.
 */
 
 module.exports = function (gulp, swig) {
@@ -21,235 +64,355 @@ module.exports = function (gulp, swig) {
     path = require('path'),
     globby = require('globby'),
     fs = require('fs'),
+    merge = require('merge-stream'),
+    concat = require('./concat-experience'),
+
+    basePath = path.join(swig.target.path, '/public/js/', swig.target.name),
 
     modules = {
       full: [],
       intermediate: [],
-      minimum: [],
+      minimal: [],
       all: [],
+      bundles: [],
+      dependencies: {},
+      flatDependencies: [],
       bundled: {}
     };
 
-  // uses npm to tell us which modules are installed
-  // we run this on the node_modules directory in temp because npm can make sense of it.
-  function * parseDeps (name) {
-    var commands = [
-        'cd ' + swig.temp,
-        'npm ll --parseable ' + (name || '')
-      ],
-      raw = yield exec(commands.join('; ')),
-      lines = raw.split('\n'),
-      deps = [];
-
-    deps = _.map(lines, function (line) {
-      var parts,
-        moduleName,
-        version;
-
-      if (line && line.length) {
-        line = path.basename(line);
-        parts = line.split(':');
-
-        if (parts.length) {
-          parts = parts[1].split('@');
-          moduleName = parts[0];
-          version = parts[1];
-
-          if (moduleName && version) {
-            return { name: moduleName, version: version };
-          }
-        }
+  function indent (what) {
+    var result = '';
+    _.each(what.split('\n'), function (line) {
+      if (line.trim().length) {
+        result += '  ' + line + '\n';
       }
-
-      return null;
+      else {
+        result += '\n';
+      }
     });
-
-    deps = _.reject(deps, function (dep) { return _.isNull(dep); });
-
-    return deps;
+    return result.trim();
   }
 
-  function findBundles (deps) {
-    var bundles = [],
-      publicPath = path.join(swig.target.path, '/public/**/*.js');
+  // This is a stub of the gilt_define module's methods
+  // that we're going to use to pull info from the modules.
+  // faster than an AST and isn't an insanely massive regex.
+  var gilt = {
+    define: function swigGiltDefine (name, deps, method, options) {
+      options = options || {};
 
-    // find files that contain 'bundle: [name]'
-    _.each(globby.sync(publicPath), function (file) {
-      var content = fs.readFileSync(file, { encoding: 'utf-8' }),
-        test = /bundle\:(\s?)\'(.+)\'/,
-        matches,
-        parts,
-        moduleName,
-        moduleFile;
+      var result = {
+        moduleName: name,
+        definedDependencies: deps,
+        targetExperiences: options.targetExperiences,
+        bundle: options.bundle,
+        script: method.toString()
+      };
 
-      if (content && content.match) {
-        matches = content.match(test);
-      }
+      // since arguments.callee won't work here, let's re-wrap the module definition.
+      result.script = 'gilt.require(\n' +
+        '  \'' + result.moduleName + '\',\n  ' +
+        indent(JSON.stringify(result.definedDependencies, null, 2).replace(/"/g, '\'')) + ',\n' +
+        result.script + ',\n  ' +
+        JSON.stringify(options).replace(/"/g, '\'') +
+        '\n);\n';
 
-      if (matches && matches.length && matches.length === 3) {
+      evalResults.push(result);
+    }
+  },
+  evalResults = [],
 
-        // parse the module name, and file name from the file path
-        parts = file.split('/');
-        moduleName = parts[parts.length - 3] + '.' + parts[parts.length - 2];
-        moduleFile = parts[parts.length - 1];
+  // for the older modules that aren't using gilt.define
+  createModule = gilt.define;
 
-        bundles.push({
-          name: matches[2],
-          moduleName: moduleName,
-          file: moduleFile,
-          path: file
+  // uses npm to tell us which modules are installed
+  // we run this on the node_modules directory in temp because npm can make sense of it.
+  function * getDependencyGraph (name) {
+    var commands = [
+        'cd ' + swig.temp,
+        'npm la --json --quiet' + (name || '')
+      ],
+      raw = yield swig.exec(commands.join('; ')),
+      result = JSON.parse(raw.stdout);
+
+    cleanTree(result);
+
+    fs.writeFileSync('app-dependencies.json', JSON.stringify(result, null, 2));
+
+    return result.dependencies;
+  }
+
+  function cleanTree (object) {
+    _.each(object, function (value, property) {
+      if (property !== 'dependencies') {
+        delete object[property];
+
+        _.each(object.dependencies, function (dep) {
+          cleanTree(dep);
         });
       }
+    });
+  }
+
+  function examineModules () {
+    var bundles = [],
+      glob = [
+        path.join(swig.target.path, '/public/js/**/*.js'),
+        '!' + path.join(swig.target.path, '/public/js/**/internal/**/*.js'),
+        '!' + path.join(swig.target.path, '/public/js/**/vendor/**/*.js'),
+        '!' + path.join(swig.target.path, '/public/js/**/main*.js')
+      ];
+
+    _.each(globby.sync(glob), function (file) {
+      var content = fs.readFileSync(file, { encoding: 'utf-8' });
+
+      // THE SKY IS FALLING.
+      // We can actually run this at about 36k operations per second
+      // so this is incredibly fast and on par with a massive regex
+      // that everyone hates.
+      eval(content);
+
+      _.each(evalResults, function (result) {
+
+        result.path = file;
+
+        if (result.targetExperiences) {
+          _.each(result.targetExperiences, function (experience) {
+            modules[experience].push(result);
+          });
+        }
+        else {
+          modules.all.push(result);
+        }
+
+        if (result.bundle) {
+          result.dependencies = {};
+          result.exclusiveDependencies = [];
+          result.name = result.bundle;
+
+          bundles.push(result);
+        }
+      });
+
+      // clear the temporary results container for the next file.
+      evalResults = [];
     });
 
     return bundles;
   }
 
-  gulp.task('bundle', [/* 'spec' */, 'merge', 'create-revision', 'minify'], function () {
-    return true;
-  });
+  function getBundleDependencies (bundle, deps) {
+    deps = deps || modules.dependencies;
 
-// https://www.npmjs.org/package/gulp-cssimport
+    _.each(deps, function (object, moduleName) {
 
-  gulp.task('minify', function () {
-
-    // js - uglify --output
-    // css - clean-css -o
-    // less - lessc -x
-    // handlebars - handlebars -s -r
-
-    // UICommons::Environment.env(args[:environment])
-
-    // #noinspection RubySimplifyBooleanInspection
-    // quit UICommons::EXIT_CODES::TASK_FAILED if false == UICommons::Results.continuous(:title => 'Minified', :pass_action => 'minified') do |result|
-    //   UICommons::Language.minify(result, package_folders, false)
-    // end
-  });
-
-  gulp.task('merge', co(function *() {
-
-    modules.all = yield parseDeps();
-    modules.bundles = findBundles(modules.all);
-
-    console.log(modules.bundles);
-
-    // remove bundled modules from modules.all
-    // var bundleNames = _.map(modules.bundles, function (bundle) { return bundle.name; });
-
-    // modules.all = _.reject(modules.all, funciton (module) {
-    //   return _.contains(bundleNames, module.name);
-    // });
-
-    // js - UICommons::Language::JavascriptMerger.merge
-    /*
-      RULES
-      - targetExperiences: ['intermediate', 'full']
-        - only shows up in intermediate or full
-      - everything goes into flat files
-
-      main.[exp].[src|min].js
-      - modules are scanned for target experiences
-      - if they are part of a bundle, skip
-      - modules (and their deps) with target exps are placed into the corresponding main.[exp] file
-      - modules without are placed in all three target exps
-
-      [module].[exp].[src|min].js
-      - modules which declare a bundle
-      - the root declaring module, and it's deps are placed into [module].[exp] file.
-      - if a dependency already exists in the main.**.js file, skip the dep.
-
-      NOTES
-      - this is going to require setting up objects first:
-      - produce dependency graph
-      - populate main.all
-
-      main: {
-        full: [],
-        intermediate: [],
-        minimum: [],
-        all: [],
-        bundled: []
+      if (bundle.moduleName === moduleName) {
+        bundle.dependencies = object.dependencies;
       }
-
-      main.all will be populated first.
-      main.bundled will be populated second, iterating through main.all.
-      main.all will remove anything which is also in main.bundled
-      main.[exp] populated based on main.all
-        - anything without a target exp will be in all three exps.
-
-      [bundle]: {
-        full: [],
-        intermediate: [],
-        minimum: []
+      else {
+        getBundleDependencies(bundle, object)
       }
+    });
+  }
 
-      bundle created based on main.bundled.
-    */
-    // css - UICommons::Language::CSSMerger.merge
-    // less - lessc
+  function flattenDependencies (deps) {
+    deps = deps || modules.dependencies;
 
-    // UICommons::Environment.env(args[:environment])
+    _.each(deps, function (dep, moduleName) {
+      modules.flatDependencies.push(moduleName);
 
-    // #noinspection RubySimplifyBooleanInspection
-    // quit UICommons::EXIT_CODES::TASK_FAILED if false == UICommons::Results.continuous(:title => 'Merging', :pass_action => 'merged') do |result|
-    //   UICommons::Language.merge(result, package_folders, false)
-    // end
+      flattenDependencies(dep.dependencies);
+    });
+  }
 
-    // css/less merger
-     // public
+  function flattenBundleDependencies (bundle, deps) {
+    deps = deps || bundle.dependencies;
 
-     //    def self.merge(filename)
+    _.each(deps, function (dep, moduleName) {
+      bundle.exclusiveDependencies.push(moduleName);
 
-     //      result = merge_file(filename)
+      flattenBundleDependencies(bundle, dep.dependencies);
+    });
+  }
 
-     //      File.open(filename.gsub(/(\.src)?\.css$/, '.src.css'), 'w') do |file|
-     //        file.print result
-     //      end
+  function findModuleInstances (moduleName, deps) {
+    deps = deps || modules.dependencies;
 
-     //    end
+    var count = 0;
 
-     //  private
+    _.each(deps, function (object, name) {
+      if (name === moduleName) {
+        count++;
+      }
+      else {
+        count += findModuleInstances(moduleName, object);
+      }
+    });
 
-     //    def self.merge_file(filename)
-     //      output = ''
+    return count;
+  }
 
-     //      if File.exists? filename
+  function findExclusiveDependencies (bundle) {
 
-     //        File.open filename do |file|
+    _.each(bundle.dependencies, function (moduleName) {
+      var instances = findModuleInstances(moduleName);
 
-     //          file.readlines.each do |line|
-     //            if line =~ /^\s*@import\s+(?:url\()?(['"]?)([\w\.\-\/]+)\1/
-     //              output << merge_file(File.expand_path($2, File.dirname(filename)))
-     //            else
-     //              output << line
-     //            end
-     //          end
+      if (instances < 2) {
+        bundle.exclusiveDependencies.push(moduleName);
+      }
+    });
+  }
 
-     //        end
+  function cleanDependencies (deps) {
+    deps = _.uniq(deps);
+    deps = _.sortBy(deps, function (moduleName) { return moduleName; })
 
-     //      else
-     //        raise "File Not Found: #{filename}"
-     //      end
+    return deps;
+  }
 
-     //      output
-     //    end
+  function findBundleDependencies () {
+    _.each(modules.bundles, function (bundle) {
+      getBundleDependencies(bundle);
+
+      flattenBundleDependencies(bundle);
+
+      bundle.dependencies = bundle.exclusiveDependencies;
+      bundle.exclusiveDependencies = [];
+
+      bundle.dependencies = cleanDependencies(bundle.dependencies);
+
+      findExclusiveDependencies(bundle);
+    });
+  }
+
+  function buildBundle (glob, bundle) {
+
+    bundle = bundle || { name: 'main' };
+
+    var streams = _.map([ 'full', 'intermediate', 'minimal' ], function (experience) {
+
+      var stream =
+        gulp.src(glob)
+
+          // tell our custom concat plugin to build this main file and check the target
+          // experiences in the modules collection var for any experiences for a particular
+          // filename/module.
+          .pipe(concat(bundle.name + '.' + experience + '.src.js', {
+            basePath: basePath,
+            experience: experience,
+            modules: modules[experience]
+          }))
+          .pipe(gulp.dest(basePath));
+
+      return stream;
+    });
+
+    return merge.apply(this, streams);
+  }
+
+  gulp.task('bundle-setup',  co(function *() {
+
+    swig.log.task('Building Dependency Graph');
+
+    modules.dependencies = yield getDependencyGraph();
+
+    swig.log.task('Examining Modules for Bundles and Experiences')
+
+    modules.bundles = examineModules();
+
+    swig.log.task('Finding Bundled Dependencies');
+
+    findBundleDependencies();
+
+    swig.log.task('Flattening Dependencies');
+
+    // turn the nested tree into a flat array
+    flattenDependencies();
+
+    swig.log.task('Cleaning Dependencies');
+
+    // remove duplicates, alphabetize
+    modules.flatDependencies = cleanDependencies(modules.flatDependencies);
+
+    swig.log.task('Removing Bundles from Dependencies');
+
+    // remove any deps that match bundles
+    modules.flatDependencies = _.reject(modules.flatDependencies, function (moduleName) {
+      var result = _.find(modules.bundles, function (bundle) {
+        return bundle.moduleName === moduleName;
+      });
+
+      return !_.isUndefined(result);
+    });
+
+    swig.log.task('Removing Exclusve Bundle Dependencies');
+
+    // remove any deps that are exclusive to a bundle
+    modules.flatDependencies = _.reject(modules.flatDependencies, function (moduleName) {
+      var result = false;
+
+      _.each(modules.bundles, function (bundle) {
+        _.each(bundle.exclusiveDependencies, function (depName) {
+          if (moduleName === depName) {
+            result = true;
+          }
+        });
+      });
+
+      return result;
+    });
+
+    swig.log('');
+
+    // leave this here for debuggin
+    // fs.writeFileSync('app-dependencies-flat.json', JSON.stringify(modules.flatDependencies, null, 2));
+    // fs.writeFileSync('app-bundles.json', JSON.stringify(modules.bundles, null, 2));
+
   }));
 
-  gulp.task('create-revision', function () {
-    // is_sbt_project = File.exists?('./build.sbt')
+  gulp.task('bundle-bundles', ['bundle-setup'], function () {
 
-    // UICommons::Environment.env(args[:environment])
+    var streams = _.map(modules.bundles, function (bundle) {
 
-    // if is_sbt_project && UICommons::Environment.env != :dev
-    //   if File.exists?(UICommons::Config.assets_version_file)
-    //     File.open(UICommons::Config.assets_version_file, 'rb') { |file|
-    //       @revision = file.read.strip
-    //     }
-    //   end
-    // end
+      swig.log.task('Bundling ' + bundle.name);
 
-    // @revision ||= "#{Time.now.strftime('%Y%m%d%H%M')}-#{%x{cd #{UICommons::Config.repo_root} && git rev-parse HEAD}.strip[0..9]}"
-    // UICommons::Config.revision = @revision
+      var glob = [];
+
+      // add the module requesting the bundle to the end
+      bundle.exclusiveDependencies.push(bundle.moduleName);
+
+      // add all of the exclusive bundle deps to the mix
+      _.each(bundle.exclusiveDependencies, function (moduleName) {
+        var modulePath = moduleName.replace(/\./g, '/');
+        glob.push(path.join(basePath, modulePath, '/**/*.js'));
+      });
+
+      return buildBundle(glob, bundle);
+    });
+
+    // return a merged stream of all the bundle streams
+    // this forces gulp to wait for completion
+    return merge.apply(this, streams);
+  });
+
+  gulp.task('bundle', ['bundle-bundles'], function () {
+
+    swig.log.task('Bundling Main');
+
+    // put together the main.[exp].src.js bundle
+    var
+      // save time by just reusing main.js that the `install` task already created.
+      mainPath = path.join(basePath, 'main.js'),
+      glob = [ mainPath ];
+
+    _.each(modules.flatDependencies, function (moduleName) {
+      var modulePath = moduleName.replace(/\./g, '/');
+      glob.push(path.join(basePath, modulePath, '/**/*.js'));
+    });
+
+    // add the /src/ directory to the mix
+    glob.push(path.join(basePath, '/src/**/*.js'));
+
+    return buildBundle(glob);
   });
 
 };
