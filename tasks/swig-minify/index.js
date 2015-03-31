@@ -20,23 +20,55 @@ module.exports = function (gulp, swig) {
     exec = require('co-exec'),
     path = require('path'),
     globby = require('globby'),
-    fs = require('fs');
+    fs = require('fs'),
+    uglify = require('gulp-uglify'),
+    rename = require('gulp-rename'),
+    mincss = require('gulp-minify-css'),
+    tap = require('gulp-tap'),
+    // filter = require('gulp-filter'),
+    // through = require('through2'),
+    basePath = path.join(swig.target.path, '/public/');
 
-  gulp.task('minify', function (done) {
+  function renameFile (path) {
+    path.basename = path.basename.replace('.src', '') + '.min';
+    return path;
+  }
 
-    // js - uglify --output
-    // css - clean-css -o
-    // less - lessc -x
-    // handlebars - handlebars -s -r
+  gulp.task('minify-js', function () {
 
-    // UICommons::Environment.env(args[:environment])
+    var glob = path.join(basePath, '/js/', swig.target.name, '/*.src.js');
 
-    // #noinspection RubySimplifyBooleanInspection
-    // quit UICommons::EXIT_CODES::TASK_FAILED if false == UICommons::Results.continuous(:title => 'Minified', :pass_action => 'minified') do |result|
-    //   UICommons::Language.minify(result, package_folders, false)
-    // end
+    swig.log.task('Minifying Javascript using Uglify');
 
+    return gulp.src(glob)
+      .pipe(tap(function (file) {
+        swig.log.info('', 'Minifying: ' + path.basename(file.path).grey);
+      }))
+      .pipe(uglify())
+      .pipe(rename(renameFile))
+      .pipe(gulp.dest(path.dirname(glob)))
+  });
+
+  gulp.task('minify-css', ['minify-js'], function () {
+
+    var glob = path.join(basePath, '/css/', swig.target.name, '/*.src.css');
+
+    swig.log('');
+    swig.log.task('Minifying CSS using CleanCSS');
+
+    return gulp.src(glob)
+      .pipe(tap(function (file) {
+        swig.log.info('', 'Minifying: ' + path.basename(file.path).grey);
+      }))
+      .pipe(mincss())
+      .pipe(rename(renameFile))
+      .pipe(gulp.dest(path.dirname(glob)))
+  });
+
+  gulp.task('minify', ['minify-css'], function (done) {
     done();
+
+    // handlebars - handlebars -s -r
   });
 
 };
