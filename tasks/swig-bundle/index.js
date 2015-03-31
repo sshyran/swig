@@ -136,8 +136,6 @@ module.exports = function (gulp, swig) {
 
     cleanTree(result);
 
-    fs.writeFileSync('app-dependencies.json', JSON.stringify(result, null, 2));
-
     return result.dependencies;
   }
 
@@ -405,9 +403,9 @@ module.exports = function (gulp, swig) {
     swig.log('');
 
     // leave this here for debuggin
-    fs.writeFileSync('app-dependencies.json', JSON.stringify(modules.dependencies, null, 2));
-    fs.writeFileSync('app-dependencies-flat.json', JSON.stringify(modules.flatDependencies, null, 2));
-    fs.writeFileSync('app-bundles.json', JSON.stringify(modules.bundles, null, 2));
+    // fs.writeFileSync('app-dependencies.json', JSON.stringify(modules.dependencies, null, 2));
+    // fs.writeFileSync('app-dependencies-flat.json', JSON.stringify(modules.flatDependencies, null, 2));
+    // fs.writeFileSync('app-bundles.json', JSON.stringify(modules.bundles, null, 2));
 
   }));
 
