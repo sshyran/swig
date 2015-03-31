@@ -59,6 +59,8 @@
     "swig-deploy" : "*",
     "swig-install" : "*",
     "swig-lint" : "*",
+    "swig-merge-css": "*",
+    "swig-minify" : "*",
     "swig-publish" : "*",
     "swig-spec" : "*",
     "swig-stub" : "*"

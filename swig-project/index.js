@@ -169,6 +169,8 @@ module.exports = function (gulp) {
       deploy: load('swig-deploy'),
       install: load('swig-install'),
       lint: load('swig-lint'),
+      'merge-css': load('swig-merge-css'),
+      minify: load('swig-minify'),
       publish: load('swig-publish'),
       spec: load('swig-spec')
     }
