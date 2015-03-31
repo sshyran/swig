@@ -33,7 +33,7 @@ module.exports = function (gulp, swig, paths, azModules) {
       sourcePath = path.join(mod.path, '/css');
 
       glob.sync(path.join(sourcePath, '/**/*.*')).forEach(function (file) {
-        content += '@import "' + modPathName + '/' + path.relative(sourcePath, file) + '";\n'
+        content += '@import (less) "' + modPathName + '/' + path.relative(sourcePath, file) + '";\n'
       });
     });
 
