@@ -413,8 +413,6 @@ module.exports = function (gulp, swig) {
 
   gulp.task('bundle-bundles', ['bundle-setup'], function () {
 
-console.log(_.map(modules.bundles, function (b) { return b.exclusiveDependencies; }));
-
     var streams = _.map(modules.bundles, function (bundle) {
 
       swig.log.task('Bundling ' + bundle.name);
@@ -441,8 +439,6 @@ console.log(_.map(modules.bundles, function (b) { return b.exclusiveDependencies
 
         glob.push(path.join(basePath, modulePath + '.js'));
       });
-
-      console.log(glob);
 
       return buildBundle(glob, bundle);
     });
