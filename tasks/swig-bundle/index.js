@@ -159,7 +159,8 @@ module.exports = function (gulp, swig) {
         path.join(swig.target.path, '/public/js/**/*.js'),
         '!' + path.join(swig.target.path, '/public/js/**/internal/**/*.js'),
         '!' + path.join(swig.target.path, '/public/js/**/vendor/**/*.js'),
-        '!' + path.join(swig.target.path, '/public/js/**/main*.js')
+        '!' + path.join(swig.target.path, '/public/js/**/{main,bundles}*.js'),
+        '!' + path.join(swig.target.path, '/public/js/**/*{src,min}.js')
       ];
 
     _.each(globby.sync(glob), function (file) {
@@ -176,6 +177,7 @@ module.exports = function (gulp, swig) {
         result.path = file;
 
         if (result.targetExperiences) {
+
           _.each(result.targetExperiences, function (experience) {
             modules[experience].push(result);
           });
@@ -185,11 +187,25 @@ module.exports = function (gulp, swig) {
         }
 
         if (result.bundle) {
-          result.dependencies = {};
-          result.exclusiveDependencies = [];
-          result.name = result.bundle;
 
-          bundles.push(result);
+          // a module with multiple experiences which declares a bundle
+          // will result in dupes, unless we check for it.
+          var existing = _.find(bundles, function (bundle) {
+            return bundle.name === result.bundle;
+          });
+
+          if (!existing) {
+            result.dependencies = {};
+            result.exclusiveDependencies = [];
+            result.name = result.bundle;
+
+            bundles.push(result);
+          }
+          else {
+            // if it exists, we want to make sure that we have all of the defined deps
+            // from the code as well, because a requirejs module could have a dep on a submodule.
+            existing.definedDependencies = existing.definedDependencies.concat(result.definedDependencies);
+          }
         }
       });
 
@@ -205,7 +221,14 @@ module.exports = function (gulp, swig) {
 
     _.each(deps, function (object, moduleName) {
 
-      if (bundle.moduleName === moduleName) {
+      // sometimes modules are REALLY REALLY DUMB and like to name their
+      // primary require module things like nav.unified.nav instead of
+      // nav.unified(.unified). We need to check for that case, sadly.
+      var shortName = bundle.moduleName.split('.');
+      shortName.splice(-1);
+      shortName = shortName.join('.');
+
+      if (bundle.moduleName === moduleName || shortName === moduleName) {
         bundle.dependencies = object.dependencies;
       }
       else {
@@ -276,6 +299,7 @@ module.exports = function (gulp, swig) {
       flattenBundleDependencies(bundle);
 
       bundle.dependencies = bundle.exclusiveDependencies;
+      bundle.dependencies = bundle.dependencies.concat(bundle.definedDependencies);
       bundle.exclusiveDependencies = [];
 
       bundle.dependencies = cleanDependencies(bundle.dependencies);
@@ -361,15 +385,35 @@ module.exports = function (gulp, swig) {
       return result;
     });
 
+    swig.log.task('Writing bundles.js');
+
+    var bundles = {};
+
+    // build a simple mapping object for requireJS to use
+    _.each(modules.bundles, function (bundle) {
+      _.each(bundle.exclusiveDependencies, function (dep) {
+        bundles[dep] = bundle.name;
+      });
+    });
+
+    bundles = 'gilt.bundle(' +
+              JSON.stringify(bundles, null, 2) +
+              ');\n'
+
+    fs.writeFileSync(path.join(basePath, 'bundles.js'), bundles);
+
     swig.log('');
 
     // leave this here for debuggin
-    // fs.writeFileSync('app-dependencies-flat.json', JSON.stringify(modules.flatDependencies, null, 2));
-    // fs.writeFileSync('app-bundles.json', JSON.stringify(modules.bundles, null, 2));
+    fs.writeFileSync('app-dependencies.json', JSON.stringify(modules.dependencies, null, 2));
+    fs.writeFileSync('app-dependencies-flat.json', JSON.stringify(modules.flatDependencies, null, 2));
+    fs.writeFileSync('app-bundles.json', JSON.stringify(modules.bundles, null, 2));
 
   }));
 
   gulp.task('bundle-bundles', ['bundle-setup'], function () {
+
+console.log(_.map(modules.bundles, function (b) { return b.exclusiveDependencies; }));
 
     var streams = _.map(modules.bundles, function (bundle) {
 
@@ -382,9 +426,23 @@ module.exports = function (gulp, swig) {
 
       // add all of the exclusive bundle deps to the mix
       _.each(bundle.exclusiveDependencies, function (moduleName) {
-        var modulePath = moduleName.replace(/\./g, '/');
-        glob.push(path.join(basePath, modulePath, '/**/*.js'));
+        var parts = moduleName.split('.'),
+          modulePath;
+
+        if (parts.length > 2) {
+          // eg. nav.unified.notification > nav/unified/notification.js
+          modulePath = parts.join('/');
+        }
+        else {
+          // eg. vendor.kairos > vendor/kairos/kairos.js
+          parts.push(parts[parts.length - 1]);
+          modulePath = parts.join('/');
+        }
+
+        glob.push(path.join(basePath, modulePath + '.js'));
       });
+
+      console.log(glob);
 
       return buildBundle(glob, bundle);
     });
@@ -402,7 +460,8 @@ module.exports = function (gulp, swig) {
     var
       // save time by just reusing main.js that the `install` task already created.
       mainPath = path.join(basePath, 'main.js'),
-      glob = [ mainPath ];
+      bundlesPath = path.join(basePath, 'bundles.js'),
+      glob = [ mainPath, bundlesPath ];
 
     _.each(modules.flatDependencies, function (moduleName) {
       var modulePath = moduleName.replace(/\./g, '/');

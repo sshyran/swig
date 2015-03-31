@@ -43,6 +43,7 @@
     "concat-with-sourcemaps": "^1.0.0",
     "glob": "*",
     "globby": "*",
+    "gulp-file": "^0.2.0",
     "gulp-sourcemaps": "^1.1.4",
     "gulp-util": "^3.0.1",
     "merge-stream": "*",
