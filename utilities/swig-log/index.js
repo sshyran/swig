@@ -33,6 +33,7 @@ module.exports = function (swig) {
 
   symbols.connector = ': ';
   symbols.start = '▸';
+  symbols.info = strip(symbols.info).cyan;
 
   if (swig.env === 'production' || swig.argv.pretty === false) {
     symbols.info =    '[ i ]';
