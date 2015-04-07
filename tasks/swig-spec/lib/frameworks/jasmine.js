@@ -13,7 +13,7 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function (gulp, swig, options, done) {
+module.exports = function (gulp, swig, options) {
 
   var _ = require('underscore'),
     file = require('gulp-file'),
@@ -40,7 +40,7 @@ module.exports = function (gulp, swig, options, done) {
     swig.log.task('Running Specs with PhantomJS+Jasmine');
     swig.log('');
 
-    file('runner.html', runner, { src: true })
+    return file('runner.html', runner, { src: true })
       .pipe(gulp.dest(options.runnerPath))
       .pipe(jasmine({
         phantomjs: {
@@ -48,7 +48,5 @@ module.exports = function (gulp, swig, options, done) {
           localToRemoteUrlAccessEnabled: true,
           ignoreSslErrors: true
         }
-      }))
-      .on('error', done)
-      .on('end', done);
+      }));
 };

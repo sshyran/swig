@@ -66,47 +66,6 @@ module.exports = function (gulp, swig) {
     swig.log.success(null, 'Done\n');
   }
 
-  gulp.task('spec', function (done) {
-
-    var specsPath = path.join(swig.target.path, 'public/spec/', swig.pkg.name);
-
-    if (swig.project.type !== 'webapp') {
-      // if we're in a ui-* modules repo
-      specsPath = path.join(swig.target.path, 'spec/');
-    }
-
-    if (!fs.existsSync(specsPath)) {
-      swig.seq(
-        'lint',
-        function () {
-          swig.log.task('Imagining That Specs Exist');
-          swig.log.info('', 'Aw boo. No specs to run!');
-
-          done();
-        }
-      );
-      return;
-    }
-
-    var installTask = 'install-noop';
-
-    if (swig.argv.module) {
-      // tell `install` that we need devDependencies too. this needs to be executed BEFORE install.
-      swig.argv.devDependencies = true;
-      installTask = 'install';
-    }
-
-    swig.seq(
-      installTask,
-      'lint',
-      'spec-setup',
-      'spec-mock-apidoc',
-      'spec-templates',
-      'spec-run',
-      done
-    );
-
-  });
 
   gulp.task('spec-setup', function (done) {
 
@@ -131,7 +90,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('spec-mock-apidoc', function (done) {
+  gulp.task('spec-mock-apidoc', ['spec-setup'], function (done) {
 
     swig.log.info('', 'Enumerating Mock API (apidoc)');
 
@@ -153,7 +112,7 @@ module.exports = function (gulp, swig) {
 
   });
 
-  gulp.task('spec-templates', function (done) {
+  gulp.task('spec-templates', ['spec-mock-apidoc'], function (done) {
 
     swig.log.info('', 'Enumerating Templates...');
 
@@ -206,7 +165,7 @@ module.exports = function (gulp, swig) {
       });
   });
 
-  gulp.task('spec-run', function (done) {
+  gulp.task('spec-run', ['spec-templates'], function () {
 
     var defaultFramework = 'jasmine',
       framework = defaultFramework,
@@ -279,6 +238,45 @@ module.exports = function (gulp, swig) {
     };
 
     // fire our specs implementation (jasmine, mocha, etc..)
-    impl(gulp, swig, options, done);
+    return impl(gulp, swig, options);
+  });
+
+  gulp.task('spec', function (done) {
+
+    var specsPath = path.join(swig.target.path, 'public/spec/', swig.pkg.name);
+
+    if (swig.project.type !== 'webapp') {
+      // if we're in a ui-* modules repo
+      specsPath = path.join(swig.target.path, 'spec/');
+    }
+
+    if (!fs.existsSync(specsPath)) {
+      swig.seq(
+        'lint',
+        function () {
+          swig.log.task('Imagining That Specs Exist');
+          swig.log.info('', 'Aw boo. No specs to run!');
+
+          done();
+        }
+      );
+      return;
+    }
+
+    var installTask = 'install-noop';
+
+    if (swig.argv.module) {
+      // tell `install` that we need devDependencies too. this needs to be executed BEFORE install.
+      swig.argv.devDependencies = true;
+      installTask = 'install';
+    }
+
+    swig.seq(
+      installTask,
+      'lint',
+      'spec-run',
+      done
+    );
+
   });
 };

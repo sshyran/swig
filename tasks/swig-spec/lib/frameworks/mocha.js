@@ -13,7 +13,7 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function (gulp, swig, options, done) {
+module.exports = function (gulp, swig, options) {
 
   var _ = require('underscore'),
     file = require('gulp-file'),
@@ -30,8 +30,8 @@ module.exports = function (gulp, swig, options, done) {
     nyanPath = path.join(mochaPath, '/lib/reporters/nyan.js'),
 
     chaiPath = path.dirname(require.resolve('chai')),
-    runnerPath = path.join(__dirname, '../../templates/mocha-runner.mustache'),
-    runner = fs.readFileSync(runnerPath, 'utf-8');
+    runnerTemplatePath = path.join(__dirname, '../../templates/mocha-runner.mustache'),
+    runner = fs.readFileSync(runnerTemplatePath, 'utf-8');
 
     swig.log.info('', 'Rendering Runner...\n');
 
@@ -46,7 +46,7 @@ module.exports = function (gulp, swig, options, done) {
     swig.log.task('Running Specs with PhantomJS+Mocha');
     swig.log('');
 
-    file('runner.html', runner, { src: true })
+    return file('runner.html', runner, { src: true })
       .pipe(gulp.dest(options.runnerPath))
       .pipe(mocha({
         reporter: nyanPath,
@@ -55,7 +55,5 @@ module.exports = function (gulp, swig, options, done) {
           localToRemoteUrlAccessEnabled: true,
           ignoreSslErrors: true
         }
-      }))
-      .on('error', function() { done(new gutil.PluginError('swig-spec', 'Test failure')); })
-      .on('end', done);
+      }));
 };
