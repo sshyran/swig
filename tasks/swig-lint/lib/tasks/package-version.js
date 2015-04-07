@@ -53,7 +53,7 @@ module.exports = function (gulp, swig) {
     }, function (cb) {
       if (!success) {
         swig.log();
-        swig.log.warn('Please make sure you\'re retuning an object containing ' + '"version: \'$$PACKAGE_VERSION$$\'"'.bold);
+        swig.log.warn('Please make sure you\'re retuning an object containing ' + '"version: \'$$PACKAGE_VERSION$$\'"\n'.bold);
       }
       else {
         if (skippedCount > 0) {
