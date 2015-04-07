@@ -1,7 +1,7 @@
 {
   "name": "swig-deploy",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -38,10 +38,14 @@
     "node": ">= 0.11.x"
   },
   "dependencies": {
-    "underscore" : "*"
+    "async-waterfall": "^0.1.5",
+    "co": "3.x",
+    "gulp-util": "^3.0.4",
+    "s3": "^4.4.0",
+    "simple-git": "^1.0.0",
+    "thunkify": "^2.1.2",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "main": "index.js"
 }

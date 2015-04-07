@@ -15,158 +15,218 @@
 
 module.exports = function (gulp, swig) {
 
-  gulp.task('deploy', ['deploy-nfs', 'deploy-s3', 'deploy-configs'], function () {
-    return true;
-  });
+  var _ = require('underscore'),
+    fs = require('fs'),
+    path = require('path'),
+    thunkify = require('thunkify'),
+    co = require('co'),
+    s3 = require('s3'),
+    waterfall = require('async-waterfall'),
 
-  gulp.task('create-revision', function (done) {
-    // is_sbt_project = File.exists?('./build.sbt')
+    tagName = swig.pkg.name + '-' + swig.pkg.version + '-assets',
+    git;
 
-    // UICommons::Environment.env(args[:environment])
+  gulp.task('deploy-setup', function (done) {
 
-    // if is_sbt_project && UICommons::Environment.env != :dev
-    //   if File.exists?(UICommons::Config.assets_version_file)
-    //     File.open(UICommons::Config.assets_version_file, 'rb') { |file|
-    //       @revision = file.read.strip
-    //     }
-    //   end
-    // end
+    swig.log.task('Deploying Assets');
 
-    // @revision ||= "#{Time.now.strftime('%Y%m%d%H%M')}-#{%x{cd #{UICommons::Config.repo_root} && git rev-parse HEAD}.strip[0..9]}"
-    // UICommons::Config.revision = @revision
+    if (!swig.rc || !swig.rc.s3) {
+      swig.log();
+      swig.log.error('.swigrc', '~/.swigrc is missing the s3 property. You need that value to continue.' +
+        '\n\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the value manually.'.bold);
+      process.exit(1);
+    }
+
+    var err = false,
+      errs = [];
+
+    // make sure our config has all the values we'll need
+    _.each(['bucket', 'accessKey', 'assetsDir', 'secretKey'], function (property) {
+      if (!swig.rc.s3[property]) {
+        err = true;
+        errs.push('~/.swigrc is missing the s3.' + property + ' property. You need that value to continue.');
+      }
+    })
+
+    if (err) {
+      swig.log();
+      swig.log.error('.swigrc', errs.join('\n            '));
+      swig.log('\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the missing value(s) manually.'.bold)
+      process.exit(1);
+    }
+
     done();
   });
 
-  gulp.task('deploy-nfs', function () {
-    // UICommons::Environment.env(args[:environment])
-    // quit UICommons::EXIT_CODES::TASK_FAILED unless UICommons::Results.continuous :title => "Deploying #{UICommons::Config.public_repo_name} Assets #{@revision} to NFS" do |result|
-    //   UICommons.deploy result
-    // end
+  gulp.task('deploy-check-version', [ 'deploy-setup' ], co(function *() {
+
+    git = require('simple-git')(swig.target.path);
+    git.exec = thunkify(git._run);
+
+    if (swig.argv.force) {
+      swig.log('');
+      swig.log.task('Skipping the Assets Version Check');
+      swig.log.warn('', 'The --force is strong with this one.\n');
+
+      var question = 'Are you sure you want to force this deploy? (y/n)'.white,
+        answer = yield swig.log.prompt(swig.log.padLeft(question, 1));
+
+      if (!answer || (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes')) {
+        swig.log('Allllrighty then.');
+        process.exit(1);
+      }
+
+      return;
+    }
+
+    swig.log('');
+    swig.log.task('Checking Assets Version');
+    swig.log.info('', 'Looking for Git tag: ' + tagName);
+
+    var result;
+
+    result = yield git.exec('tag');
+    result = result.split('\n');
+
+    if (_.contains(result, tagName)) {
+      swig.log();
+      swig.log.error('swig-deploy',
+        'It looks like you\'ve already deployed the assets for this version.\n   The tag: ' + tagName + ', already exists.\n' +
+        '   If you believe that was in error, you can delete the tag and try again, or use the --force flag\n' +
+        '   but tread carefully!'.bold
+      );
+      process.exit(1);
+    }
+
+    swig.log.info('', 'Tag is new. We\'re good to go.');
+
+  }));
+
+  gulp.task('deploy-s3', [ 'deploy-check-version' ], function (done) {
+
+    // https://s3.amazonaws.com/gilt-assets/a/js/web-x-domain/0.0.13/main.full.min.js
+    // is the same as
+    // https://cdn5.giltcdn.com/a/js/web-x-domain/0.0.13/main.full.min.js
+    // where 'gilt-assets' is the bucket name
+
+    swig.log('');
+    swig.log.task('Deploying Assets to S3');
+    swig.log.info('', 'Assets @ https://s3.amazonaws.com/gilt-assets/');
+
+    var s3 = require('s3'),
+      basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name),
+      directories = [ 'css', 'img', 'js', 'templates' ],
+      client = s3.createClient({
+        s3Options: {
+          accessKeyId: swig.rc.s3.accessKey,
+          secretAccessKey: swig.rc.s3.secretKey
+        }
+      }),
+      tasks = [];
+
+    _.each(directories, function (dir) {
+      tasks.push(function (callback) {
+        var params = {
+          localDir: basePath.replace('{{dir}}', dir),
+          deleteRemoved: true,
+          s3Params: {
+            Bucket: swig.rc.s3.bucket,
+            // eg. /a/js/web-checkout/0.1.1/
+            Prefix: path.join(swig.rc.s3.assetsDir, dir, swig.target.name, swig.pkg.version),
+          }
+        },
+        uploader = client.uploadDir(params),
+        progressBegan = false,
+        lastPercent = '';
+
+        swig.log();
+        swig.log.task('Syncing ' + params.localDir.grey);
+
+        uploader.on('error', function (err) {
+          // don't worry about ugly output here.
+          swig.log();
+          swig.log.error('deploy-s3', err.stack);
+        });
+
+        uploader.on('progress', function () {
+          if (uploader.progressAmount <= 0) {
+            if (!progressBegan) {
+              progressBegan = true;
+              lastPercent = '0%';
+              var preamble = swig.log.symbols.info + '  Progress ' + swig.log.symbols.start + swig.log.symbols.start + ' ' + lastPercent.white;
+              swig.log.write(swig.log.padLeft(preamble, 1));
+            }
+            return;
+          }
+
+          var percent = parseInt((uploader.progressAmount / uploader.progressTotal) * 100, 10),
+            backspace = (new Array(lastPercent.length + 1)).join('\b');
+
+          lastPercent = percent + '%';
+
+          swig.log.write(backspace + lastPercent.white);
+        });
+
+        uploader.on('end', function () {
+          var backspace = (new Array(lastPercent.length + 1)).join('\b');
+
+          swig.log.write(backspace + '100%\n'.green);
+          swig.log.info('', 'Directory Synced to: ' + params.s3Params.Prefix.grey);
+
+          callback(null);
+        });
+
+      });
+    });
+
+    waterfall(tasks, function (callback) {
+      done();
+    });
+
   });
 
-  gulp.task('deploy-s3', function () {
-    // if args[:environment] == 'prod'
-    //   UICommons::Environment.env(args[:environment])
-    //   quit UICommons::EXIT_CODES::TASK_FAILED unless UICommons::Results.continuous :title => "Deploying #{UICommons::Config.public_repo_name} Assets #{@revision} to S3" do |result|
-    //     UICommons.deploy_s3 result
-    //   end
-    // else
-    //   puts UICommons::Results.yellow_text 'S3 Deploy is currently only for Prod'
-    // end
+  /*
+   * @note: We only create the git tag if we made it this far.
+  */
+  gulp.task('deploy-tag-version', [ 'deploy-s3' ], co(function *() {
+
+    swig.log('');
+    swig.log.task('Creating Assets Git Tag');
+
+    swig.log.info('', 'Fetching Tags');
+    var result = yield git.exec('fetch --tags'),
+      skipPush = false;
+
+    swig.log.info('', 'Tagging: ' + tagName);
+
+    try {
+      result = yield git.exec('tag ' + tagName);
+    }
+    catch (e) {
+      skipPush = true;
+      swig.log.error('', e);
+    }
+
+    if (!skipPush) {
+      swig.log.info('', 'Pushing Tags');
+      result = yield git.exec('push --tags');
+    }
+    else {
+      swig.log.warn('', 'Skipping Pushing Tags. Disregard this warning if you used --force, and didn\'nt delete the tag prior.');
+    }
+
+  }));
+
+  /*
+   * @note:
+   *  Order of Operation:
+   *    - deploy-setup
+   *    - deploy-check-version
+   *    - deploy-s3
+   *    - deploy-tag-version
+  */
+  gulp.task('deploy', [ 'deploy-tag-version' ], function (done) {
+    done();
   });
 
-  gulp.task('deploy-configs', function () {
-    // UICommons::Environment.env(args[:environment])
-
-    // if UICommons::Config.create_assets_version_file == true
-    //   quit UICommons::EXIT_CODES::TASK_FAILED unless UICommons::Results.continuous :title => "Updating #{UICommons::Config.public_repo_name} assets.version file to version #{@revision}" do |result|
-    //     UICommons.update_assets_version_file result
-    //   end
-    // end
-  });
 };
-
-   //  def self.deploy(result)
-   //    host = UICommons::Environment.asset_share_host
-   //    repo_name = UICommons::Config.public_repo_name
-   //    revision = UICommons::Config.revision
-   //    src_folder = UICommons::Config.repo_root + "/" +UICommons::Config.public_root
-   //    modules = {}
-   //    success = true
-
-   //    if host.empty?
-   //      success = false
-   //    else
-   //      UICommons::Config.deploy_folders.split(',').each do |dir|
-   //        begin
-   //          output = %x{rsync --archive --recursive --compress "#{src_folder}/#{dir}/#{repo_name}/" "#{host}/#{dir}/#{repo_name}/#{revision}"}
-
-   //          success &&= $?.success?
-
-   //          if modules[dir].nil?
-   //            modules[dir] = {
-   //              :filename => "#{host}/#{dir}/#{repo_name}/#{revision}",
-   //              :success => $?.success?,
-   //              :output => output
-   //            }
-   //          end
-
-   //          if UICommons::Config.create_latest_bundle_symlink
-   //            latest_bundle = "#{src_folder}/#{dir}/#{repo_name}/latest_bundle"
-   //            File.unlink(latest_bundle) rescue nil
-   //            File.symlink(revision, latest_bundle)
-   //            output = %x{rsync --archive --compress "#{latest_bundle}" "#{host}/#{dir}/#{repo_name}"}
-   //            File.unlink(latest_bundle) rescue nil # Cleanup otherwise problems in rpm war build
-
-   //            success &&= $?.success?
-
-   //            modules[dir + '-latest_bundle'] = {
-   //              :filename => latest_bundle,
-   //              :success => $?.success?,
-   //              :output => output
-   //            }
-
-   //          end
-
-   //        rescue Exception => e
-   //          puts e
-   //          success = false
-   //          exit
-   //        end
-   //      end
-   //    end
-
-   //    results = modules.values.sort_by{|r|r[:filename]}
-
-   //    results.each do |r|
-   //      result.push r
-   //    end
-
-   //    result.close(:success => success)
-   //  end
-
-   // def self.deploy_s3(result)
-   //    host = UICommons::Environment.s3_host
-   //    repo_name = UICommons::Config.public_repo_name
-   //    revision = UICommons::Config.revision
-   //    src_folder = UICommons::Config.repo_root + '/' +UICommons::Config.public_root
-   //    modules = {}
-   //    success = true
-
-
-
-   //    UICommons::Config.deploy_folders.split(',').each do |dir|
-   //      begin
-
-   //        puts "S3 deploy command:"
-   //        puts "  #{File.join(File.dirname(__FILE__), '../bin/s3cmd')} sync #{src_folder}/#{dir}/#{repo_name}/ #{host}/#{dir}/#{repo_name}/#{revision}/ 2>&1\n"
-
-   //        output = %x{#{File.join(File.dirname(__FILE__), '../bin/s3cmd')} sync #{src_folder}/#{dir}/#{repo_name}/ #{host}/#{dir}/#{repo_name}/#{revision}/ 2>&1}
-
-   //        puts "S3 deploy raw output:"
-   //        puts "  #{output}\n"
-
-   //        success &&= $?.success?
-
-   //        if modules[dir].nil?
-   //          modules[dir] = {
-   //            :filename => "#{host}/#{dir}/#{repo_name}/#{revision}",
-   //            :success => $?.success?,
-   //            :output => output
-   //          }
-   //        end
-   //      rescue Exception => e
-   //        puts e
-   //        success = false
-   //        exit
-   //      end
-   //    end
-
-   //    results = modules.values.sort_by{|r|r[:filename]}
-
-   //    results.each do |r|
-   //      result.push r
-   //    end
-
-   //    result.close(:success => success)
-   //  end
