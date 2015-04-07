@@ -220,13 +220,23 @@ module.exports = function (gulp, swig) {
   /*
    * @note:
    *  Order of Operation:
+   *    - install
+   *    - lint
+   *    - spec
+   *    - bundle
    *    - deploy-setup
    *    - deploy-check-version
    *    - deploy-s3
    *    - deploy-tag-version
   */
-  gulp.task('deploy', [ 'deploy-tag-version' ], function (done) {
-    done();
+  gulp.task('deploy', function (done) {
+
+    swig.seq(
+      'install',
+      'spec', // spec lints before running specs
+      'bundle',
+      'deploy-tag-version',
+      done);
   });
 
 };
