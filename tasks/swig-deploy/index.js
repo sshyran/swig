@@ -237,6 +237,7 @@ module.exports = function (gulp, swig) {
       'spec', // spec lints before running specs
       'bundle',
       'merge-css',
+      'minify',
       'deploy-tag-version',
       done);
   });
