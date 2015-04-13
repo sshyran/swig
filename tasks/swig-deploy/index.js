@@ -191,7 +191,7 @@ module.exports = function (gulp, swig) {
   gulp.task('deploy-tag-version', [ 'deploy-s3' ], co(function *() {
 
     swig.log('');
-    swig.log.task('Creating Assets Git Tag');
+    swig.log.task('Tagging Assets Version');
 
     swig.log.info('', 'Fetching Tags');
     var result = yield git.exec('fetch --tags'),
@@ -224,6 +224,7 @@ module.exports = function (gulp, swig) {
    *    - lint
    *    - spec
    *    - bundle
+   *    - merge-css
    *    - deploy-setup
    *    - deploy-check-version
    *    - deploy-s3
@@ -235,6 +236,7 @@ module.exports = function (gulp, swig) {
       'install',
       'spec', // spec lints before running specs
       'bundle',
+      'merge-css',
       'deploy-tag-version',
       done);
   });
