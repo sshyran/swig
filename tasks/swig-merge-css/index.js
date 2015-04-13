@@ -24,6 +24,8 @@ module.exports = function (gulp, swig) {
 
   gulp.task('merge-css', function () {
 
+    swig.log.task('Merging LESS and CSS Files');
+
     var basePath = path.join(swig.target.path, '/public/css/', swig.target.name),
       glob = [
         path.join(basePath, '/*.{less,css}'),
