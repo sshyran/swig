@@ -109,7 +109,7 @@ module.exports = function (gulp, swig) {
       };
 
       // since arguments.callee won't work here, let's re-wrap the module definition.
-      result.script = 'gilt.require(\n' +
+      result.script = 'gilt.define(\n' +
         '  \'' + result.moduleName + '\',\n  ' +
         indent(JSON.stringify(result.definedDependencies, null, 2).replace(/"/g, '\'')) + ',\n' +
         result.script + ',\n  ' +
