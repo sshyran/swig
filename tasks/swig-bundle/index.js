@@ -158,7 +158,8 @@ module.exports = function (gulp, swig) {
         '!' + path.join(swig.target.path, '/public/js/**/internal/**/*.js'),
         '!' + path.join(swig.target.path, '/public/js/**/vendor/**/*.js'),
         '!' + path.join(swig.target.path, '/public/js/**/{main,bundles}*.js'),
-        '!' + path.join(swig.target.path, '/public/js/**/*{src,min}.js')
+        '!' + path.join(swig.target.path, '/public/js/**/*{src,min}.js'),
+        '!' + path.join(swig.target.path, '/public/js/**/templates/**/*.js'),
       ];
 
     _.each(globby.sync(glob), function (file) {
@@ -168,7 +169,14 @@ module.exports = function (gulp, swig) {
       // We can actually run this at about 36k operations per second
       // so this is incredibly fast and on par with a massive regex
       // that everyone hates.
-      eval(content);
+      try {
+        eval(content);
+      }
+      catch (e) {
+        swig.log.error('swig-bundle:examineModules', 'An error ocurred while evaluating: ' + file.grey);
+        swig.log.info('', e);
+        process.exit(1);
+      }
 
       _.each(evalResults, function (result) {
 
@@ -284,6 +292,10 @@ module.exports = function (gulp, swig) {
   }
 
   function cleanDependencies (deps) {
+
+    // these are already present in main.js
+    deps = _.difference(deps, ['internal.require', 'internal.gilt_require', 'internal.json'])
+
     deps = _.uniq(deps);
     deps = _.sortBy(deps, function (moduleName) { return moduleName; })
 
