@@ -23,42 +23,63 @@ module.exports = function (gulp, swig) {
     thunkify = require('thunkify'),
     co = require('co'),
 
+    git,
     npmCommand,
     tagName,
     targetPath,
     files;
 
-  gulp.task('publish-verify', function publishVerifyTask (done) {
+  gulp.task('publish-verify', function (done) {
+
+    var pkgPath,
+      result;
 
     swig.log.task('Verifying before Publishing');
 
-    var git = require('simple-git')(swig.target.path),
-      result;
-
+    git = require('simple-git')(swig.target.path);
     git.exec = thunkify(git._run);
     tagName = swig.pkg.name + '-' + swig.pkg.version;
 
-    if (!swig.argv.module) {
-      swig.error('publish-verify', 'You must define a module to publish.');
+    swig.log.info('', 'Verifying Arguments');
+
+    if (!swig.argv.module || !swig.argv.m) {
+      swig.error('publish-verify', 'You must define a module to publish with either the --module or --m flag.');
       process.exit(1);
+    }
+
+    if (!swig.argv.module && swig.argv.m) {
+      swig.argv.module = swig.argv.m;
     }
 
     targetPath = swig.target.path;
 
+    swig.log.info('', 'Verifying Target');
+
     if (!fs.existsSync(targetPath)) {
-      swig.error('publish-verify', 'The module specified doesn\'t exist here.');
+      swig.error('publish-verify', 'The ' + swig.argv.module + ' module specified doesn\'t exist here.');
       process.exit(1);
     }
 
-    var pkgPath = path.join(targetPath, '/package.json');
+    swig.log.info('', 'Verifying package.json');
+
+    pkgPath = path.join(targetPath, '/package.json');
 
     if (!fs.existsSync(pkgPath)) {
       swig.error('publish-verify', 'You cannot publish a module without a package.json file.');
       process.exit(1);
     }
 
-    co(function * () {
-      swig.log.info('', 'Checking Tags\n');
+    done();
+  });
+
+  gulp.task('publish-check-version', ['publish-verify'], co(function * () {
+
+    swig.log('');
+    swig.log.task('Checking Module Version');
+    swig.log.info('', 'Looking for Git tag: ' + tagName);
+
+    try {
+
       result = yield git.exec('tag');
       result = result.split('\n');
 
@@ -69,17 +90,16 @@ module.exports = function (gulp, swig) {
         );
         process.exit(1);
       }
+    }
+    catch (e) {
+      swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta + '\n  ' + e);
+      process.exit(1);
+    }
 
-    })(function (err) {
-      if (err) {
-        swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta);
-        process.exit(1);
-      }
-      done();
-    });
-  });
+    swig.log.info('', 'Tag is new. We\'re good to go.');
+  }));
 
-  gulp.task('publish-npm', function publisNpmTask (done) {
+  gulp.task('publish-npm', ['publish-check-version'], co(function * () {
 
     var tempPath = path.join(swig.temp, '/publish/', swig.argv.module),
       result,
@@ -101,16 +121,20 @@ module.exports = function (gulp, swig) {
     files = glob.sync(path.join(tempPath, '/**/*'));
 
     _.each(files, co(function * (file) {
-      swig.log('Removing extended attributes from: ' + file.replace(tempPath, '').grey);
+      swig.log.info('', 'Removing extended attributes from: ' + file.replace(tempPath, '').grey);
       result = yield swig.exec('xattr -c ' + file);
     }));
 
-    co(function * () {
+    try {
 
       // run npm against the temp module location, redirect stderr to stdout
-      npmCommand = 'npm publish ' + tempPath + ' --tag=null --loglevel=info 2>&1';
+      npmCommand = [
+        'cd ' + tempPath,
+        'npm publish . --tag=null --loglevel=info 2>&1'
+      ].join('; ');
 
-      swig.log('[swig-publish]'.yellow + ' executing npm command:\n' + npmCommand.grey);
+      swig.log.info('', 'NPM Command:\n  ' + npmCommand.splt('; ').join(';\n  '));
+      swig.log.info('', 'Publishing Module');
 
       result = yield swig.exec(npmCommand, null, {
         stdout: function (data) {
@@ -118,37 +142,28 @@ module.exports = function (gulp, swig) {
         }
       });
 
-      if (result.stdout.indexOf('npm info ok')) {
-        swig.log('[swig-publish]'.green + ' npm publish suceeded.');
+      if (!result.stdout.indexOf('npm info ok')) {
+        swig.log.error('', 'Sad Pandas. Publish Failed.');
+        swig.log.info('', 'Command Output:\n    ' + streamResult.split('\n').join('\n    ').grey);
       }
-      else {
-        swig.log('[stdout] '.blue + streamResult);
-        swig.log('[swig-publish]'.red + ' npm publish failed.');
-      }
+    }
+    catch (e) {
+      swig.log.error('', 'Sad Pandas. Publish Failed.\n  ' + e);
+      swig.log.info('', 'Command Output:\n    ' + streamResult.split('\n').join('\n    ').grey);
+      process.exit(1);
+    }
 
-    })(function (err, res) {
-      if (err) {
-        swig.log('[stdout] '.blue + streamResult);
-        swig.log('[swig-publish]'.red + ' npm publish failed.');
-        process.exit(1);
-      }
-      done();
-    });
+  }));
 
-  });
-
-  gulp.task('publish-tag', function publishTagTask (done) {
+  gulp.task('publish-tag-version', ['publish-npm'], co(function * () {
 
     swig.log('');
-    swig.log.task('Publishing Tags');
+    swig.log.task('Tagging Module Version');
 
-    var git = require('simple-git')(swig.target.path),
-      tagName = swig.pkg.name + '-' + swig.pkg.version,
-      result;
+    var result;
 
-    git.exec = thunkify(git._run);
+    try {
 
-    co(function * () {
       swig.log.info('', 'Fetching Tags');
       result = yield git.exec('fetch --tags');
 
@@ -157,26 +172,30 @@ module.exports = function (gulp, swig) {
 
       swig.log.info('', 'Pushing Tags');
       result = yield git.exec('push --tags');
+    }
+    catch (e) {
+      swig.log.error('[publish-tag-version]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta + '\n  ' + e);
+      process.exit(1);
+    };
 
-    })(function (err) {
-      if (err) {
-        swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' + swig.pkg.version).magenta);
-        process.exit(1);
-      }
-      done();
-    });
+  }));
 
-  });
-
-  gulp.task('publish', function (done) {
+  /*
+   * @note:
+   *  Order of Operations
+   *    - lint
+   *    - spec
+   *    - publish-verify
+   *    - publish-check-version
+   *    - publish-npm
+   *    - publish-tag-version
+   *    - release-email
+  */
+  gulp.task('publish-tag-version', function (done) {
     swig.seq(
-      'publish-verify',
-
-      // spec lints before running specs
       'spec',
-      // 'publish-npm',
-      'publish-tag',
-      // 'release-email',
+      'publish-tag-version',
+      'release-email',
       done);
   });
 

@@ -23,6 +23,7 @@ module.exports = function (gulp, swig) {
     fs = require('fs'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
+    replace = require('gulp-replace'),
     mincss = require('gulp-minify-css'),
     tap = require('gulp-tap'),
     rimraf = require('rimraf'),
@@ -38,6 +39,7 @@ module.exports = function (gulp, swig) {
 
     var glob = path.join(basePath, '/js/', swig.target.name, '/*.src.js');
 
+    swig.log('');
     swig.log.task('Minifying Javascript using Uglify');
 
     return gulp.src(glob)
@@ -51,7 +53,23 @@ module.exports = function (gulp, swig) {
 
   gulp.task('minify-css', ['minify-js'], function () {
 
-    var glob = path.join(basePath, '/css/', swig.target.name, '/*.src.css');
+    var glob = path.join(basePath, '/css/', swig.target.name, '/*.src.css'),
+      blackMagic = new RegExp('url\\((\\/a)?(\\/img\\/)(' + swig.target.name + ')(\\/[^\\)]+)\\)', 'ig'),
+
+      // turns this:
+      //  /img/web-mosaic/nav/footer/footer-sprite.png
+      // into this:
+      //  //assets[n].giltcdn.com/img/web-mosaic/1.0.0/nav/footer/footer-sprite.png
+      replaceFn = function (match, leading, imgDir, target, asset) {
+        var min = 1,
+          max = 4,
+          assetServer = Math.floor(Math.random() * (max - min + 1)) + min,
+          result;
+
+        result = '//assets' + assetServer + '.giltcdn.com' + (leading || '') + imgDir + target + '/' + swig.pkg.version + asset;
+        console.log(result);
+        return result;
+      };
 
     swig.log('');
     swig.log.task('Minifying CSS using CleanCSS');
@@ -61,6 +79,7 @@ module.exports = function (gulp, swig) {
         swig.log.info('', 'Minifying: ' + path.basename(file.path).grey);
       }))
       .pipe(mincss())
+      .pipe(replace(blackMagic, replaceFn))
       .pipe(rename(renameFile))
       .pipe(gulp.dest(path.dirname(glob)))
   });

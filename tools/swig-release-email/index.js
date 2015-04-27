@@ -180,13 +180,19 @@ module.exports = function (gulp, swig) {
       fs.writeFileSync(path.join(__dirname, 'email-inlined.html'), html);
 
       // gmail has a 102k limit on html content before it starts "clipping" it.
-      // shelving this until they stop replacing whitespace in the code
-      // minimize.parse = thunkify(minimize.parse);
-      // html = yield minimize.parse(html);
+      // this greatly reduces the size of the html file.
+      minimize.parse = thunkify(minimize.parse);
+      html = yield minimize.parse(html);
+
+      // remove <code data-remove>. we have to have that in there
+      // so Minimize will leave the whitespace alone
+      html = html.replace(/\<code data\-remove\>/g, '');
+      html = html.replace(/\<code\>\<\/td\>/g, '');
 
       fs.writeFileSync(path.join(__dirname, 'email-min.html'), html);
 
-      swig.log.info('', 'Sending Email');
+      swig.log();
+      swig.log.task('Sending Email');
 
       if (swig.pkg.maintainers && _.isArray(swig.pkg.maintainers)) {
         swig.pkg.maintainers.forEach(function (maint) {
