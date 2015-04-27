@@ -66,8 +66,8 @@ module.exports = function (gulp, swig) {
           assetServer = Math.floor(Math.random() * (max - min + 1)) + min,
           result;
 
-        result = '//assets' + assetServer + '.giltcdn.com' + (leading || '') + imgDir + target + '/' + swig.pkg.version + asset;
-        console.log(result);
+        result = 'url(//assets' + assetServer + '.giltcdn.com' + (leading || '') + imgDir + target + '/' + swig.pkg.version + asset + ')';
+
         return result;
       };
 
