@@ -28,7 +28,7 @@ module.exports = function (gulp, swig) {
 
   gulp.task('deploy-setup', function (done) {
 
-    swig.log.task('Deploying Assets');
+    swig.log.task('Preparing to Deploy Assets');
 
     if (!swig.rc || !swig.rc.s3) {
       swig.log();
@@ -72,8 +72,13 @@ module.exports = function (gulp, swig) {
         answer = yield swig.log.prompt(swig.log.padLeft(question, 1));
 
       if (!answer || (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes')) {
-        swig.log('Allllrighty then.');
+        swig.log();
+        swig.log('(╯°□°）╯︵ ┻━┻)  Allllrighty then.');
         process.exit(1);
+      }
+      else {
+        swig.log();
+        swig.log('BRING IT ON, CUPCAKE!  ᕦ(ò_ó*)ᕤ\n');
       }
 
       return;
@@ -102,7 +107,7 @@ module.exports = function (gulp, swig) {
 
   }));
 
-  gulp.task('deploy-s3', [ 'deploy-check-version' ], function (done) {
+  gulp.task('deploy-s3', function (done) {
 
     // https://s3.amazonaws.com/gilt-assets/a/js/web-x-domain/0.0.13/main.full.min.js
     // is the same as
@@ -220,19 +225,20 @@ module.exports = function (gulp, swig) {
   /*
    * @note:
    *  Order of Operation:
+   *    - deploy-check-version
    *    - install
    *    - lint
    *    - spec
    *    - bundle
    *    - merge-css
    *    - deploy-setup
-   *    - deploy-check-version
    *    - deploy-s3
    *    - deploy-tag-version
   */
   gulp.task('deploy', function (done) {
 
     swig.seq(
+      'deploy-check-version',
       'install',
       'spec', // spec lints before running specs
       'bundle',
