@@ -47,11 +47,11 @@ if [ "$NODE_ENV" != "production" ]; then
   # we need 0.11.13 because 0.11.14 ships with npm 2.0.0, which breaks our auth.
 
   if [ ! -e "$NVM_DIR/v0.11.13" ]; then
-    echo ".  ${gray}You don't have node v0.11.13 installed, doing that now:${reset}"
-    nvm install 0.11.13
+    echo ".  ${gray}You don't have node v0.12 installed, doing that now:${reset}"
+    nvm install 0.12
   fi
 
-  nvm use v0.11.13 >/dev/null
+  nvm use v0.12 >/dev/null
 
 fi
 
@@ -78,4 +78,4 @@ fi
 
 
 # pass control to gulp
-node --harmony `which gulp` "$@"
+node --harmony --harmony-proxies `which gulp` "$@"

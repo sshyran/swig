@@ -19,8 +19,8 @@ echo "\n${cyan}${reset}\n"
 
 cwd=$PWD
 source ~/.nvm/nvm.sh
-nvm install 0.11.13 >/dev/null
-nvm use 0.11.13
+nvm install 0.12 >/dev/null
+nvm use 0.12
 
 # clone the repo if somehow this is being run after an npm install
 echo "\n→ ${cyan}Cloning gilt-swig (if it doesn't exist). Errors are OK.${reset}\n"
