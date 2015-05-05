@@ -15,8 +15,7 @@
 
 module.exports = function (gulp, swig) {
 
-  var _ = require('underscore'),
-    services = require('./lib/services');
+  var _ = require('underscore');
 
   gulp.task('tunnel', ['app-registry'], function () {
 
