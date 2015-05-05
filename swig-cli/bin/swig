@@ -43,10 +43,11 @@ if [ "$NODE_ENV" != "production" ]; then
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-  # run node 0.11.13. allow errors to pass through to the user.
-  # we need 0.11.13 because 0.11.14 ships with npm 2.0.0, which breaks our auth.
+  # run node 0.12. allow errors to pass through to the user.
 
-  if [ ! -e "$NVM_DIR/v0.11.13" ]; then
+  if ls $NVM_DIR/versions/node/v0.12.* 1> /dev/null 2>&1; then
+    echo "Node v0.12 already installed" 1> /dev/null 2>&1
+  else
     echo ".  ${gray}You don't have node v0.12 installed, doing that now:${reset}"
     nvm install 0.12
   fi
