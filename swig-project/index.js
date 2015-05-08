@@ -15,6 +15,11 @@
 
 module.exports = function (gulp) {
 
+  // this sets the --harmony and --harmony-proxies flags on the node process
+  // this allows us to use `gulp` or `node` on swig tasks without specifying
+  // those flags (it's a good thing)
+  require('harmonize')();
+
   var _ = require('underscore'),
     path = require('path'),
     os = require('os'),
