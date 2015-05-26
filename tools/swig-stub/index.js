@@ -64,6 +64,14 @@ module.exports = function (gulp, swig) {
         }
       ], function (answers) {
         if (answers.continue) {
+
+          if (swig.rc.newrelic) {
+            data.newRelicKey = swig.rc.newrelic.licenseKey;
+          }
+          else {
+            data.newRelicKey = '';
+          }
+
           return doit(data, done);
         }
         else {
@@ -94,8 +102,6 @@ module.exports = function (gulp, swig) {
         installCommand = 'npm install --tag=null --loglevel=warn 2>&1',
         destPath,
         stream;
-
-
 
       stream = gulp
         .src(path.join(__dirname, 'templates', data.type, '/**/*'))
