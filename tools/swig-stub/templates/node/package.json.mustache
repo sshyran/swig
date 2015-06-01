@@ -1,0 +1,64 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "repository": [
+    {
+      "type": "git",
+      "url": "ssh://gerrit.gilt.com:29418/web-{{name}}.git"
+    }
+  ],
+  "main": "app.js",
+  "urls": {
+    "cdn": "https://assets1.giltcdn.com"
+  },
+  "gilt": {
+    "port": {{port}},
+    "publicPort": {{port}},
+    "specs": {
+      "framework": "mocha"
+    },
+    "app": {
+      "aliasPrefix": "{{alias}}",
+      "chassis": {
+        "navigation": {{navigation}},
+        "footer": {{footer}}
+      },
+      "middleware": [
+        "404",
+        "500",
+        "router",
+        "runtime"
+      ],
+      "newrelic": {
+        "licenseKey": "{{newRelicKey}}",
+        "logLevel": "info"
+      }
+    },
+    "uiDependencies": {
+      "common.admin_bar": "0.5.x",
+      "common.storage": "1.0.x",
+      "common.template": "1.x.x",
+
+      "dom.chassis": "0.16.x",
+      "dom.form_polyfills": "0.2.x",
+
+      "nav.footer": "0.3.x",
+      "nav.unified": "0.34.x",
+
+      "vendor.handlebars": "1.0.0",
+      "vendor.underscore": "1.8.x",
+
+      "view.admin_bar": "*"
+    }
+  },
+  "dependencies": {
+    "app.chassis": "0.0.x",
+    "underscore": "1.6.x"
+  },
+  "devDependencies": {
+    "gulp": "*",
+    "swig-project": "*"
+  }
+}
+
