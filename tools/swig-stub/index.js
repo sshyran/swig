@@ -29,7 +29,7 @@ module.exports = function (gulp, swig) {
       name: 'Please enter the name of the thing',
       description: 'Please enter the description of the thing',
       port: 'Please enter the port this thing should run on',
-      alias: 'If you\'d like this to have a directory alias (eg. /thing), please enter it (otherwise press return):',
+      alias: 'If you\'d like this to have a root directory alias (eg. localhost:9999/alias), please enter it (otherwise press return):',
       navigation: 'Should this render the navigation/header?',
       footer: 'Should this render the footer?',
       continue: 'Does everything look OK?'
