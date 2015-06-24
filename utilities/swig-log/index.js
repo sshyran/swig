@@ -45,15 +45,32 @@ module.exports = function (swig) {
   }
 
   if (swig.env === 'development' && !swig.argv.poolparty) {
-    var oldLog = console.log;
+    var oldLog = console.log,
+      oldWrite = process.stdout.write,
+      suppress = false;
+
+    // since this commit (https://github.com/gulpjs/gulp-util/commit/6f6e7c2947ccb59d71d3a680e3a76683289a0548)
+    // gulp uses stdout for the time, and console.log for the rest.
+    // the reason wasn't documented on the commit and it seems silly.
+    process.stdout.write = function () {
+      var args = Array.prototype.slice.call(arguments);
+
+      suppress = false;
+
+      if (/^\[\d\d\:\d\d:\d\d\]/.test(strip(args[0]))) {
+        suppress = true;
+      }
+      else {
+        oldWrite.apply(process.stdout, args);
+      }
+    }
 
     // gulp-util.log always starts each log with [00:00:00]
     // we're suppressing that output if on a dev machine.
     console.log = function () {
-      var args = Array.prototype.slice.call(arguments),
-        suppress = true;
+      var args = Array.prototype.slice.call(arguments);
 
-      if (/^\[\d\d\:\d\d:\d\d\]/.test(strip(args[0]))) {
+      if (suppress) {
 
         // if gulp is reporting an error, let that through.
         _.each(args, function (arg) {
@@ -65,6 +82,7 @@ module.exports = function (swig) {
         });
 
         if (suppress) {
+          suppress = false;
           return;
         }
       }
