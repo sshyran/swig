@@ -169,10 +169,10 @@ module.exports = function (gulp) {
 
   swig = _.extend(swig, {
     tasks: {
-      'assets-deploy': load('swig-deploy'),
+      'assets-deploy': load('swig-assets'),
       bundle: load('swig-bundle'),
       'default': load('swig-default'),
-      'docker-release': load('swig-docker').
+      'docker-release': load('swig-docker'),
       install: load('swig-install'),
       lint: load('swig-lint'),
       'merge-css': load('swig-merge-css'),
