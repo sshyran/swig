@@ -26,7 +26,7 @@ module.exports = function (gulp, swig) {
     tagName = swig.pkg.name + '-' + swig.pkg.version + '-assets',
     git;
 
-  gulp.task('deploy-setup', function (done) {
+  gulp.task('assets-setup', function (done) {
 
     swig.log.task('Preparing to Deploy Assets');
 
@@ -58,7 +58,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('deploy-check-version', [ 'deploy-setup' ], co(function *() {
+  gulp.task('assets-check-version', [ 'assets-setup' ], co(function *() {
 
     git = require('simple-git')(swig.target.path);
     git.exec = thunkify(git._run);
@@ -95,7 +95,7 @@ module.exports = function (gulp, swig) {
 
     if (_.contains(result, tagName)) {
       swig.log();
-      swig.log.error('swig-deploy',
+      swig.log.error('swig-assets',
         'It looks like you\'ve already deployed the assets for this version.\n   The tag: ' + tagName + ', already exists.\n' +
         '   If you believe that was in error, you can delete the tag and try again, or use the --force flag\n' +
         '   but tread carefully!'.bold
@@ -107,7 +107,7 @@ module.exports = function (gulp, swig) {
 
   }));
 
-  gulp.task('deploy-s3', function (done) {
+  gulp.task('assets-s3', function (done) {
 
     // https://s3.amazonaws.com/gilt-assets/a/js/web-x-domain/0.0.13/main.full.min.js
     // is the same as
@@ -193,7 +193,7 @@ module.exports = function (gulp, swig) {
   /*
    * @note: We only create the git tag if we made it this far.
   */
-  gulp.task('deploy-tag-version', [ 'deploy-s3' ], co(function *() {
+  gulp.task('assets-tag-version', [ 'assets-s3' ], co(function *() {
 
     swig.log('');
     swig.log.task('Tagging Assets Version');
@@ -225,26 +225,26 @@ module.exports = function (gulp, swig) {
   /*
    * @note:
    *  Order of Operation:
-   *    - deploy-check-version
+   *    - assets-check-version
    *    - install
    *    - lint
    *    - spec
    *    - bundle
    *    - merge-css
-   *    - deploy-setup
-   *    - deploy-s3
-   *    - deploy-tag-version
+   *    - assets-setup
+   *    - assets-s3
+   *    - assets-tag-version
   */
-  gulp.task('deploy', function (done) {
+  gulp.task('assets-deploy', function (done) {
 
     swig.seq(
-      'deploy-check-version',
+      'assets-check-version',
       'install',
       'spec', // spec lints before running specs
       'bundle',
       'merge-css',
       'minify',
-      'deploy-tag-version',
+      'assets-tag-version',
       done);
   });
 
