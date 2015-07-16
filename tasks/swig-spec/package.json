@@ -1,7 +1,7 @@
 {
   "name": "swig-spec",
   "description": "Runs specs (tests, expectations) for ui-* modules and web apps.",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -44,7 +44,7 @@
     "gulp-concat": "*",
     "gulp-file": "*",
     "gulp-jasmine-phantomjs": "git://github.com/gilt/gulp-jasmine-phantomjs.git",
-    "gulp-mocha-phantomjs": "^0.6.1",
+    "gulp-mocha-phantomjs": "git://github.com/jdcataldo/grunt-mocha-phantomjs.git",
     "gulp-tap": "*",
     "gulp-util": "*",
     "gulp-wrap": "*",
@@ -58,7 +58,6 @@
     "minimist": "*",
     "mocha": "2.0.x",
     "mustache": "*",
-    "phantomjs": "~1.9.1",
     "through2": "*",
     "underscore": "*"
   },
