@@ -21,6 +21,8 @@ module.exports = function (swig, gulp) {
   require('./lib/fs')(swig);
   require('./lib/diff')(swig);
 
+  swig.log = require('./lib/log')(swig);
+
   // a utility to allow us to run tasks in a series, non-paralell order.
   // we're loading this local, modded copy until the author merges a PR
   // chalk is a dep in package.json required for this. remove that

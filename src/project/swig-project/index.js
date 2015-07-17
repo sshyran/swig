@@ -132,7 +132,6 @@ module.exports = function (gulp) {
     }
   }
 
-  swig.log = require('swig-log')(swig);
   swig.util = require('swig-util')(swig, gulp);
 
   setupPaths();
@@ -151,6 +150,9 @@ module.exports = function (gulp) {
     fs.mkdirSync(swig.temp);
   }
 
+  // tools are still gulp tasks, but they don't tend to operate on files
+  // in this context the distinction is important so that we don't do any
+  // extra processing
   swig = _.extend(swig, {
     tools: {
       'app-registry': load('swig-app-registry'),

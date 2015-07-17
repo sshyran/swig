@@ -1,4 +1,10 @@
-Swig - Log
+swig-util
+=========
+
+Documentation forthcoming
+
+
+swig-log
 =========
 
 Swig-log provides logging mechanisms to swig modules. The `log` object
