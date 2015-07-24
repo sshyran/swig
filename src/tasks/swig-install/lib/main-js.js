@@ -44,10 +44,16 @@ module.exports = function (gulp, swig, paths) {
   });
 
   // load the config dependencies
-  glob.sync(path.join(swig.temp, '/**/node_modules/**/package.json')).forEach(function (file) {
+  glob.sync(path.join(swig.temp, '/**/node_modules/@gilt-tech/**/package.json')).forEach(function (file) {
     pkg = JSON.parse(fs.readFileSync(file, { encoding: 'utf-8' }));
     if (pkg.configDependencies) {
       configDeps = _.extend(configDeps, pkg.configDependencies);
+    }
+    else if (pkg.gilt.configDependencies) {
+      configDeps = _.extend(configDeps, pkg.gilt.configDependencies);
+    }
+    else if (pkg.gilt.configDefaults) {
+      configDeps = _.extend(configDeps, pkg.gilt.configDefaults);
     }
   });
 

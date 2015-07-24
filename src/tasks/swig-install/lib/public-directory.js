@@ -57,7 +57,7 @@ module.exports = function (gulp, swig) {
 
     swig.log.info('', 'Compiling module list...');
 
-    var modulesPath = path.join(swig.temp, '/**/node_modules'),
+    var modulesPath = path.join(swig.temp, '/**/node_modules/@gilt-tech'),
       modPaths = glob.sync(modulesPath),
       dirs;
 
