@@ -102,6 +102,7 @@ module.exports = function (gulp, swig) {
   gulp.task('publish-npm', ['publish-check-version'], co(function * () {
 
     var tempPath = path.join(swig.temp, '/publish/', swig.argv.module),
+      tagFlag = '',
       result,
       streamResult;
 
@@ -125,12 +126,19 @@ module.exports = function (gulp, swig) {
       result = yield swig.exec('xattr -c ' + file);
     }));
 
+    // if the version contains a hypen, then assume that we're publishing
+    // a test version. this keeps the module from being tagged as `latest`
+    // in the registry.
+    if (swig.pkg.version.indexOf('-') > 0) {
+      tagFlag = ' --tag=test'; // leading space is important
+    }
+
     try {
 
       // run npm against the temp module location, redirect stderr to stdout
       npmCommand = [
         'cd ' + tempPath,
-        'npm publish . --tag=null --loglevel=info 2>&1'
+        'npm publish .' + tagFlag + ' --loglevel=info 2>&1'
       ].join('; ');
 
       swig.log.info('', 'NPM Command:\n  ' + npmCommand.splt('; ').join(';\n  '));
