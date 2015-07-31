@@ -137,13 +137,13 @@ module.exports = function (gulp, swig) {
       var packageTempPath = path.join(swig.temp, (key ? key + '-' : '') + 'package.json'),
         pkg = { dependencies: deps },
         internalModules = {
-          'internal.browser_detect' : '0.1.x',
-          'internal.json' : '2.0.x',
-          'internal.less' : '1.6.x',
-          'internal.modernizr' : '2.5.x',
-          'internal.require' : '2.1.x',
-          'internal.gilt_require' : '0.x.x',
-          'less.helpers' : '0.2.x'
+          '@gilt-tech/internal.browser_detect' : '0.1.x',
+          '@gilt-tech/internal.json' : '2.0.x',
+          '@gilt-tech/internal.less' : '1.6.x',
+          '@gilt-tech/internal.modernizr' : '2.5.x',
+          '@gilt-tech/internal.require' : '2.1.x',
+          '@gilt-tech/internal.gilt_require' : '0.x.x',
+          '@gilt-tech/less.helpers' : '0.2.x'
         };
 
       if (fs.existsSync(packageTempPath)) {

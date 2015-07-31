@@ -117,10 +117,6 @@ In the command above, `build` is the name of the Gulp Task. That task will use G
     Runs a web application in an NVM isolated environment. Currently only supports
     Node.js applications which contain app.js at the root.
 
-  - `swig-tunnel`
-    Spins up an SSH tunnel for services. Looks in .swigrc for the tunnel configurations
-    to use.
-
   - `swig-stub`
     Generates scaffolding for a Gilt-style web application. Presently limited to Node.js applications.
 

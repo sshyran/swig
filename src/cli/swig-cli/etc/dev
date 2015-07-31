@@ -93,7 +93,6 @@ npm link swig-spec
 echo "\n→ ${cyan}Linking Tools${reset}:\n"
 npm link swig-run
 npm link swig-app-registry
-npm link swig-tunnel
 npm link swig-zk
 
 echo "\n→ ${cyan}swig-project${reset}:\n"

@@ -1,4 +1,4 @@
 var path = require('path'),
-    app = require('app.chassis')();
+    app = require('@gilt-tech/app.chassis')();
 
 app.start();
