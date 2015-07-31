@@ -1,7 +1,7 @@
 {
-  "name": "swig-run",
+  "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -38,10 +38,11 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "underscore" : "*"
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
-  "main": "index.js"
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

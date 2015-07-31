@@ -1,7 +1,7 @@
 {
-  "name": "swig-project",
+  "name": "@gilt-tech/swig-project",
   "description": "Launching point for the Swig framework.",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -37,37 +37,37 @@
   "engines": {
     "node": ">= 0.12.x"
   },
-  "preferGlobal" : "true",
+  "preferGlobal": "true",
   "dependencies": {
-    "co" : "3.x",
+    "co": "3.x",
     "colors": "*",
     "harmonize": "*",
-    "thunkify" : "*",
-    "underscore" : "*",
-    "yargs" : "*",
+    "thunkify": "*",
+    "underscore": "*",
+    "yargs": "*",
 
-    "swig-util" : "^0.1.0",
-
-    "swig-app-registry" : "*",
-    "swig-release-email" : "*",
-    "swig-run" : "*",
-    "swig-tunnel" : "*",
-    "swig-zk" : "*",
-
-    "swig-assets" : "*",
-    "swig-bundle" : "*",
-    "swig-default" : "*",
-    "swig-docker" : "*",
-    "swig-install" : "*",
-    "swig-lint" : "*",
-    "swig-merge-css": "*",
-    "swig-minify" : "*",
-    "swig-publish" : "*",
-    "swig-spec" : "*",
-    "swig-stub" : "*"
+    "@gilt-tech/swig-util": "^0.1.0",
+    "@gilt-tech/swig-app-registry": "*",
+    "@gilt-tech/swig-release-email": "*",
+    "@gilt-tech/swig-run": "*",
+    "@gilt-tech/swig-tunnel": "*",
+    "@gilt-tech/swig-zk": "*",
+    "@gilt-tech/swig-assets": "*",
+    "@gilt-tech/swig-bundle": "*",
+    "@gilt-tech/swig-default": "*",
+    "@gilt-tech/swig-docker": "*",
+    "@gilt-tech/swig-install": "*",
+    "@gilt-tech/swig-lint": "*",
+    "@gilt-tech/swig-merge-css": "*",
+    "@gilt-tech/swig-minify": "*",
+    "@gilt-tech/swig-publish": "*",
+    "@gilt-tech/swig-spec": "*",
+    "@gilt-tech/swig-stub": "*"
   },
-  "devDependencies": {
-
-  },
-  "main": "index.js"
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true,
+    "private": true
+  }
 }

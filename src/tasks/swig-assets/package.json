@@ -1,7 +1,7 @@
 {
-  "name": "swig-assets",
+  "name": "@gilt-tech/swig-assets",
   "description": "",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -47,5 +47,8 @@
     "underscore": "*"
   },
   "devDependencies": {},
-  "main": "index.js"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

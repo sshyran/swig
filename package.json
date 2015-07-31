@@ -1,8 +1,8 @@
 {
-  "name": "swig",
+  "name": "@gilt-tech/swig",
   "description": "Project definition only, contains no modules for publishing",
   "readme": "README.md",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -35,9 +35,10 @@
       "url": "http://github.com/gilt/gilt-swig/blob/master/LICENSE"
     }
   ],
-  "dependencies": {
-  },
-  "devDependencies": {
-  },
-  "private": true
+  "dependencies": {},
+  "devDependencies": {},
+  "private": true,
+  "gilt": {
+    "scoped": true
+  }
 }

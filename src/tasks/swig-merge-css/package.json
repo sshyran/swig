@@ -1,7 +1,7 @@
 {
-  "name": "swig-merge-css",
+  "name": "@gilt-tech/swig-merge-css",
   "description": "",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -44,5 +44,8 @@
     "underscore": "*"
   },
   "devDependencies": {},
-  "main": "index.js"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

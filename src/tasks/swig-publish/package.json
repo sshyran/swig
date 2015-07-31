@@ -1,7 +1,7 @@
 {
-  "name": "swig-publish",
+  "name": "@gilt-tech/swig-publish",
   "description": "",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -47,5 +47,8 @@
     "underscore": "*"
   },
   "devDependencies": {},
-  "main": "index.js"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

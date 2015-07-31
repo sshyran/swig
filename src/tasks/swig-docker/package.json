@@ -1,7 +1,7 @@
 {
-  "name": "swig-docker",
+  "name": "@gilt-tech/swig-docker",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -48,5 +48,8 @@
     "wrench": "^1.5.8"
   },
   "devDependencies": {},
-  "main": "index.js"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

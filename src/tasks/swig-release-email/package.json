@@ -1,7 +1,7 @@
 {
-  "name": "swig-release-email",
+  "name": "@gilt-tech/swig-release-email",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -48,5 +48,8 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {},
-  "main": "index.js"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

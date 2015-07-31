@@ -1,7 +1,7 @@
 {
-  "name": "swig-zk",
+  "name": "@gilt-tech/swig-zk",
   "description": "",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -38,14 +38,15 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "co" : "3.x",
-    "co-sh" : "*",
-    "co-read" : "*",
-    "thunkify" : "*",
-    "underscore" : "*"
+    "co": "3.x",
+    "co-sh": "*",
+    "co-read": "*",
+    "thunkify": "*",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
-  "main": "index.js"
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

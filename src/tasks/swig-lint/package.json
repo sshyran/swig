@@ -1,7 +1,7 @@
 {
-  "name": "swig-lint",
+  "name": "@gilt-tech/swig-lint",
   "description": "",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -38,19 +38,20 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "gulp-add-src" : "*",
-    "gulp-buffer" : "*",
-    "gulp-handlebars" : "*",
-    "gulp-insert" : "*",
-    "gulp-jshint" : "1.9.2",
-    "gulp-recess-plus" : "git://github.com/shellscape/gulp-recess-plus.git",
-    "gulp-util" : "*",
+    "gulp-add-src": "*",
+    "gulp-buffer": "*",
+    "gulp-handlebars": "*",
+    "gulp-insert": "*",
+    "gulp-jshint": "1.9.2",
+    "gulp-recess-plus": "git://github.com/shellscape/gulp-recess-plus.git",
+    "gulp-util": "*",
     "jshint-stylish": "*",
-    "through2" : "*",
-    "underscore" : "*"
+    "through2": "*",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
-  "main": "index.js"
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }

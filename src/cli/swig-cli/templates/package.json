@@ -1,7 +1,7 @@
 {
-  "name": "",
+  "name": "@gilt-tech/",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "",
   "keywords": [],
   "repository": {
@@ -13,17 +13,14 @@
     "email": "info@gilt.com",
     "url": "http://gilt.com/"
   },
-  "contributors": [
-  ],
+  "contributors": [],
   "gilt": {
-    "uiDependencies": {
-    }
+    "uiDependencies": {},
+    "scoped": true
   },
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "devDependencies": {
-    "gulp" : "*",
-    "swig-project" : "*"
+    "gulp": "*",
+    "swig-project": "*"
   }
 }

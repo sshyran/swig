@@ -1,7 +1,7 @@
 {
-  "name": "swig-app-registry",
+  "name": "@gilt-tech/swig-app-registry",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -38,14 +38,15 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "co" : "3.x",
-    "co-request" : "*",
-    "request" : "*",
-    "thunkify" : "*",
-    "underscore" : "*"
+    "co": "3.x",
+    "co-request": "*",
+    "request": "*",
+    "thunkify": "*",
+    "underscore": "*"
   },
-  "devDependencies": {
-
-  },
-  "main": "index.js"
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
 }
