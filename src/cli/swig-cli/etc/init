@@ -55,8 +55,8 @@ if (fs.existsSync(paths.pkg)) {
     pkg.devDependencies['gulp'] = '*';
     fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
   }
-  if (!pkg.devDependencies['swig-project']) {
-    pkg.devDependencies['swig-project'] = '*';
+  if (!pkg.devDependencies['@gilt-tech/swig-project']) {
+    pkg.devDependencies['@gilt-tech/swig-project'] = '*';
     fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
   }
 }
