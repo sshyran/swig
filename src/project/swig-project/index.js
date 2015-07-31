@@ -132,7 +132,7 @@ module.exports = function (gulp) {
     }
   }
 
-  swig.util = require('swig-util')(swig, gulp);
+  swig.util = require('@gilt-tech/swig-util')(swig, gulp);
 
   setupPaths();
   findTarget();
@@ -155,12 +155,11 @@ module.exports = function (gulp) {
   // extra processing
   swig = _.extend(swig, {
     tools: {
-      'app-registry': load('swig-app-registry'),
-      'relase-email': load('swig-release-email'),
-      run: load('swig-run'),
-      stub: load('swig-stub'),
-      tunnel: load('swig-tunnel'),
-      zk: load('swig-zk')
+      'app-registry': load('@gilt-tech/swig-app-registry'),
+      'relase-email': load('@gilt-tech/swig-release-email'),
+      run: load('@gilt-tech/swig-run'),
+      stub: load('@gilt-tech/swig-stub'),
+      zk: load('@gilt-tech/swig-zk')
     }
   });
 
@@ -171,16 +170,16 @@ module.exports = function (gulp) {
 
   swig = _.extend(swig, {
     tasks: {
-      'assets-deploy': load('swig-assets'),
-      bundle: load('swig-bundle'),
-      'default': load('swig-default'),
-      'docker-release': load('swig-docker'),
-      install: load('swig-install'),
-      lint: load('swig-lint'),
-      'merge-css': load('swig-merge-css'),
-      minify: load('swig-minify'),
-      publish: load('swig-publish'),
-      spec: load('swig-spec')
+      'assets-deploy': load('@gilt-tech/swig-assets'),
+      bundle: load('@gilt-tech/swig-bundle'),
+      'default': load('@gilt-tech/swig-default'),
+      'docker-release': load('@gilt-tech/swig-docker'),
+      install: load('@gilt-tech/swig-install'),
+      lint: load('@gilt-tech/swig-lint'),
+      'merge-css': load('@gilt-tech/swig-merge-css'),
+      minify: load('@gilt-tech/swig-minify'),
+      publish: load('@gilt-tech/swig-publish'),
+      spec: load('@gilt-tech/swig-spec')
     }
   });
 

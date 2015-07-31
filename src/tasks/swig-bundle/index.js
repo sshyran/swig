@@ -294,7 +294,15 @@ module.exports = function (gulp, swig) {
   function cleanDependencies (deps) {
 
     // these are already present in main.js
-    deps = _.difference(deps, ['internal.require', 'internal.gilt_require', 'internal.json', 'internal.modernizr', 'internal.browser_detect', 'internal.less', 'internal.picturefill']);
+    deps = _.difference(deps, [
+      '@gilt-tech/internal.require',
+      '@gilt-tech/internal.gilt_require',
+      '@gilt-tech/internal.json',
+      '@gilt-tech/internal.modernizr',
+      '@gilt-tech/internal.browser_detect',
+      '@gilt-tech/internal.less',
+      '@gilt-tech/internal.picturefill'
+    ]);
 
     deps = _.uniq(deps);
     deps = _.sortBy(deps, function (moduleName) { return moduleName; })
