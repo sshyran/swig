@@ -22,8 +22,9 @@ module.exports = function (gulp, swig, util) {
       uiDeps,
       pkg;
 
+    swig.log();
     swig.log.task('Merging Node App Package(s)');
-    swig.log.info('merge-node', 'Extracting dependencies');
+    swig.log.info(null, 'Extracting dependencies');
 
     pkg = _.extend({}, swig.pkg);
 
@@ -33,9 +34,6 @@ module.exports = function (gulp, swig, util) {
     }
 
     uiDeps = util.extract(pkg, {}, path.basename(swig.cwd));
-
-    swig.log.success(null, 'Done\n');
-
     uiDeps = util.iterate(uiDeps);
 
     if (uiDeps) {

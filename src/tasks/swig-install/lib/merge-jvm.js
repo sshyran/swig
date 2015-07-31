@@ -21,6 +21,7 @@ module.exports = function (gulp, swig, util) {
       glob = require('glob'),
       deps;
 
+    swig.log();
     swig.log.task('Merging JVM App Package(s)');
 
     deps = util.extract(swig.pkg, {}, path.basename(swig.cwd));

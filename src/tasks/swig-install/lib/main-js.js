@@ -66,11 +66,9 @@ module.exports = function (gulp, swig, paths) {
                     .replace('{{files}}', files)
                     .replace('{{configs}}', JSON.stringify(configDeps || {}, null, '  '));
 
-  swig.log.info('', 'Writing main.js to:');
-
   destPath = path.join(paths.js, 'main.js');
+
+  swig.log.info('', 'Writing main.js to: ' + destPath.grey);
+
   fs.writeFileSync(destPath, mainjs);
-
-  swig.log(swig.log.padLeft(destPath.grey, 2));
-
 };

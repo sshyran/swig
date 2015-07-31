@@ -24,7 +24,7 @@ module.exports = function (gulp, swig) {
     errors,
     regex = {
       requested: /npm\shttp[s]?\s([\d]+|GET)\s(.+)/,
-      installed: /npm\sinfo\sinstall\s((.+)\@([\d|\.]+))$/,
+      installed: /npm\sinfo\sinstall\s(\@gilt-tech\/(.+)\@([\d|\.]+))$/,
       error: /npm\sERR\!\sError\:\s(.+)/
     },
     downloaded = [];
@@ -47,12 +47,12 @@ module.exports = function (gulp, swig) {
     }
     else if (regex.installed.test(line)) {
       matches = line.match(regex.installed);
-      moduleName = matches[1].replace('@', ' v');
+      moduleName = matches[2] + ' v' + matches[3];
 
       if (_.indexOf(downloaded, moduleName) === -1) {
         downloaded.push(moduleName);
 
-        swig.log(swig.log.padding + swig.log.padding + swig.log.symbols.success + '  ' + moduleName);
+        swig.log(swig.log.strip(swig.log.symbols.download).green + '  ' + moduleName);
       }
     }
     else if (regex.error.test(line)) {
@@ -69,13 +69,14 @@ module.exports = function (gulp, swig) {
 
   function * local() {
     if (swig.argv.module) {
-      swig.log.info('', 'Skipping Local Node Modules');
+      swig.log.info('', 'Skipping Node Modules');
       return;
     }
 
     var pkg = swig.pkg;
 
-    swig.log.task('Installing Local Node Modules');
+    swig.log();
+    swig.log.task('Installing Node Modules');
 
     if (!pkg.dependencies || _.isEmpty(pkg.dependencies)) {
       swig.log.warn(null, 'package.json doesn\'t contain any dependencies, nothing to install.\n');
@@ -88,17 +89,20 @@ module.exports = function (gulp, swig) {
       }
     });
 
+    if (!downloaded.length) {
+      swig.log.info(null, 'Node Modules are up to date.');
+    }
+
     if (output.stdout.indexOf('not ok') > -1){
       swig.log.error('install:local', 'One or more modules failed to install from npm.\n ' +
         swig.log.padLeft('For more info, look here: ' + path.join(swig.temp, 'npm_debug.log').grey, 7));
     }
-
-    swig.log();
   }
 
   function * ui () {
     var pkg = swig.pkg;
 
+    swig.log();
     swig.log.task('Installing Gilt UI Dependencies');
 
     if (!swig.argv.module && (!pkg.gilt || !pkg.gilt.uiDependencies)) {
@@ -122,8 +126,6 @@ module.exports = function (gulp, swig) {
       swig.log.error('install:ui', 'One or more modules failed to install from npm.\n ' +
         swig.log.padLeft('For more info, look here: ' + path.join(swig.temp, 'npm_debug.log').grey, 7));
     }
-
-    swig.log();
   }
 
   // this is a plain old noop task for conditionally executing install.
@@ -148,6 +150,5 @@ module.exports = function (gulp, swig) {
     mergeModules();
     processPublic();
 
-    swig.log.success('Install Complete\n');
   }));
 };

@@ -162,8 +162,7 @@ module.exports = function (gulp, swig) {
       modules[name] = pkg.version;
     });
 
-    swig.log.info('', 'Writing manifest.json to:');
-    swig.log(swig.log.padLeft(manifestPath.grey, 2));
+    swig.log.info('', 'Writing manifest.json to: ' + manifestPath.grey);
 
     fs.writeFileSync(manifestPath, JSON.stringify({ generated: now, dependencies: modules }, null, 2));
   }
@@ -249,6 +248,7 @@ module.exports = function (gulp, swig) {
       return;
     }
 
+    swig.log();
     swig.log.task('Processing node_modules → /public')
 
     clean();

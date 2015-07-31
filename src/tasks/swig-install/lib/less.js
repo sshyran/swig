@@ -37,11 +37,9 @@ module.exports = function (gulp, swig, paths, azModules) {
       });
     });
 
-    swig.log.info('', 'Writing dependencies.less to:');
+    swig.log.info('', 'Writing dependencies.less to: ' + depsPath.grey);
 
     fs.writeFileSync(depsPath, content);
-
-    swig.log(swig.log.padLeft(depsPath.grey, 2));
 
     if (!fs.existsSync(mainCssPath)) {
       swig.log();

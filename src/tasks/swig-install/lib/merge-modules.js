@@ -29,6 +29,7 @@ module.exports = function (gulp, swig) {
       basePkg = _.extend({}, swig.pkg),
       deps = util.extract(basePkg, {}, path.basename(swig.cwd));
 
+    swig.log();
     swig.log.task('Merging Node Modules Package(s)');
 
     _.each(packages, function (pkg) {
@@ -36,7 +37,7 @@ module.exports = function (gulp, swig) {
       deps = util.extract(pkg, deps, pkg.name);
     });
 
-    swig.log.info('merge-modules', 'Extracting dependencies');
+    swig.log.info(null, 'Extracting dependencies');
 
     deps = util.iterate(deps);
 
@@ -44,7 +45,5 @@ module.exports = function (gulp, swig) {
       swig.log.error('install:merge-modules', 'Validation of module dependencies failed.');
       process.exit(0);
     }
-
-    swig.log.success(null, 'Done\n');
   };
 };

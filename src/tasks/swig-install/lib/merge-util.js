@@ -58,6 +58,7 @@ module.exports = function (gulp, swig) {
         conflictFound = false,
         message;
 
+      swig.log();
       swig.log.task('Checking for dependency conflicts');
 
       _.each(depTree, function (versions, name) {
@@ -109,7 +110,9 @@ module.exports = function (gulp, swig) {
           conflictFound = true;
         }
         else {
-          swig.log(swig.log.padLeft(swig.log.symbols.success + '  ' + name + ' v' + ver, 2));
+          // let's keep this from being too chatty, we really don't need to know about modules that
+          // were fine, just the ones that weren't
+          swig.log.verbose(swig.log.symbols.success + swig.log.padding + name + ' v' + ver);
           results[name] = ver;
         }
 
@@ -119,13 +122,15 @@ module.exports = function (gulp, swig) {
         swig.log.error('install:package-merge', 'Package Merge: module version conflict found (scroll up if you can\'t see the conflict).');
         process.exit(0);
       }
-
-      swig.log();
+      else {
+        swig.log.info('', 'No dependency conflicts found.');
+      }
 
       return results;
     },
 
     generate: function (deps, key) {
+      swig.log();
       swig.log.task('Writing merged package.json');
 
       // if a task is requesting install and needs devDependencies to be available
@@ -155,7 +160,7 @@ module.exports = function (gulp, swig) {
 
       fs.writeFileSync(packageTempPath, JSON.stringify(pkg, null, 2));
 
-      swig.log(swig.log.padLeft(' package.json: ' + packageTempPath.grey + '\n', 1));
+      swig.log.info(null, 'package.json: ' + packageTempPath.grey);
     }
   };
 
