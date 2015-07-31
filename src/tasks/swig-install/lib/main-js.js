@@ -49,10 +49,10 @@ module.exports = function (gulp, swig, paths) {
     if (pkg.configDependencies) {
       configDeps = _.extend(configDeps, pkg.configDependencies);
     }
-    else if (pkg.gilt.configDependencies) {
+    else if (pkg.gilt && pkg.gilt.configDependencies) {
       configDeps = _.extend(configDeps, pkg.gilt.configDependencies);
     }
-    else if (pkg.gilt.configDefaults) {
+    else if (pkg.gilt && pkg.gilt.configDefaults) {
       configDeps = _.extend(configDeps, pkg.gilt.configDefaults);
     }
   });
