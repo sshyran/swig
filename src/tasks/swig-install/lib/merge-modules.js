@@ -21,7 +21,7 @@ module.exports = function (gulp, swig) {
       path = require('path'),
       glob = require('glob'),
       util = require('./merge-util')(gulp, swig),
-      modulesPath = path.join(swig.temp, '/node_modules'),
+      modulesPath = path.join(swig.temp, '/**/node_modules/@gilt-tech'),
       packages = glob.sync(path.join(modulesPath, '/**/package.json')),
 
       // we need to merge whatever the app defined (uiDeps) as well
