@@ -146,7 +146,11 @@ module.exports = function (gulp, swig) {
       'lint-script',
       'lint-package-version',
       'lint-unicode',
-      'lint-css',
+      /*
+       Commenting out lint-css until alternative to recess is found.
+       TODO: Find alternative CSS linter
+
+      'lint-css',*/
       'lint-handlebars',
       done
     );
