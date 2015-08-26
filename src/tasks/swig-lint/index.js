@@ -113,19 +113,15 @@ module.exports = function (gulp, swig) {
     swig.log.task('Linting CSS and LESS');
 
     var buffer = require('gulp-buffer'),
-      mock = require('./lib/mock')(gulp, swig),
-      recess = require('gulp-recess-plus'),
-      reporter = require('./lib/reporters/recess-reporter')(swig),
-      recessOpts = {
-        strictPropertyOrder: false,
-        noOverqualifying: false
-      };
+      lesshint = require('gulp-lesshint'),
+      reporter = require('./lib/reporters/lesshint-reporter')(swig),
+      mock = require('./lib/mock')(gulp, swig);
 
-    return gulp.src(paths.css)
+    return gulp.src(path.join(swig.target.path, 'public/css/', path.basename(swig.target.path), '/src/**/*.less'))
       .pipe(buffer())
       .pipe(mock())
-      .pipe(recess(recessOpts))
-      .on('error', reporter.fail)
+      .pipe(lesshint())
+      .on('error', function () {})
       .pipe(reporter);
   });
 
@@ -146,11 +142,7 @@ module.exports = function (gulp, swig) {
       'lint-script',
       'lint-package-version',
       'lint-unicode',
-      /*
-       Commenting out lint-css until alternative to recess is found.
-       TODO: Find alternative CSS linter
-
-      'lint-css',*/
+      'lint-css',
       'lint-handlebars',
       done
     );

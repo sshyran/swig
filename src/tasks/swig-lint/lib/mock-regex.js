@@ -55,7 +55,7 @@ module.exports = {
     '@' + // less vars always start with an @. unfortunately, some css things also start with @
     '\\{?' + // interpolation form (optional)
       '(' + // save this part:
-        '[\\w-]+' + // any valid variable name
+        '[a-z]+' + // letters only
       ')' +
       '\\b' + // word boundary
     '\\}?' + // end interpolation
