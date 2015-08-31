@@ -1,5 +1,5 @@
 {
-  "name": "@gilt-tech/",
+  "name": "",
   "description": "",
   "version": "0.0.2",
   "homepage": "",
@@ -16,11 +16,10 @@
   "contributors": [],
   "gilt": {
     "uiDependencies": {},
-    "scoped": true
   },
   "dependencies": {},
   "devDependencies": {
-    "gulp": "*",
-    "swig-project": "*"
+    "@gilt-tech/gulp": "*",
+    "@gilt-tech/swig-project": "*"
   }
 }
