@@ -88,7 +88,7 @@ module.exports = function (swig) {
         swig.log('    No files to lint.\n');
       }
     }
-    else if (fileCount > maxProblems || problems > maxProblems) {
+    else if (problems > maxProblems) {
       output = 'You\'ve got ' + problems.toString().magenta + (problems > 1 ? ' warnings' : ' warning');
 
       if (errors > 0) {
