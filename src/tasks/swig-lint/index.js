@@ -120,7 +120,9 @@ module.exports = function (gulp, swig) {
     return gulp.src(path.join(swig.target.path, 'public/css/', path.basename(swig.target.path), '/src/**/*.less'))
       .pipe(buffer())
       .pipe(mock())
-      .pipe(lesshint())
+      .pipe(lesshint({
+        configPath: path.join(__dirname, '.lesshintrc')
+      }))
       .on('error', function () {})
       .pipe(reporter);
   });
