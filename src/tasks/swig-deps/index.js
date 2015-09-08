@@ -17,7 +17,6 @@ module.exports = function (gulp, swig) {
 
   var _ = require('underscore'),
     david = require('david'),
-    inquirer = require('inquirer'),
     thunkify = require('thunkify'),
     co = require('co'),
 
