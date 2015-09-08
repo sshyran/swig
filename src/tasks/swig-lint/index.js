@@ -141,8 +141,9 @@ module.exports = function (gulp, swig) {
 
   gulp.task('lint', function (done) {
     swig.seq(
-      'lint-script',
       'lint-package-version',
+      'dependencies', // from swig-deps
+      'lint-script',
       'lint-unicode',
       'lint-css',
       'lint-handlebars',

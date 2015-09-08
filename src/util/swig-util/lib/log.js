@@ -191,9 +191,9 @@ module.exports = function (swig) {
       puts(symbol + prefix + what);
     },
 
-    table: function (rows) {
+    table: function (rows, options) {
 
-      var table = new Table({
+      var table = new Table(_.extend({
         chars: {
           'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
           'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' ,
@@ -201,7 +201,7 @@ module.exports = function (swig) {
           'mid-mid': '', 'right': '' , 'right-mid': '' , 'middle': ''
         },
         style: { 'padding-left': 1, 'padding-right': 1 }
-      });
+      }, options));
 
       rows.forEach(function (row) {
         table.push(row);
@@ -224,7 +224,7 @@ module.exports = function (swig) {
       return sprintf('%' + (howMany * linePrefix.length) + 's%s', '', what);
     },
 
-    padRight: function (what) {
+    padRight: function (what, howMany) {
       return sprintf('%s%' + (howMany * linePrefix.length) + 's', what, '');
     },
 
