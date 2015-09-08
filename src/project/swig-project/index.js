@@ -173,6 +173,7 @@ module.exports = function (gulp) {
       'assets-deploy': load('@gilt-tech/swig-assets'),
       bundle: load('@gilt-tech/swig-bundle'),
       'default': load('@gilt-tech/swig-default'),
+      'deps': load('@gilt-tech/swig-deps'),
       'docker-release': load('@gilt-tech/swig-docker'),
       install: load('@gilt-tech/swig-install'),
       lint: load('@gilt-tech/swig-lint'),

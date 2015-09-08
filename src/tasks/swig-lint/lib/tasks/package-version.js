@@ -73,7 +73,7 @@ module.exports = function (gulp, swig) {
 
   gulp.task('lint-package-version', ['lint-setup'], function () {
 
-    swig.log.task('Linting Package Version');
+    swig.log.task('Linting Package Version variable in scripts');
 
     return gulp.src(swig.linter.paths.js)
       .pipe(plugin());
