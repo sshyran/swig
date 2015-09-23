@@ -14,4 +14,4 @@
 
 */
 var gulp = require('gulp'),
-  swig = require('swig-project')(gulp);
+  swig = require('@gilt-tech/swig-project')(gulp);
