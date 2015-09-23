@@ -24,7 +24,7 @@ Swig provides...
   To use swig anywhere, you'll need swig-cli:
   
 ```
-npm install swig-cli -g
+npm install -g @gilt-tech/swig-cli
 ```
 
   To use swig in any directory:
@@ -35,7 +35,7 @@ swig init && swig
 
   We recommend adding swig to your user directory, making the tools swig provides available in most terminal sessions.
 
-For more information on swig's command line interface, see the [swig-cli README](https://github.com/gilt/gilt-swig/tree/master/swig-cli/README.md)
+For more information on swig's command line interface, see the [swig-cli README](https://github.com/gilt/gilt-swig/blob/master/src/cli/swig-cli/README.md)
 
 ### Technical Requirements
 
@@ -136,4 +136,4 @@ Utilities are standard CommonJS Node modules which contain objects, convenience 
 
 ## Want to contribute?
 
-Anyone can help make this project better - We follow the same contributing guide as the Gulp project. Please check out their [Contributing guide](/CONTRIBUTING.md)!
+Anyone can help make this project better - We follow the same contributing guide as the Gulp project. Please check out their [Contributing guide](https://github.com/gulpjs/gulp/blob/master/CONTRIBUTING.md)!
