@@ -1,0 +1,64 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "repository": [
+    {
+      "type": "git",
+      "url": "ssh://gerrit.gilt.com:29418/web-{{name}}.git"
+    }
+  ],
+  "main": "app.js",
+  "urls": {
+    "cdn": "https://assets1.giltcdn.com"
+  },
+  "gilt": {
+    "port": {{port}},
+    "publicPort": {{port}},
+    "specs": {
+      "framework": "mocha"
+    },
+    "app": {
+      "aliasPrefix": "{{alias}}",
+      "chassis": {
+        "navigation": {{navigation}},
+        "footer": {{footer}}
+      },
+      "middleware": [
+        "404",
+        "500",
+        "router",
+        "runtime"
+      ],
+      "newrelic": {
+        "licenseKey": "{{newRelicKey}}",
+        "logLevel": "info"
+      }
+    },
+    "uiDependencies": {
+      "@gilt-tech/common.admin_bar": "0.5.x",
+      "@gilt-tech/common.storage": "1.0.x",
+      "@gilt-tech/common.template": "1.x.x",
+
+      "@gilt-tech/dom.chassis": "0.17.x",
+      "@gilt-tech/dom.form_polyfills": "0.2.x",
+
+      "@gilt-tech/nav.footer": "0.3.x",
+      "@gilt-tech/nav.unified": "0.34.x",
+
+      "@gilt-tech/vendor.handlebars": "1.0.x",
+      "@gilt-tech/vendor.underscore": "1.8.x",
+
+      "@gilt-tech/view.admin_bar": "*"
+    }
+  },
+  "dependencies": {
+    "@gilt-tech/app.chassis": "0.0.x",
+    "underscore": "1.8.x"
+  },
+  "devDependencies": {
+    "gulp": "*",
+    "@gilt-tech/swig-project": "*"
+  }
+}
+
