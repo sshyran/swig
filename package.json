@@ -1,0 +1,50 @@
+{
+  "name": "@gilt-tech/swig-run",
+  "description": "",
+  "version": "0.1.0",
+  "homepage": "https://github.com/gilt/gilt-swig-run",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "mangement"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gilt/gilt-swig-run.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gilt/gilt-swig-run/issues"
+  },
+  "author": {
+    "name": "Gilt Groupe",
+    "email": "info@gilt.com",
+    "url": "http://gilt.com/"
+  },
+  "contributors": [
+    {
+      "name": "Andrew Powell",
+      "email": "powella@gilt.com",
+      "url": "https://github.com/shellscape/"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/gilt/gilt-swig-run/blob/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.12.x"
+  },
+  "dependencies": {
+    "underscore": "*",
+
+    "@gilt-tech/swig-zk": "*"
+  },
+  "devDependencies": {},
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
+  }
+}
