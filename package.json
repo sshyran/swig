@@ -1,8 +1,7 @@
 {
   "name": "@gilt-tech/swig",
-  "description": "Project definition only, contains no modules for publishing",
-  "readme": "README.md",
-  "version": "0.0.2",
+  "description": "Launching point for the Swig framework.",
+  "version": "0.5.0",
   "homepage": "https://github.com/gilt/gilt-swig",
   "keywords": [
     "gulp",
@@ -35,10 +34,36 @@
       "url": "http://github.com/gilt/gilt-swig/blob/master/LICENSE"
     }
   ],
-  "dependencies": {},
+  "engines": {
+    "node": ">= 0.12.x"
+  },
+  "dependencies": {
+    "co": "3.x",
+    "colors": "*",
+    "harmonize": "*",
+    "thunkify": "*",
+    "underscore": "*",
+    "yargs": "*",
+
+    "@gilt-tech/swig-default": "*",
+
+    "@gilt-tech/swig-assets": "*",
+    "@gilt-tech/swig-bundle": "*",
+    "@gilt-tech/swig-deps": "*",
+    "@gilt-tech/swig-install": "*",
+    "@gilt-tech/swig-lint": "^0.1.0",
+    "@gilt-tech/swig-merge-css": "*",
+    "@gilt-tech/swig-minify": "*",
+    "@gilt-tech/swig-publish": "*",
+    "@gilt-tech/swig-release-email": "*",
+    "@gilt-tech/swig-spec": "*",
+    "@gilt-tech/swig-stub": "*",
+
+    "@gilt-tech/swig-util": "^0.1.0"
+  },
   "devDependencies": {},
-  "private": true,
-  "gilt": {
-    "scoped": true
+  "main": "index.js",
+  "bin": {
+    "swig": "bin/swig"
   }
 }

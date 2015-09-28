@@ -1,1 +1,0 @@
-Tools are gulp tasks which fall within swig contextually, but do not perform any file operations.
