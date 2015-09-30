@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+#  ________  ___       __   ___  ________
+# |\   ____\|\  \     |\  \|\  \|\   ____\
+# \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+#  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+#   \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+#     ____\_\  \ \____________\ \__\ \_______\
+#    |\_________\|____________|\|__|\|_______|
+#    \|_________|
+
+#    It's delicious.
+#    Brought to you by the fine folks at Gilt (http://github.com/gilt)
+
+export GILT_ENV=development;
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+FOREVER="$DIR/../node_modules/.bin/forever"
+source ~/.nvm/nvm.sh;
+nvm use 0.12;
+node "$FOREVER" start -c "node --harmony --harmony-proxies $@" app.js -f

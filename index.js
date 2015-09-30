@@ -24,6 +24,7 @@ module.exports = function (gulp, swig) {
 
     node = {
       command: path.join(__dirname, '/lib/command-node'),
+      forever: path.join(__dirname, '/lib/command-forever'),
       args: [],
       env: {},
       valid: function () {
@@ -55,12 +56,18 @@ module.exports = function (gulp, swig) {
       }
     };
 
-  swig.tell('run', { description: 'Swig tasks for running Gilt Node Framework apps.' });
+  swig.tell('run', {
+    description: 'Swig tasks for running Gilt Node Framework apps.',
+    flags: {
+      '--forever': 'Runs the app using `forever` and tails the forever log.'
+    }
+  });
 
   function run (cb) {
 
     var env = _.extend(process.env, node.env || {}),
-      cp = spawn(node.command, node.args, env);
+      cmd = swig.argv.forever ? node.forever : node.command,
+      cp = spawn(cmd, node.args, env);
 
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stderr);
