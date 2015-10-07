@@ -4,13 +4,16 @@
   "duplicateProperty": {
     "exclude": ["background-image"]
   },
+  "emptyRule": false,
   "finalNewline": false,
   "hexNotation": false,
   "hexLength": false,
+  "propertyUnits": false,
   "qualifyingElement": false,
   "singleLinePerProperty": false,
   "singleLinePerSelector": false,
   "spaceAfterPropertyColon": false,
+  "spaceBeforeBrace": false,
   "trailingSemicolon": false,
   "urlQuotes": false
 }

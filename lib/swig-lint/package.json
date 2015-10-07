@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-lint",
   "description": "Lints Gilt front-end assets.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
@@ -44,7 +44,6 @@
     "gulp-insert": "*",
     "gulp-jshint": "1.9.2",
     "gulp-lesshint": "git://github.com/gilt/gulp-lesshint.git",
-    "gulp-lesshint-stylish": "^1.0.0",
     "gulp-util": "*",
     "jshint-stylish": "*",
     "through2": "*",
