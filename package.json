@@ -55,6 +55,7 @@
     "colors": "*",
     "globby": "^3.0.1",
     "harmonize": "*",
+    "less": "^2.5.3",
     "mustache": "^2.1.3",
     "thunkify": "*",
     "underscore": "*",
