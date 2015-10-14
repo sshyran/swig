@@ -60,6 +60,13 @@ if [ "$1" == "init" ]; then
   exit
 fi
 
+if [ "$1" == "pre-publish" ]; then
+  node --harmony "$dir/../lib/pre-publish" "$@"
+  # --vendor
+  # --less
+  exit
+fi
+
 if [ ! -e "`which gulp`" ]; then
   echo ".  ${gray}You don't have gulp installed, doing that now:${reset}"
   sudo npm install -g gulp --registry=https://registry.npmjs.org/ --loglevel=http
