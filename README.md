@@ -1,4 +1,4 @@
-Swig
+Swig [![Build Status](https://travis-ci.org/gilt/gilt-swig.svg)](https://travis-ci.org/gilt/gilt-swig)
 =========
 
 Swig represents a pattern to manage a consistent gulp task structure across many projects and many developers within an organization.
