@@ -106,6 +106,12 @@ module.exports = function (gulp) {
         target = path.join(swig.cwd, target);
       }
 
+      if (!fs.existsSync(target)) {
+        swig.log();
+        swig.log.error('The module specified doesn\'t exist in this repository.');
+        process.exit(1);
+      }
+
       swig.project.type = 'module';
     }
     else {
@@ -119,18 +125,6 @@ module.exports = function (gulp) {
       name: path.basename(target),
       repo: swig.argv.repo || path.basename(swig.cwd)
     };
-  }
-
-  function findPackage () {
-
-    var packagePath = path.join(swig.target.path, 'package.json')
-
-    if (fs.existsSync(packagePath)) {
-      swig.pkg = require(packagePath);
-    }
-    else {
-      console.log('.  ' + 'warning!    '.yellow.bold + ' package.json not found at: ' + packagePath.grey);
-    }
   }
 
   // allows a task to tell swig about itself
@@ -152,12 +146,23 @@ module.exports = function (gulp) {
 
   setupPaths();
   findTarget();
-  findPackage();
+
+  var packagePath = path.join(swig.target.path, 'package.json')
+
+  if (fs.existsSync(packagePath)) {
+    swig.pkg = require(packagePath);
+  }
+
   findSwigRc();
 
   target = (swig.argv.module || swig.pkg.name);
 
   console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
+
+  if (_.isEmpty(swig.pkg)) {
+    console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
+  }
+
   console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
   console.log('·  ' + 'target:      '.blue + (target ? (target || '').grey : 'NO TARGET'.yellow));
   console.log('·  ' + 'target-path: '.blue + swig.target.path.grey + '\n');
