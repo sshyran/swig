@@ -68,7 +68,7 @@ else {
 console.log('Running npm install...'.yellow);
 
 // run ui install
-var cp = exec('npm install --loglevel=http 2>&1', execOpts, function (error, stdout, stderr){
+var cp = exec('npm install --loglevel=warn 2>&1', execOpts, function (error, stdout, stderr){
   if (error) {
     npmInstallError = error.toString();
   }
