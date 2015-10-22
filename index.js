@@ -96,6 +96,10 @@ module.exports = function (gulp) {
       moduleName,
       repo = swig.argv.repo || '';
 
+    if (swig.argv.m) {
+      swig.argv.module = swig.argv.m;
+    }
+
     if(swig.argv.module) {
       target = path.join('src', swig.argv.module.replace(/\./g, '/'));
 
@@ -109,6 +113,7 @@ module.exports = function (gulp) {
       if (!fs.existsSync(target)) {
         swig.log();
         swig.log.error('The module specified doesn\'t exist in this repository.');
+        console.log(target);
         process.exit(1);
       }
 
@@ -122,7 +127,7 @@ module.exports = function (gulp) {
 
     swig.target = {
       path: target,
-      name: path.basename(target),
+      name: swig.argv.module || path.basename(target),
       repo: swig.argv.repo || path.basename(swig.cwd)
     };
   }
@@ -154,8 +159,6 @@ module.exports = function (gulp) {
   }
 
   findSwigRc();
-
-  target = (swig.argv.module || swig.pkg.name);
 
   console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
 

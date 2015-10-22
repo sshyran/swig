@@ -48,7 +48,7 @@
     "@gilt-tech/swig-minify": "*",
     "@gilt-tech/swig-publish": "*",
     "@gilt-tech/swig-release-email": "*",
-    "@gilt-tech/swig-spec": "*",
+    "@gilt-tech/swig-spec": "^0.1.0",
     "@gilt-tech/swig-stub": "^0.1.0",
     "@gilt-tech/swig-util": "^0.1.0",
     "co": "3.x",
