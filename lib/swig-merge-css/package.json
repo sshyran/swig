@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-merge-css",
   "description": "Merges CSS and LESS files for the Gilt front-end asset pipeline.",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
