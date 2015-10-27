@@ -31,8 +31,11 @@ function version {
   echo ${temp##*|}
 }
 
-echo "·\n· ${bold}${white}hey guys! oh big gulps eh? - ${underline}${grey}http://youtu.be/praFGD51ih8${reset}\n·"
-echo "·  ${bold}${red}swig${reset}         v`version`"
+export SWIG_VERSION=`version`
+
+#echo "·\n· ${bold}${white}hey guys! oh big gulps eh? - ${underline}${grey}http://youtu.be/praFGD51ih8${reset}\n·"
+echo "·"
+echo "·  ${red}swig${reset}         v$SWIG_VERSION"
 
 # NVM is used here as a convenience and an assertion that we're using the right
 # version of node. It's not required in production, as production should be using
@@ -56,7 +59,12 @@ if [ "$NODE_ENV" != "production" ]; then
 fi
 
 if [ "$1" == "init" ]; then
-  node --harmony "$dir/../lib/init"
+  node --harmony "$dir/../lib/init.js"
+  exit
+fi
+
+if [ "$1" == "update" ]; then
+  node --harmony "$dir/../lib/update.js"
   exit
 fi
 
@@ -74,4 +82,4 @@ if [ ! -e "`which gulp`" ]; then
 fi
 
 # pass control to gulp
-node --harmony --harmony-proxies `which gulp` "$@"
+node --harmony "$dir/../lib/update.js" && node --harmony --harmony-proxies `which gulp` "$@"

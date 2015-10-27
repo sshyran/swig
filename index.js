@@ -146,13 +146,45 @@ module.exports = function (gulp) {
     swig.tasks[taskName] = taskInfo;
   }
 
+  function checkLocalVersion () {
+
+    var semverDiff = require('semver-diff'),
+      strip = require('strip-ansi'),
+      repeating = require('repeating'),
+
+      line1 = 'Local update available: ' + process.env.SWIG_VERSION + (' (current: ' + thisPkg.version + ')').gray,
+      line2 = 'Run ' + 'npm update @gilt-tech/swig'.blue + ' to update',
+      line1Len = strip(line1).length,
+      line2Len = strip(line2).length,
+      maxLen = Math.max(line1Len, line2Len),
+      top = repeating('─', maxLen + 4);
+
+    if (!semverDiff(thisPkg.version, process.env.SWIG_VERSION)) {
+      return;
+    }
+
+    if (maxLen > line1Len){
+      line1 += repeating(' ', maxLen - line1Len);
+    }
+    else if (maxLen > line2Len) {
+      line2 += repeating(' ', maxLen - line2Len);
+    }
+
+    console.log('┌' + top +       '┐');
+    console.log('│  '.yellow + line1 + '  │'.yellow);
+    console.log('│  '.yellow + line2 + '  │'.yellow);
+    console.log('└' + top +      '┘');
+
+    console.log('·');
+  }
+
   swig.util = require('@gilt-tech/swig-util')(swig, gulp);
   swig.tell = tell;
 
   setupPaths();
   findTarget();
 
-  var packagePath = path.join(swig.target.path, 'package.json')
+  var packagePath = path.join(swig.target.path, 'package.json');
 
   if (fs.existsSync(packagePath)) {
     swig.pkg = require(packagePath);
@@ -161,6 +193,8 @@ module.exports = function (gulp) {
   findSwigRc();
 
   console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
+
+  checkLocalVersion();
 
   if (_.isEmpty(swig.pkg)) {
     console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
