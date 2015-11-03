@@ -2,7 +2,12 @@
   "borderZero": false,
   "comment": false,
   "duplicateProperty": {
-    "exclude": ["background-image"]
+    "exclude": [
+      "-webkit-transition-property",
+      "background-image",
+      "src",
+      "transition-property"
+    ]
   },
   "emptyRule": false,
   "finalNewline": false,
@@ -15,5 +20,6 @@
   "spaceAfterPropertyColon": false,
   "spaceBeforeBrace": false,
   "trailingSemicolon": true,
+  "urlFormat": false,
   "urlQuotes": false
 }
