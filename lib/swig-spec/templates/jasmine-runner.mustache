@@ -62,6 +62,10 @@
         }
       });
 
+      {{#fixtures}}
+      window.fixtures['{{name}}'] = {{{fixture}}};
+      {{/fixtures}}
+
     </script>
 
   </body>
