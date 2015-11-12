@@ -44,6 +44,7 @@
           if (window.__runner__) {
 
             window.__runner__.run({
+              suppressConsole: {{verbose}},
               reporters: [
                 new jasmine.NyanReporter({
                   verbosity: 3,
