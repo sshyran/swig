@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-publish",
   "description": "Publishes a Gilt UI Module, providing linting and spec automation.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
