@@ -10,14 +10,11 @@
  *  https://github.com/gilt/gilt-swig/templates/vender.mustache
  */
 
-gilt.define(
-  '{{name}}',
-  [],
-  function () {
+gilt.define('{{name}}', [], function () {
 
-    var exports = {}, define = null, require = null, {{global}} = null;
+  var exports = {}, define = null, require = null, {{global}} = null;
 
 {{{contents}}}
 
-    return exports.{{global}} || this.{{global}} || {{global}} || exports;
+  return exports.{{global}} || this.{{global}} || {{global}} || exports;
 });
