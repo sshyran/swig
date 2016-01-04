@@ -15,12 +15,20 @@
 
 module.exports = function (gulp, swig) {
 
+  swig.tell('run', {
+    description: 'Swig tasks for running Gilt Node Framework apps.',
+    flags: {
+      '--forever': 'Runs the app using `forever` and tails the forever log.'
+    }
+  });
+
   require('@gilt-tech/swig-zk')(gulp, swig);
 
   var path = require('path'),
     spawn = require('child_process').spawn,
     fs = require('fs'),
     _ = require('underscore'),
+    forever = require('forever'),
 
     node = {
       command: path.join(__dirname, '/lib/command-node'),
@@ -56,13 +64,6 @@ module.exports = function (gulp, swig) {
       }
     };
 
-  swig.tell('run', {
-    description: 'Swig tasks for running Gilt Node Framework apps.',
-    flags: {
-      '--forever': 'Runs the app using `forever` and tails the forever log.'
-    }
-  });
-
   function run (cb) {
 
     var env = _.extend(process.env, node.env || {}),
@@ -86,6 +87,17 @@ module.exports = function (gulp, swig) {
       cp.kill();
       swig.log();
       swig.log.success(null, 'Terminating App');
+
+      var runner = forever.stop('app.js', false);
+
+      runner.on('stop', function (process) {
+        swig.log.success(null, 'Stopped forever Daemon');
+      });
+
+      runner.on('error', function (err) {
+        swig.log.error('forever', 'Error stopping the forever Daemon');
+        process.exit(1);
+      });
     });
   }
 

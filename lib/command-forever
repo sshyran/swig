@@ -17,4 +17,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 FOREVER="$DIR/../node_modules/.bin/forever"
 source ~/.nvm/nvm.sh;
 nvm use 0.12;
-node "$FOREVER" start -c "node --harmony --harmony-proxies $@" app.js -f
+node "$FOREVER" start -c "node --harmony --harmony-proxies" app.js
+node "$FOREVER" logs app.js -f -n 1
+# forever start -c "node --harmony --harmony-proxies" app.js
+# forever logs app.js -f -n 1
