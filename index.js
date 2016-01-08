@@ -184,7 +184,8 @@ module.exports = function (gulp) {
   setupPaths();
   findTarget();
 
-  var packagePath = path.join(swig.target.path, 'package.json');
+  var packagePath = path.join(swig.target.path, 'package.json'),
+    targetName = swig.target.name;
 
   if (fs.existsSync(packagePath)) {
     swig.pkg = require(packagePath);
@@ -201,7 +202,7 @@ module.exports = function (gulp) {
   }
 
   console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
-  console.log('·  ' + 'target:      '.blue + (target ? (target || '').grey : 'NO TARGET'.yellow));
+  console.log('·  ' + 'target:      '.blue + (targetName ? targetName.grey : 'NO TARGET'.yellow));
   console.log('·  ' + 'target-path: '.blue + swig.target.path.grey + '\n');
 
   // create swigs's temporary directory;
