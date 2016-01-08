@@ -188,6 +188,11 @@ module.exports = function (gulp) {
 
   if (fs.existsSync(packagePath)) {
     swig.pkg = require(packagePath);
+
+    // if package has a name use it for the target.name
+    if (swig.pkg.name) {
+      swig.target.name = swig.pkg.name;
+    }
   }
 
   findSwigRc();
