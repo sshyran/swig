@@ -93,7 +93,6 @@ module.exports = function (gulp) {
   function findTarget () {
 
     var target,
-      moduleName,
       repo = swig.argv.repo || '';
 
     if (swig.argv.m) {
@@ -125,9 +124,15 @@ module.exports = function (gulp) {
       swig.project.type = 'webapp';
     }
 
+    var packagePath = path.join(target, 'package.json');
+
+    if (fs.existsSync(packagePath)) {
+      swig.pkg = require(packagePath);
+    }
+
     swig.target = {
       path: target,
-      name: swig.argv.module || path.basename(target),
+      name: swig.argv.module || (swig.pkg && swig.pkg.name) || path.basename(target),
       repo: swig.argv.repo || path.basename(swig.cwd)
     };
   }
@@ -187,13 +192,8 @@ module.exports = function (gulp) {
   var packagePath = path.join(swig.target.path, 'package.json'),
     targetName = swig.target.name;
 
-  if (fs.existsSync(packagePath)) {
+  if (!swig.pkg && fs.existsSync(packagePath)) {
     swig.pkg = require(packagePath);
-
-    // if package has a name use it for the target.name
-    if (swig.pkg.name) {
-      swig.target.name = swig.pkg.name;
-    }
   }
 
   findSwigRc();
