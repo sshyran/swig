@@ -28,6 +28,7 @@ module.exports = function (gulp) {
     fs = require('fs'),
     argv = require('yargs').argv,
     target,
+    targetName,
     taskDeps,
     taskName = argv._.length > 0 ? argv._[0] : 'default',
     thisPkg = require('./package.json'),
@@ -130,6 +131,10 @@ module.exports = function (gulp) {
       swig.pkg = require(packagePath);
     }
 
+    if (_.isEmpty(swig.pkg)) {
+      console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
+    }
+
     swig.target = {
       path: target,
       name: swig.argv.module || (swig.pkg && swig.pkg.name) || path.basename(target),
@@ -183,28 +188,17 @@ module.exports = function (gulp) {
     console.log('·');
   }
 
+  console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
+
   swig.util = require('@gilt-tech/swig-util')(swig, gulp);
   swig.tell = tell;
 
+  findSwigRc();
+  checkLocalVersion();
   setupPaths();
   findTarget();
 
-  var packagePath = path.join(swig.target.path, 'package.json'),
-    targetName = swig.target.name;
-
-  if (!swig.pkg && fs.existsSync(packagePath)) {
-    swig.pkg = require(packagePath);
-  }
-
-  findSwigRc();
-
-  console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
-
-  checkLocalVersion();
-
-  if (_.isEmpty(swig.pkg)) {
-    console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
-  }
+  targetName = swig.target.name;
 
   console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
   console.log('·  ' + 'target:      '.blue + (targetName ? targetName.grey : 'NO TARGET'.yellow));
