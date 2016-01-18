@@ -28,6 +28,7 @@ module.exports = function (gulp) {
     fs = require('fs'),
     argv = require('yargs').argv,
     target,
+    targetName,
     taskDeps,
     taskName = argv._.length > 0 ? argv._[0] : 'default',
     thisPkg = require('./package.json'),
@@ -93,7 +94,6 @@ module.exports = function (gulp) {
   function findTarget () {
 
     var target,
-      moduleName,
       repo = swig.argv.repo || '';
 
     if (swig.argv.m) {
@@ -125,9 +125,19 @@ module.exports = function (gulp) {
       swig.project.type = 'webapp';
     }
 
+    var packagePath = path.join(target, 'package.json');
+
+    if (fs.existsSync(packagePath)) {
+      swig.pkg = require(packagePath);
+    }
+
+    if (_.isEmpty(swig.pkg)) {
+      console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
+    }
+
     swig.target = {
       path: target,
-      name: swig.argv.module || path.basename(target),
+      name: swig.argv.module || (swig.pkg && swig.pkg.name) || path.basename(target),
       repo: swig.argv.repo || path.basename(swig.cwd)
     };
   }
@@ -178,28 +188,17 @@ module.exports = function (gulp) {
     console.log('·');
   }
 
+  console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
+
   swig.util = require('@gilt-tech/swig-util')(swig, gulp);
   swig.tell = tell;
 
+  findSwigRc();
+  checkLocalVersion();
   setupPaths();
   findTarget();
 
-  var packagePath = path.join(swig.target.path, 'package.json'),
-    targetName = swig.target.name;
-
-  if (fs.existsSync(packagePath)) {
-    swig.pkg = require(packagePath);
-  }
-
-  findSwigRc();
-
-  console.log('·  ' + 'swig (local)'.red + ' v' + thisPkg.version + '\n·');
-
-  checkLocalVersion();
-
-  if (_.isEmpty(swig.pkg)) {
-    console.log('.  ' + 'warning!    '.yellow + ' package.json not found at: ' + packagePath.grey);
-  }
+  targetName = swig.target.name;
 
   console.log('·  ' + 'gulpfile:    '.blue + module.parent.id.replace(process.env.HOME, '~').grey);
   console.log('·  ' + 'target:      '.blue + (targetName ? targetName.grey : 'NO TARGET'.yellow));
