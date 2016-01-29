@@ -12,6 +12,8 @@
 #    It's delicious.
 #    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 
+args=$@
+
 bold=$(tput bold)
 underline=$(tput sgr 0 1)
 reset=$(tput sgr0)
@@ -89,4 +91,4 @@ if [ ! -e "`which gulp`" ]; then
 fi
 
 # pass control to gulp
-node --harmony "$dir/../lib/update.js" && node --harmony --harmony-proxies `which gulp` "$@"
+node --harmony "$dir/../lib/update.js" && gulp $args
