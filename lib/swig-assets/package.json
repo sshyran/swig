@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-assets",
   "description": "Deploys Gilt assets.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
@@ -26,6 +26,16 @@
       "name": "Andrew Powell",
       "email": "powella@gilt.com",
       "url": "https://github.com/shellscape/"
+    },
+    {
+      "name": "Rory Haddon",
+      "email": "rhaddon@gilt.com",
+      "url": "https://github.com/roryh/"
+    },
+    {
+      "name": "Nick Rogers",
+      "email": "nrogers@gilt.com",
+      "url": "https://github.com/njprrogers/"
     }
   ],
   "licenses": [
@@ -47,8 +57,5 @@
     "underscore": "*"
   },
   "devDependencies": {},
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
-  }
+  "main": "index.js"
 }
