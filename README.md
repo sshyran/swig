@@ -162,4 +162,10 @@ superfelous `gulp` output.
 
 ## Want to contribute?
 
-Anyone can help make this project better - We follow the same contributing guide as the Gulp project. Please check out their [Contributing guide](https://github.com/gulpjs/gulp/blob/master/CONTRIBUTING.md)!
+Anyone can help make this project better - We follow the same contributing guide as the Gulp project. Please check out their [Contributing guide](https:d//github.com/gulpjs/gulp/blob/master/CONTRIBUTING.md)!
+
+### Publishing
+
+When a [task](https://github.com/gilt/gilt-swig-assets) or [utility](https://github.com/gilt/gilt-swig-util) dependency is updated,
+this module should also have it's patch version bumped, and published. This ensures that users will consistently have the latest
+task dependencies for each version of swig. Exceptions can be made in the case of non-critical updates to task dependencies.
