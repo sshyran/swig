@@ -76,7 +76,7 @@ if [ "$firstParam" == "update" ]; then
 fi
 
 if [ "$firstParam" == "pre-publish" ]; then
-  node --harmony "$dir/../lib/pre-publish" "$@"
+  node --harmony "$dir/../lib/pre-publish" $args
   # --vendor
   # --less
   exit
