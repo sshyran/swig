@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-minify",
   "description": "Minifies Gilt front-end assets.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
@@ -38,6 +38,7 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
+    "gulp-bless": "3.0.x",
     "co": "3.x",
     "co-exec": "*",
     "glob": "*",
