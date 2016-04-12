@@ -45,7 +45,7 @@
     "@gilt-tech/swig-install": "^0.1.0",
     "@gilt-tech/swig-lint": "^0.2.0",
     "@gilt-tech/swig-merge-css": "^0.1.0",
-    "@gilt-tech/swig-minify": "^0.1.0",
+    "@gilt-tech/swig-minify": "^0.2.0",
     "@gilt-tech/swig-publish": "^0.1.0",
     "@gilt-tech/swig-release-email": "^0.1.0",
     "@gilt-tech/swig-spec": "^0.1.0",
