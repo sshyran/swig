@@ -38,7 +38,7 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "gulp-bless": "3.0.x",
+    "gulp-bless": "3.0.3",
     "co": "3.x",
     "co-exec": "*",
     "glob": "*",
