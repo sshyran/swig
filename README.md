@@ -92,7 +92,7 @@ Tasks are modules which contain Gulp task definitions. Swig task definitions use
 ```
 gulp build
 ```
-In the command above, `build` is the name of the Gulp Task. That task will use Gulp plugins to serve its purpose. Swig Task Modueles contain Gulp tasks which operate on files and directories.
+In the command above, `build` is the name of the Gulp Task. That task will use Gulp plugins to serve its purpose. Swig Task Modules contain Gulp tasks which operate on files and directories.
 
   - [swig-default](https://github.com/gilt/gilt-swig/tree/master/lib): `swig`  
     Registered as the default Gulp task. Displays information on available tasks.
@@ -105,7 +105,7 @@ In the command above, `build` is the name of the Gulp Task. That task will use G
 
   - [swig-install](https://github.com/gilt/gilt-swig-assets/tree/master/lib): `swig install`  
     Installs all client-side requirements for a web application.
-    (Gilt internal: This is snynomymous with ui-install)
+    (Gilt internal: This is synonymous with ui-install)
 
   - [swig-lint](https://github.com/gilt/gilt-swig-assets/tree/master/lib): `swig lint`  
     Lints javascript and less/css files and looks for other special considerations
