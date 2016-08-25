@@ -74,16 +74,16 @@ module.exports = function(gulp, swig) {
         './.dockerignore',
         './nova.yml'
       ],
-      fileNotFound = false;
+      fileNotFound = false,
+      gitDiffResult;
 
     // Check git repo is not 'dirty'
 
-    // TODO enable
-    /*gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
+    gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
     if (gitDiffResult !== '') {
       swig.log.error('Git repo is ditry, please commit all changes and try again');
       process.exit(1);
-    }*/
+    }
 
     // Check arguments passed to task
 
