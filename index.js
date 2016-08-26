@@ -26,7 +26,7 @@ module.exports = function(gulp, swig) {
     appName = swig.pkg.name,
     deployVersion,
     execSyncOpts = {
-      returnOuput: {
+      returnOutput: {
         encoding: 'utf8'
       },
       pipeOutput: {
@@ -61,7 +61,7 @@ module.exports = function(gulp, swig) {
   }
 
   function getLatestVersionTag() {
-    return execSync('git tag -l --sort=-v:refname | egrep \'v(?:[0-9].?)+$\' | head -n 1', execSyncOpts.returnOuput);
+    return execSync('git tag -l --sort=-v:refname | egrep \'v(?:[0-9].?)+$\' | head -n 1', execSyncOpts.returnOutput);
   }
 
   function getLatestVersionParsed() {
@@ -251,8 +251,8 @@ module.exports = function(gulp, swig) {
     if (isNewBuild) {
       gitCommands = [
         'git add package.json',
-        'git tag -a -m "' + deployVersion + '" ' + deployVersion,
-        'git commit -m "' + deployVersion + ' set in package.json"',
+        'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
+        'git commit -m "v' + deployVersion + ' set in package.json"',
         'git push --tags',
         'git push || true'      // If we're on a local branch and don't want to abort the script when 'git push' fails, hence the '|| true' at the end
       ];
@@ -262,7 +262,7 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-build-docker', function() {
-    var imageAlreadyExists = execSync('docker images -q ' + appName + ':' + deployVersion, execSyncOpts.returnOuput);
+    var imageAlreadyExists = execSync('docker images -q ' + appName + ':' + deployVersion, execSyncOpts.returnOutput);
 
     if (imageAlreadyExists) {
       swig.log.warn('Docker image with tag [' + appName + ':' + deployVersion + '] already exists, using this.');
