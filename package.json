@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "homepage": "https://github.com/gilt/gilt-swig-run",
   "keywords": [
     "gulp",
@@ -41,7 +41,8 @@
     "forever": "^0.15.1",
     "underscore": "*",
 
-    "@gilt-tech/swig-zk": "*"
+    "@gilt-tech/swig-zk": "*",
+    "@gilt-tech/swig-transform-jsx": "*"
   },
   "devDependencies": {},
   "main": "index.js",

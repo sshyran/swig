@@ -23,6 +23,7 @@ module.exports = function (gulp, swig) {
   });
 
   require('@gilt-tech/swig-zk')(gulp, swig);
+  require('@gilt-tech/swig-transform-jsx')(gulp, swig);
 
   var path = require('path'),
     spawn = require('child_process').spawn,
@@ -101,7 +102,7 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  gulp.task('run', ['zk'], function (cb) {
+  gulp.task('run', ['zk', 'watch-jsx'], function (cb) {
 
     var errors;
 
