@@ -157,7 +157,7 @@ module.exports = function(gulp, swig) {
     s3Client = new AWS.S3();
 
     s3Client.listObjects({
-        Bucket: 'gilt-common',
+        Bucket: novaEnv.deployment_bucket,
         MaxKeys: 1
     }, function(err, data) {
       if (err) {
