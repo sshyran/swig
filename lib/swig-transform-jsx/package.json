@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-transform-jsx",
   "description": "Transforms JSX into Javascript.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "https://github.com/gilt/gilt-swig-assets",
   "keywords": [
     "gulp",
@@ -54,10 +54,11 @@
   },
   "dependencies": {
     "babel-core": "6.x.x",
-    "gulp-babel": "6.x.x",
-    "gulp-tap": "0.x.x",
     "babel-plugin-transform-react-jsx": "6.x.x",
     "glob": "*",
+    "gulp-babel": "6.x.x",
+    "gulp-plumber": "^1.1.0",
+    "gulp-tap": "0.x.x",
     "underscore": "*"
   },
   "devDependencies": {},
