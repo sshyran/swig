@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "homepage": "https://github.com/gilt/gilt-swig-run",
   "keywords": [
     "gulp",
@@ -26,6 +26,16 @@
       "name": "Andrew Powell",
       "email": "powella@gilt.com",
       "url": "https://github.com/shellscape/"
+    },
+    {
+      "name": "Nick Rogers",
+      "email": "nrogers@gilt.com",
+      "url": "https://github.com/njprrogers/"
+    },
+    {
+      "name": "Federico Giovagnoli",
+      "email": "fgiovagnoli@gilt.com",
+      "url": "https://github.com/Meesayen/"
     }
   ],
   "licenses": [
@@ -42,7 +52,7 @@
     "underscore": "*",
 
     "@gilt-tech/swig-zk": "*",
-    "@gilt-tech/swig-transform-jsx": "*"
+    "@gilt-tech/swig-transpile-scripts": "^1.0.0"
   },
   "devDependencies": {},
   "main": "index.js",
