@@ -23,7 +23,10 @@ module.exports = function (gulp, swig) {
   });
 
   require('@gilt-tech/swig-zk')(gulp, swig);
-  require('@gilt-tech/swig-transpile-scripts')(gulp, swig);
+
+  if (!swig.tasks['transpile-scripts']) {
+    require('@gilt-tech/swig-transpile-scripts')(gulp, swig);
+  }
 
   var path = require('path'),
     spawn = require('child_process').spawn,
@@ -102,7 +105,8 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  gulp.task('run', ['zk', 'watch-scripts'], function (cb) {
+  // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
+  gulp.task('run', ['transpile-scripts', 'zk', 'watch-scripts'], function (cb) {
 
     var errors;
 

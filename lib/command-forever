@@ -16,8 +16,8 @@ export GILT_ENV=development;
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 FOREVER="$DIR/../node_modules/.bin/forever"
 source ~/.nvm/nvm.sh;
-nvm use 5;
-node "$FOREVER" start -c "node --harmony --harmony-proxies" app.js
+nvm use 6;
+node "$FOREVER" start -c "node" app.js
 node "$FOREVER" logs app.js -f -n 1
 # forever start -c "node --harmony --harmony-proxies" app.js
 # forever logs app.js -f -n 1

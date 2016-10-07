@@ -14,6 +14,6 @@
 
 export GILT_ENV=development;
 source ~/.nvm/nvm.sh;
-nvm use 5;
+nvm use 6;
 echo ""
-node --harmony --harmony-proxies $@ app;
+node $@ app;
