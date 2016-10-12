@@ -54,6 +54,7 @@ module.exports = function(gulp, swig) {
     console.log('  --stack          Name of stack in nova.yml to deploy to.');
     console.log('  --new-version    Deploy a new version, valid options are (patch|minor|major). Version will ');
     console.log('                   be incremented in package.json accordingly and tagged in git.');
+    console.log('  --latest-tag     Get the latest version tag on the current');
     console.log('  --version        Specify new version manually. Value should be N.N.N and newer that latest');
     console.log('                   deployed version.');
     console.log('');
@@ -86,6 +87,11 @@ module.exports = function(gulp, swig) {
     }
 
     // Check arguments passed to task
+
+    if (argv.latestTag) {
+      swig.log.info('Latest version tag is: ' + getLatestVersionTag());
+      process.exit(0);
+    }
 
     if (!argv.env || !/\w+/.test(argv.env)) {
       swig.log.error('Missing "--env" option');
@@ -252,7 +258,7 @@ module.exports = function(gulp, swig) {
       gitCommands = [
         'git add package.json',
         'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
-        'git commit -m "v' + deployVersion + ' set in package.json"',
+        'git commit -m "autocommit: v' + deployVersion + ' set in package.json"',
         'git push --tags',
         'git push || true'      // If we're on a local branch and don't want to abort the script when 'git push' fails, hence the '|| true' at the end
       ];
@@ -262,15 +268,28 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-build-docker', function() {
-    var imageAlreadyExists = execSync('docker images -q ' + appName + ':' + deployVersion, execSyncOpts.returnOutput);
+    var imageAlreadyExists = execSync('docker images -q ' + appName + ':' + deployVersion, execSyncOpts.returnOutput),
+      homeNpmrcPath = process.env.HOME + '/.npmrc',
+      localNpmrcPath = './.npmrc';
 
     if (imageAlreadyExists) {
       swig.log.warn('Docker image with tag [' + appName + ':' + deployVersion + '] already exists, using this.');
     } else {
       try {
-        fs.linkSync(process.env.HOME + '/.npmrc', './.npmrc');
+        //track if .npmrc file exists in the project folder, so as to know whether to clean it up after the docker container is built.
+        var localNpmrc = false;
+
+        if (fs.existsSync(localNpmrcPath)) {
+          localNpmrc = true
+        } else {
+          fs.linkSync(homeNpmrcPath, localNpmrcPath);
+        }
         execSync('docker build -t ' + appName + ':' + deployVersion + ' .', _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
-        fs.unlinkSync('./.npmrc');
+
+        // remove .npmrc if it didn't exist before the script was run.
+        if (!localNpmrc) {
+          fs.unlinkSync(localNpmrcPath);
+        }
       } catch (e) {
         swig.log.error('Docker build failed. ' + e.message);
         process.exit(1);
