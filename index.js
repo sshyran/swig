@@ -54,7 +54,7 @@ module.exports = function(gulp, swig) {
     console.log('  --stack          Name of stack in nova.yml to deploy to.');
     console.log('  --new-version    Deploy a new version, valid options are (patch|minor|major). Version will ');
     console.log('                   be incremented in package.json accordingly and tagged in git.');
-    console.log('  --latest-tag     Get the latest version tag on this repo');
+    console.log('  --latest-tag     Get the latest version tag on the current');
     console.log('  --version        Specify new version manually. Value should be N.N.N and newer that latest');
     console.log('                   deployed version.');
     console.log('');

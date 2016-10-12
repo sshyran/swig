@@ -30,6 +30,7 @@ Options:
   --stack          Name of stack in nova.yml to deploy to.
   --new-version    Deploy a new version, valid options are (patch|minor|major). Version will
                    be incremented in package.json accordingly and tagged in git.
+  --latest-tag     Get the latest version tag on the current repo
   --version        Specify new version manually. Value should be N.N.N and newer that latest
                    deployed version.
 ```
@@ -37,5 +38,5 @@ Options:
 
 Links:
 
-[swig](https://github.com/gilt/gilt-swig)
-[nova deploy tool](https://github.com/gilt/nova)
+* [swig](https://github.com/gilt/gilt-swig)
+* [nova deploy tool](https://github.com/gilt/nova)
