@@ -1,6 +1,6 @@
 {
   "name": "@gilt-tech/swig-nova",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "gilt-swig module for deploying with nova deployment tool",
   "main": "index.js",
   "scripts": {
