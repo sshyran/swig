@@ -145,7 +145,7 @@ module.exports = function (gulp) {
   // allows a task to tell swig about itself
   function tell (taskName, taskInfo) {
     if (swig.tasks[taskName]) {
-      throw 'Swig already has a task entry for: ' + taskName;
+      console.log(`Task '${taskName}' has been overridden by a local installation`.yellow);
     }
 
     taskInfo = _.extend({
