@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-zk",
   "description": "A swig task that ensures zookeeper is running.",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "homepage": "https://github.com/gilt/gilt-swig-run",
   "keywords": [
     "gulp",
@@ -38,11 +38,11 @@
     "node": ">= 0.12.x"
   },
   "dependencies": {
-    "co": "3.x",
-    "co-sh": "*",
-    "co-read": "*",
-    "thunkify": "*",
-    "underscore": "*"
+    "co": "^3.1.0",
+    "co-read": "^0.1.1",
+    "co-run": "^1.0.0",
+    "thunkify": "^2.1.2",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "main": "index.js",
