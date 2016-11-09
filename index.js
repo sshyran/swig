@@ -153,6 +153,11 @@ module.exports = function(gulp, swig) {
     done();
   });
 
+  gulp.task('pull-latest-tags', function() {
+    swig.log.info('Pulling latest tags from git');
+    execSync('git pull --tags', execSyncOpts.pipeOutput);
+  });
+
   gulp.task('nova-check-aws-auth', function(done) {
     var s3Client;
 
@@ -311,6 +316,7 @@ module.exports = function(gulp, swig) {
     swig.seq(
       'nova-check-options',
       'nova-check-aws-auth',
+      'pull-latest-tags',
       'nova-new-version',
       'nova-specified-version',
       'assets-deploy',
