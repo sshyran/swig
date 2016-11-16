@@ -154,8 +154,8 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('pull-latest-tags', function() {
-    swig.log.info('Pulling latest tags from git');
-    execSync('git pull --tags', execSyncOpts.pipeOutput);
+    swig.log.info('Fetching latest tags from git');
+    execSync('git fetch --tags', execSyncOpts.pipeOutput);
   });
 
   gulp.task('nova-check-aws-auth', function(done) {
