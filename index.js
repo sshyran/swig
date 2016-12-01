@@ -21,9 +21,6 @@ module.exports = function(gulp, swig) {
     fs = require('fs'),
     semverDiff = require('semver-diff'),
     YAML = require('yamljs'),
-
-
-    appName = swig.pkg.name,
     deployVersion,
     execSyncOpts = {
       returnOutput: {
@@ -150,6 +147,13 @@ module.exports = function(gulp, swig) {
       swig.log.error('No stack \'' + argConfig.stack + '\' in environment \'' + argConfig.env + '\' found in nova.yml');
       process.exit(1);
     }
+
+    try {
+      execSync('which nova');
+    } catch(e) {
+      swig.log.error('\'nova\' deploy tool does not appear to be installed. https://github.com/gilt/nova');
+      process.exit(1);
+    }
     done();
   });
 
@@ -273,12 +277,12 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-build-docker', function() {
-    var imageAlreadyExists = execSync('docker images -q ' + appName + ':' + deployVersion, execSyncOpts.returnOutput),
+    var imageAlreadyExists = execSync('docker images -q ' + novayml.service_name + ':' + deployVersion, execSyncOpts.returnOutput),
       homeNpmrcPath = process.env.HOME + '/.npmrc',
       localNpmrcPath = './.npmrc';
 
     if (imageAlreadyExists) {
-      swig.log.warn('Docker image with tag [' + appName + ':' + deployVersion + '] already exists, using this.');
+      swig.log.warn('Docker image with tag [' + novayml.service_name + ':' + deployVersion + '] already exists, using this.');
     } else {
       try {
         //track if .npmrc file exists in the project folder, so as to know whether to clean it up after the docker container is built.
@@ -289,7 +293,7 @@ module.exports = function(gulp, swig) {
         } else {
           fs.linkSync(homeNpmrcPath, localNpmrcPath);
         }
-        execSync('docker build -t ' + appName + ':' + deployVersion + ' .', _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
+        execSync('docker build -t ' + novayml.service_name + ':' + deployVersion + ' .', _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
 
         // remove .npmrc if it didn't exist before the script was run.
         if (!localNpmrc) {
