@@ -15,6 +15,7 @@
   "finalNewline": false,
   "hexNotation": false,
   "hexLength": false,
+  "propertyOrdering": false,
   "propertyUnits": false,
   "qualifyingElement": false,
   "singleLinePerProperty": false,
