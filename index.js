@@ -13,6 +13,8 @@
  */
 
 module.exports = function(gulp, swig) {
+  const inquirer = require('inquirer');
+
   var _ = require('underscore'),
     argv = require('yargs').argv,
     AWS = require('aws-sdk'),
@@ -34,9 +36,14 @@ module.exports = function(gulp, swig) {
     isNewBuild,
     novayml = YAML.load('./nova.yml'),
     novaEnv,
-    novaStack,
 
-    argConfig = {};
+    argConfig = {
+      env: null,
+      stack: null,
+      newVersion: null,
+      version: null,
+      forcedRun: false
+    };
 
   /**
    * @desc  Output help & instructions to console.
@@ -53,6 +60,7 @@ module.exports = function(gulp, swig) {
     console.log('                   be incremented in package.json accordingly and tagged in git.');
     console.log('  --latest-tag     Get the latest version tag on the current');
     console.log('  --version        Specify new version manually. Value should be N.N.N and newer that latest');
+    console.log('  --force, -f      Skip confirmation phases (useful for CI environments)');
     console.log('                   deployed version.');
     console.log('');
     process.exit(0);
@@ -75,49 +83,17 @@ module.exports = function(gulp, swig) {
       fileNotFound = false,
       gitDiffResult;
 
-    // Check git repo is not 'dirty'
 
-    gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
-    if (gitDiffResult !== '') {
-      swig.log.error('Git repo is ditry, please commit all changes and try again');
+    // First thing, let's check if we have the right tools installed
+
+    try {
+      execSync('which nova');
+    } catch(e) {
+      swig.log.error('\'nova\' deploy tool does not appear to be installed. https://github.com/gilt/nova');
       process.exit(1);
     }
 
-    // Check arguments passed to task
-
-    if (argv.latestTag) {
-      swig.log.info('Latest version tag is: ' + getLatestVersionTag());
-      process.exit(0);
-    }
-
-    if (!argv.env || !/\w+/.test(argv.env)) {
-      swig.log.error('Missing "--env" option');
-      outputHelp();
-    }
-
-    if (!argv.stack || !/\w+/.test(argv.stack)) {
-      swig.log.error('Missing "--stack" option');
-      outputHelp();
-    }
-
-    if (argv.version && argv.newVersion || (!argv.newVersion && !argv.version)) {
-      swig.log.error('--version or --new-version option is required, they can not be specified together.');
-      outputHelp();
-    }
-
-    if (!argv.newVersion && /^(?:patch|minor|major)$/.test(argv.newVersion)) {
-      swig.log.error('Invalid value specified for --new-version option.');
-      outputHelp();
-    }
-
-    argConfig = {
-      env: argv.env,
-      stack: argv.stack,
-      newVersion: argv.newVersion,
-      version: argv.version
-    };
-
-    // Check require files exist
+    // Then check if all the required files exist
 
     checkFilesExist.forEach(function(file) {
       if (!fs.existsSync(file)) {
@@ -130,32 +106,211 @@ module.exports = function(gulp, swig) {
       process.exit(1);
     }
 
-    novaEnv = _.find(novayml.environments, function(srcEnv) {
-      return srcEnv.name === argConfig.env;
-    });
+   // Check if the git repo is not 'dirty'
 
-    if (!novaEnv) {
-      swig.log.error('No environment \'' + argConfig.env + '\' found in nova.yml');
+    gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
+    if (gitDiffResult !== '') {
+      swig.log.error('Git repo is dirty, please commit all changes and try again');
       process.exit(1);
     }
 
-    novaStack = _.find(novaEnv.stacks, function(srcStack) {
-      return srcStack.stack_name === argConfig.stack;
-    });
+    // Check arguments validity
 
-    if (!novaStack) {
-      swig.log.error('No stack \'' + argConfig.stack + '\' in environment \'' + argConfig.env + '\' found in nova.yml');
-      process.exit(1);
+    if (argv.latestTag) {
+      swig.log.info('Latest version tag is: ' + getLatestVersionTag());
+      process.exit(0);
     }
 
-    try {
-      execSync('which nova');
-    } catch(e) {
-      swig.log.error('\'nova\' deploy tool does not appear to be installed. https://github.com/gilt/nova');
-      process.exit(1);
+    if (argv.env) {
+      novaEnv = novayml.environments.find(
+          e => e.name.toLowerCase() === argv.env.toLowerCase());
+      if (!novaEnv) {
+        swig.log.error(`Environment '${argv.env}' not found in your nova.yml.`);
+        swig.log.info('Maybe a typo. Do not worry, we will ask you which ' +
+            'environment you want to deploy to later.');
+      } else {
+        argConfig.env = novaEnv.name;
+      }
     }
+
+    if (argv.stack) {
+      if (!novayml.environments.find(e => e.stacks.find(
+            s => s.stack_name.toLowerCase() === argv.stack.toLowerCase()))) {
+        swig.log.error(`Stack '${argv.stack}' not found in your nova.yml.`);
+        swig.log.info('Maybe a typo. Do not worry, we will ask you which ' +
+            'stack you want to deploy later.');
+      } else {
+        argConfig.stack = argv.stack;
+      }
+    }
+
+    if (argv.version && argv.newVersion) {
+      swig.log.error('--version and --new-version options can not be specified together.');
+      outputHelp();
+    }
+
+    if (argv.newVersion) {
+      if (!/^(?:patch|minor|major)$/.test(argv.newVersion)) {
+        swig.log.error('Invalid value specified for --new-version option.');
+        outputHelp(); // exits
+      }
+      argConfig.newVersion = argv.newVersion;
+    }
+
+    if (argv.version) {
+      if (!/^\d+\.\d+\.\d+$/.test(argv.version)) {
+        swig.log.error('Invalid value specified for --version option.');
+        outputHelp(); // exits
+      }
+      argConfig.version = argv.version;
+    }
+
+    if (argv.force || argv.f) {
+      argConfig.forcedRun = true;
+    }
+
     done();
   });
+
+  gulp.task('nova-inquisitor', co(function* () {
+    swig.log('');
+    const prompt = inquirer.createPromptModule();
+    const environments = novayml.environments.map(e => e.name);
+    const v = getLatestVersionTag().replace('v', '').split('.').map(n => +n);
+
+    let answer;
+    let env;
+
+    if (!argConfig.env) {
+      if (environments.length > 1) {
+        answer = yield prompt({
+          type: 'list',
+          name: 'env',
+          message: 'Choose the AWS environment you need to deploy to:',
+          choices: environments
+        });
+        env = answer.env;
+      } else {
+        if (!argConfig.forcedRun) {
+          answer = yield prompt({
+            type: 'confirm',
+            name: 'envConfirmed',
+            message: `You will deploy to the AWS '${environments[0]}' environment. Correct?`,
+            default: true
+          });
+          if (!answer.envConfirmed) {
+            swig.log.info('Aborted!'.red);
+            process.exit(1);
+          }
+        }
+        env = environments[0];
+      }
+      argConfig.env = env;
+      novaEnv = novayml.environments.find(e => e.name === env);
+    }
+
+    const stacks = novaEnv.stacks.map(s => s.stack_name);
+    let stack;
+
+    if (argConfig.stack) {
+      let stackConf = novaEnv.stacks.find(
+          s => s.stack_name.toLowerCase() === argConfig.stack.toLowerCase());
+      if (!stackConf) {
+        swig.log.error(`Stack '${argConfig.stack}' for environment ${env} not found in your nova.yml.`);
+      } else {
+        argConfig.stack = stack = stackConf.stack_name;
+      }
+    }
+
+    if (!argConfig.stack || !stack) {
+      if (stacks.length > 1) {
+        answer = yield prompt({
+          type: 'list',
+          name: 'stack',
+          message: 'Choose the AWS stack you need to deploy to:',
+          choices: stacks
+        });
+        stack = answer.stack;
+      } else {
+        if (!argConfig.forcedRun) {
+          answer = yield prompt({
+            type: 'confirm',
+            name: 'stackConfirmed',
+            message: `You will deploy to the AWS '${stacks[0]}' stack. Correct?`,
+            default: true
+          });
+          if (!answer.stackConfirmed) {
+            swig.log.info('Aborted!'.red);
+            process.exit(1);
+          }
+        }
+        stack = stacks[0];
+      }
+      argConfig.stack = stack;
+    }
+
+    if (!argConfig.version && !argConfig.newVersion) {
+      const currentVersion = `(current: ${v.join('.')})`.grey;
+      answer = yield prompt({
+        type: 'list',
+        name: 'version',
+        message: 'What version bump do you want to perform? ' + currentVersion,
+        choices: [
+          { name: 'major ' + `(${v[0]+1}.0.0)`.grey,
+            value: 'major', short: 'major' },
+          { name: 'minor ' + `(${v[0]}.${v[1]+1}.0)`.grey,
+            value: 'minor', short: 'minor' },
+          { name: 'patch ' + `(${v[0]}.${v[1]}.${v[2]+1})`.grey,
+            value: 'patch', short: 'patch' },
+          { name: 'Manually type new version...', value: 'manual' }
+        ]
+      });
+
+      if (answer.version === 'manual') {
+        answer = yield prompt({
+          type: 'input',
+          name: 'version',
+          message: `What will be the new version? ${currentVersion}`,
+          validate: version => /^\d+\.\d+\.\d+$/.test(version)
+        })
+        argConfig.version = answer.version;
+      } else {
+        argConfig.newVersion = answer.version;
+      }
+    }
+
+    swig.log('');
+    swig.log.info('', 'Deploying with the following configuration:');
+    swig.log.status('', ' Environment: '.cyan + `'${argConfig.env}'`.green);
+    swig.log.status('', ' Stack: '.cyan + `'${argConfig.stack}'`.green);
+    if (argConfig.version) {
+      swig.log.status('', ' New Version: '.cyan + `${argConfig.version}`.green);
+    } else {
+      if (argConfig.newVersion === 'major') {
+        swig.log.status('', ' New Version: '.cyan + `${v[0]+1}.0.0`.green);
+      }
+      if (argConfig.newVersion === 'minor') {
+        swig.log.status('', ' New Version: '.cyan + `${v[0]}.${v[1]+1}.0`.green);
+      }
+      if (argConfig.newVersion === 'patch') {
+        swig.log.status('', ' New Version: '.cyan + `${v[0]}.${v[1]}.${v[2]+1}`.green);
+      }
+    }
+
+    if (!argConfig.forcedRun) {
+      swig.log('');
+      answer = yield prompt({
+        type: 'confirm',
+        name: 'confirmed',
+        message: 'Are you sure you want to proceed?',
+        default: true
+      });
+      if (!answer.confirmed) {
+        swig.log.info('Aborted!'.red);
+        process.exit(1);
+      }
+    }
+  }));
 
   gulp.task('pull-latest-tags', function() {
     swig.log.info('Fetching latest tags from git');
@@ -319,6 +474,7 @@ module.exports = function(gulp, swig) {
 
     swig.seq(
       'nova-check-options',
+      'nova-inquisitor',
       'nova-check-aws-auth',
       'pull-latest-tags',
       'nova-new-version',

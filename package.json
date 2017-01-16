@@ -1,6 +1,6 @@
 {
   "name": "@gilt-tech/swig-nova",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "gilt-swig module for deploying with nova deployment tool",
   "main": "index.js",
   "scripts": {
@@ -16,12 +16,13 @@
   },
   "homepage": "https://github.com/gilt/gilt-swig-nova#readme",
   "dependencies": {
+    "@gilt-tech/swig-assets": "*",
     "aws-sdk": "^2.5.3",
     "co": "^3.1.0",
+    "inquirer": "^2.0.0",
     "semver-diff": "^2.1.0",
     "underscore": "*",
     "yamljs": "^0.2.8",
-    "yargs": "^5.0.0",
-    "@gilt-tech/swig-assets": "*"
+    "yargs": "^5.0.0"
   }
 }
