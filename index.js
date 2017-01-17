@@ -77,7 +77,6 @@ module.exports = function(gulp, swig) {
   gulp.task('nova-check-options', function(done) {
     const checkFilesExist = [
         './Dockerfile',
-        './.dockerignore',
         './nova.yml'
       ];
     let fileNotFound = false;
