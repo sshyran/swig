@@ -1,17 +1,18 @@
-node_modules/*
+node_modules
 newrelic_agent.log
 .jshintrc
+.dockerignore
+.gitignore
 json/mock/*
 log/*
-# All css/js/img resources in /public are served from the CDN
-public/*
-# We need the public/templates folder to use them in the node-framework at runtime.
-!public/templates/*
-# Don't need unit tests
-tests/*
-# Definitely don't want o deploy the .git folder.
-.git/*
-# Exclude /.idea IntelliJ settings directory
-.idea/*
-# Nova deploy configuration file not needed.
+public/js
+public/css
+public/img
+# Note: we want the public/templates direcotry in the docker image
+test
+.git
+.idea
+conf
 nova.yml
+*.md
+perf
