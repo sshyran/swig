@@ -14,17 +14,16 @@
 
 module.exports = function(gulp, swig) {
   const inquirer = require('inquirer');
-
-  var _ = require('underscore'),
-    argv = require('yargs').argv,
-    AWS = require('aws-sdk'),
-    execSync = require('child_process').execSync,
-    co = require('co'),
-    fs = require('fs'),
-    semverDiff = require('semver-diff'),
-    YAML = require('yamljs'),
-    deployVersion,
-    execSyncOpts = {
+  const _ = require('underscore');
+  const argv = require('yargs').argv;
+  const AWS = require('aws-sdk');
+  const execSync = require('child_process').execSync;
+  const co = require('co');
+  const fs = require('fs');
+  const semverDiff = require('semver-diff');
+  const YAML = require('yamljs');
+  const path = require('path');
+  const execSyncOpts = {
       returnOutput: {
         encoding: 'utf8'
       },
@@ -32,18 +31,19 @@ module.exports = function(gulp, swig) {
         encoding: 'utf8',
         stdio: 'inherit'
       }
-    },
-    isNewBuild,
-    novayml = YAML.load('./nova.yml'),
-    novaEnv,
-
-    argConfig = {
+    };
+  const argConfig = {
       env: null,
       stack: null,
       newVersion: null,
       version: null,
       forcedRun: false
     };
+
+  let isNewBuild;
+  let novayml = YAML.load('./nova.yml');
+  let novaEnv;
+  let deployVersion;
 
   /**
    * @desc  Output help & instructions to console.
@@ -75,13 +75,12 @@ module.exports = function(gulp, swig) {
   }
 
   gulp.task('nova-check-options', function(done) {
-    var checkFilesExist = [
+    const checkFilesExist = [
         './Dockerfile',
-        './.dockerignore',
         './nova.yml'
-      ],
-      fileNotFound = false,
-      gitDiffResult;
+      ];
+    let fileNotFound = false;
+    let gitDiffResult;
 
 
     // First thing, let's check if we have the right tools installed
@@ -318,13 +317,11 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-check-aws-auth', function(done) {
-    var s3Client;
-
     swig.log.info('Using AWS profile: ' + novaEnv.aws_profile);
 
     AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: novaEnv.aws_profile });
 
-    s3Client = new AWS.S3();
+    const s3Client = new AWS.S3();
 
     s3Client.listObjects({
         Bucket: novaEnv.deployment_bucket,
@@ -346,12 +343,10 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-new-version', function() {
-    var vMatch,
-      newVersion;
 
     if (argConfig.newVersion) {
 
-      vMatch = getLatestVersionParsed();
+      let vMatch = getLatestVersionParsed();
 
       if (vMatch === null) {
         swig.log.error('Something went wrong parsing the latest git version tag: "' + getLatestVersionTag() + '"');
@@ -374,7 +369,7 @@ module.exports = function(gulp, swig) {
         vMatch[2]++;
       }
 
-      newVersion = vMatch.join('.');
+      const newVersion = vMatch.join('.');
 
       swig.log.info('New version after [' + argConfig.newVersion + '] bump: ' + newVersion.green);
 
@@ -387,18 +382,16 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-specified-version', function() {
-    var versionMatch,
-      latestVersion;
 
     if (argConfig.version) {
-      versionMatch = argConfig.version.match(/^((\d+)\.(\d+)\.(\d+))$/);
+      const versionMatch = argConfig.version.match(/^((\d+)\.(\d+)\.(\d+))$/);
 
       if (versionMatch === null) {
         swig.log.error('value passed for version must be in the format N.N.N');
         process.exit(1);
       }
 
-      latestVersion = getLatestVersionParsed();
+      const latestVersion = getLatestVersionParsed();
 
       if (semverDiff(latestVersion[1], versionMatch[1]) === null) {
         swig.log.error('New version can not be less than latest existing version: ' + latestVersion[1]);
@@ -416,10 +409,9 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-version-cleanup', function() {
-    var gitCommands;
 
     if (isNewBuild) {
-      gitCommands = [
+      const gitCommands = [
         'git add package.json',
         'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
         'git commit -m "autocommit: v' + deployVersion + ' set in package.json"',
@@ -432,27 +424,42 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-build-docker', function() {
-    var imageAlreadyExists = execSync('docker images -q ' + novayml.service_name + ':' + deployVersion, execSyncOpts.returnOutput),
-      homeNpmrcPath = process.env.HOME + '/.npmrc',
-      localNpmrcPath = './.npmrc';
+    const imageAlreadyExists = execSync('docker images -q ' + novayml.service_name + ':' + deployVersion, execSyncOpts.returnOutput);
+    const homeNpmrcPath = path.join(process.env.HOME, '.npmrc');
+    const localNpmrcPath = path.join('.','.npmrc');
+    const dockerIgnoreTemplate = path.join(__dirname, 'templates', 'dockerignore.template');
+    const localDockerIgnorePath = path.join('.', '.dockerignore');
 
     if (imageAlreadyExists) {
       swig.log.warn('Docker image with tag [' + novayml.service_name + ':' + deployVersion + '] already exists, using this.');
     } else {
       try {
-        //track if .npmrc file exists in the project folder, so as to know whether to clean it up after the docker container is built.
-        var localNpmrc = false;
+        // track if .npmrc & .dockerignore exist in the project folder, so as to know whether to clean them up after the docker container is built.
+        let localNpmrc = false;
+        let localDockerIgnore = false;
+
+        if (fs.existsSync(localDockerIgnorePath)) {
+          localDockerIgnore = true;
+          swig.log.warn(`Local .dockerignore file being used at ${localDockerIgnorePath}. Remove this to use nova-deploy's default`);
+        } else {
+          fs.linkSync(dockerIgnoreTemplate, localDockerIgnorePath);
+        }
 
         if (fs.existsSync(localNpmrcPath)) {
           localNpmrc = true
         } else {
           fs.linkSync(homeNpmrcPath, localNpmrcPath);
         }
+
         execSync('docker build -t ' + novayml.service_name + ':' + deployVersion + ' .', _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
 
         // remove .npmrc if it didn't exist before the script was run.
         if (!localNpmrc) {
           fs.unlinkSync(localNpmrcPath);
+        }
+        // remove .dockerignore if it didn't exist before the script was run.
+        if (!localDockerIgnore) {
+          fs.unlinkSync(localDockerIgnorePath);
         }
       } catch (e) {
         swig.log.error('Docker build failed. ' + e.message);
