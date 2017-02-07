@@ -23,22 +23,29 @@ module.exports = function(gulp, swig) {
   const semverDiff = require('semver-diff');
   const YAML = require('yamljs');
   const path = require('path');
+
   const execSyncOpts = {
-      returnOutput: {
-        encoding: 'utf8'
-      },
-      pipeOutput: {
-        encoding: 'utf8',
-        stdio: 'inherit'
-      }
-    };
+    returnOutput: {
+      encoding: 'utf8'
+    },
+    pipeOutput: {
+      encoding: 'utf8',
+      stdio: 'inherit'
+    }
+  };
+
   const argConfig = {
-      env: null,
-      stack: null,
-      newVersion: null,
-      version: null,
-      forcedRun: false
-    };
+    env: null,
+    stack: null,
+    newVersion: null,
+    version: null,
+    forcedRun: false
+  };
+
+  const isNotMasterBranch = execSync('git rev-parse --abbrev-ref HEAD',
+        execSyncOpts.returnOutput).trim() !== 'master';
+
+  const lastRc = execSync(`git tag -l --sort=-v:refname | egrep '(?:\-rc\\d+)$' | head -n 1`, execSyncOpts.returnOutput);
 
   let isNewBuild;
   let novayml = YAML.load('./nova.yml');
@@ -67,11 +74,19 @@ module.exports = function(gulp, swig) {
   }
 
   function getLatestVersionTag() {
-    return execSync('git tag -l --sort=-v:refname | egrep \'v(?:[0-9].?)+$\' | head -n 1', execSyncOpts.returnOutput);
+    return execSync('git tag -l --sort=-v:refname | egrep \'v(?:[0-9]\.?)+[0-9]$\' | head -n 1', execSyncOpts.returnOutput);
   }
 
   function getLatestVersionParsed() {
     return getLatestVersionTag().match(/v((\d+)\.(\d+)\.(\d+))/);
+  }
+
+  function getRCSuffix(version) {
+    let suffix = '-rc1';
+    if (lastRc && ~lastRc.indexOf(version)) {
+      suffix = `-rc${Number(lastRc.replace(/.+?\-rc/, '')) + 1}`
+    }
+    return suffix;
   }
 
   gulp.task('nova-check-options', function(done) {
@@ -180,6 +195,32 @@ module.exports = function(gulp, swig) {
     let answer;
     let env;
 
+    if (isNotMasterBranch) {
+      swig.log('');
+      answer = yield prompt({
+        type: 'confirm',
+        name: 'confirmed',
+        message: 'WARNING: You are about to release from a branch different than "master". Are you sure you want to continue?',
+        default: false
+      });
+      if (!answer.confirmed) {
+        swig.log.info('Aborted!'.red);
+        process.exit(1);
+      }
+      swig.log.info('Since you are releasing from a branch that is not "master"');
+      swig.log.info('the version you will choose will be suffixed with "-rc",');
+      swig.log.info('and you will only be allowed to release on staging.');
+      swig.log('');
+      if (!novayml.environments.find(e => e.stacks.find(
+            s => s.stack_name.toLowerCase() === 'staging'))) {
+        swig.log.info('It seems like you do not have a staging stack set in your nova.yml');
+        swig.log.info('Aborting the operation.'.red);
+        process.exit(1);
+      } else {
+        argConfig.stack = 'staging';
+      }
+    }
+
     if (!argConfig.env) {
       if (environments.length > 1) {
         answer = yield prompt({
@@ -216,6 +257,10 @@ module.exports = function(gulp, swig) {
           s => s.stack_name.toLowerCase() === argConfig.stack.toLowerCase());
       if (!stackConf) {
         swig.log.error(`Stack '${argConfig.stack}' for environment ${env} not found in your nova.yml.`);
+        if (isNotMasterBranch) {
+          swig.log.info('Aborted!'.red);
+          process.exit(1);
+        }
       } else {
         argConfig.stack = stack = stackConf.stack_name;
       }
@@ -273,6 +318,10 @@ module.exports = function(gulp, swig) {
           validate: version => /^\d+\.\d+\.\d+$/.test(version)
         })
         argConfig.version = answer.version;
+        if (isNotMasterBranch) {
+          const suffix = getRCSuffix(argConfig.version);
+          argConfig.version = `${argConfig.version}${suffix}`;
+        }
       } else {
         argConfig.newVersion = answer.version;
       }
@@ -285,15 +334,18 @@ module.exports = function(gulp, swig) {
     if (argConfig.version) {
       swig.log.status('', ' New Version: '.cyan + `${argConfig.version}`.green);
     } else {
+      let newV;
       if (argConfig.newVersion === 'major') {
-        swig.log.status('', ' New Version: '.cyan + `${v[0]+1}.0.0`.green);
+        newV = `${v[0]+1}.0.0`;
       }
       if (argConfig.newVersion === 'minor') {
-        swig.log.status('', ' New Version: '.cyan + `${v[0]}.${v[1]+1}.0`.green);
+        newV = `${v[0]}.${v[1]+1}.0`;
       }
       if (argConfig.newVersion === 'patch') {
-        swig.log.status('', ' New Version: '.cyan + `${v[0]}.${v[1]}.${v[2]+1}`.green);
+        newV = `${v[0]}.${v[1]}.${v[2]+1}`;
       }
+      const suffix = isNotMasterBranch ? getRCSuffix(newV) : '';
+      swig.log.status('', ' New Version: '.cyan + `${newV}${suffix}`.green);
     }
 
     if (!argConfig.forcedRun) {
@@ -343,9 +395,7 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-new-version', function() {
-
     if (argConfig.newVersion) {
-
       let vMatch = getLatestVersionParsed();
 
       if (vMatch === null) {
@@ -369,11 +419,14 @@ module.exports = function(gulp, swig) {
         vMatch[2]++;
       }
 
-      const newVersion = vMatch.join('.');
+      const newV = vMatch.join('.');
+      const suffix = isNotMasterBranch ? getRCSuffix(newV) : '';
+      const newVersion = `${newV}${suffix}`;
 
       swig.log.info('New version after [' + argConfig.newVersion + '] bump: ' + newVersion.green);
 
       execSync('npm --no-git-tag-version version ' + newVersion);
+
       swig.pkg.version = newVersion;
 
       isNewBuild = true;
@@ -382,48 +435,63 @@ module.exports = function(gulp, swig) {
   });
 
   gulp.task('nova-specified-version', function() {
-
     if (argConfig.version) {
-      const versionMatch = argConfig.version.match(/^((\d+)\.(\d+)\.(\d+))$/);
+      if (!isNotMasterBranch) {
+        const versionMatch = argConfig.version.match(/^((\d+)\.(\d+)\.(\d+))$/);
 
-      if (versionMatch === null) {
-        swig.log.error('value passed for version must be in the format N.N.N');
-        process.exit(1);
-      }
+        if (versionMatch === null) {
+          swig.log.error('value passed for version must be in the format N.N.N');
+          process.exit(1);
+        }
 
-      const latestVersion = getLatestVersionParsed();
+        const latestVersion = getLatestVersionParsed();
 
-      if (semverDiff(latestVersion[1], versionMatch[1]) === null) {
-        swig.log.error('New version can not be less than latest existing version: ' + latestVersion[1]);
-        process.exit(1);
-      } else {
-        isNewBuild = true;
+        if (semverDiff(latestVersion[1], versionMatch[1]) === null) {
+          swig.log.error('New version can not be less than latest existing version: ' + latestVersion[1]);
+          process.exit(1);
+        } else {
+          isNewBuild = true;
+        }
       }
 
       if (isNewBuild) {
         execSync('npm --no-git-tag-version version ' + argConfig.version);
         swig.pkg.version = argConfig.version;
       }
+
       deployVersion = argConfig.version;
     }
   });
 
   gulp.task('nova-version-cleanup', function() {
-
+    swig.log('');
     if (isNewBuild) {
-      const gitCommands = [
-        'git add package.json',
-        'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
-        'git commit -m "autocommit: v' + deployVersion + ' set in package.json"',
-        'git push --tags',
-        'git push || true'      // If we're on a local branch and don't want to abort the script when 'git push' fails, hence the '|| true' at the end
-      ];
+      let gitCommands;
+      if (isNotMasterBranch) {
+        swig.log.info('Tagging RC version on git');
+        gitCommands = [
+          'git tag -a -m "Release Candidate v' + deployVersion + '" v' + deployVersion,
+          'git push --tags',
+          'git checkout package.json'
+        ];
+      } else {
+        swig.log.info('Tagging release version on git');
+        gitCommands = [
+          'git add package.json',
+          'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
+          'git commit -m "autocommit: v' + deployVersion + ' set in package.json"',
+          'git push --tags',
+          'git push || true'      // If we're on a local branch and don't want to abort the script when 'git push' fails, hence the '|| true' at the end
+        ];
+      }
 
       execSync(gitCommands.join(';'), execSyncOpts.pipeOutput);
     }
   });
 
   gulp.task('nova-build-docker', function() {
+    swig.log('');
+    swig.log.info('Building Docker image');
     const imageAlreadyExists = execSync('docker images -q ' + novayml.service_name + ':' + deployVersion, execSyncOpts.returnOutput);
     const homeNpmrcPath = path.join(process.env.HOME, '.npmrc');
     const localNpmrcPath = path.join('.','.npmrc');
@@ -487,8 +555,8 @@ module.exports = function(gulp, swig) {
       'nova-new-version',
       'nova-specified-version',
       'assets-deploy',
-      'nova-version-cleanup',
       'nova-build-docker',
+      'nova-version-cleanup',
       'nova-call-deploy',
       done);
   });
