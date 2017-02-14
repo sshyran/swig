@@ -1,0 +1,137 @@
+<style>
+  /* this css is inlined into the html below before it is sent as email content */
+  h2 { font-size: 18px; padding: 8px 10px; margin: 10px 0; background: #f7f7f7; border: 1px solid #ddd; border-radius: 3px; font-weight: bold; color: #333; text-shadow: 0 1px rgba(255,255,255,0.5); }
+  h3 { font-size: 13px; padding-left: 10px; }
+
+  .fileList { font: 12px Helvetica, Arial; padding: 10px 20px; max-width: 800px; vertical-align: middle; }
+  .fileList td { border-top: 1px solid #eee; }
+  .fileList tr:first-child td { border: 0; }
+  .fileList a { padding-right: 10px; font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+  .fileList .fileName { padding: 4px 0; }
+  .fileList .additions { color: #55a532; font-weight: bold; padding: 6px 0 0 0; }
+  .fileList .deletions { color: #bd2c00; font-weight: bold; padding: 6px 0 0 4px; }
+  .fileList .graph { padding: 4px 0 4px 10px; white-space: nowrap; }
+
+  h4 {
+    font: 12px Helvetica, Arial;
+    line-height: 1.4em;
+    padding: 10px 20px;
+  }
+
+  .graph { font-size: 0; font-size: 18px; }
+  .graph .add { color: #55a532; }
+  .graph .del { color: #bd2c00; }
+  .graph .norm { color: #ddd; }
+
+  .fileHeader {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    font: 13px Helvetica, Arial;
+    line-height: 28px;
+    margin: 20px 20px 0 20px;
+    max-width: 720px;
+    padding: 0 10px;
+    text-shadow: 0 1px 0 #fff;
+  }
+  .fileHeader .total {
+    color: #666;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  .fileHeader .name {
+    letter-spacing: 0.3px;
+    padding-left: 20px;
+  }
+
+  .diff {
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin: 0 20px 15px 20px;
+    max-width: 740px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .diff table {
+    color: #333;
+    font-size: 12px;
+    overflow: visible;
+    vertical-align: middle;
+    white-space: pre;
+    width: 100%;
+  }
+  .diff table td { padding: 4px 10px; font-family: Consolas, Courier; }
+  .diff table td:last-child { border-right: 0; }
+  .diff table .line { min-widght: 50px; text-align: right; color: rgba(0,0,0,0.3); }
+  .diff table tr.normal .line { border-right: 1px solid #eee; }
+  .diff table tr.add { background-color: #eaffea; }
+  .diff table tr.add .line { background: #dbffdb; border-right: 1px solid #c1e9c1; }
+  .diff table tr.del { background-color: #ffecec; }
+  .diff table tr.del .line { background: #ffdddd; border-right: 1px solid #f1c0c0; }
+  .diff table tr.chunk { border-right: 1px solid #d5e4f2; background-color: #f8fafd; }
+  .diff table tr.chunk td { color: rgba(0,0,0,0.3); }
+  .diff table tr.chunk .line { background: #f0f5fa; border-right: 1px solid #d5e4f2; }
+</style>
+
+<meta charset="UTF-8">
+
+<h2>Published {{repo}} module "{{moduleName}}" v{{fromVersion}} → v{{toVersion}}</h2>
+
+<h3>Showing {{fileCount}} changed files with {{additions}} additions and {{deletions}} deletions.</h3>
+
+<table cellpadding="0" cellspacing="0" border="0" class="fileList">
+<tbody>
+  {{#files}}
+  <tr>
+    <td class="fileName" width="100%"><a href="#{{{fromName}}}"><span>{{{fromName}}}</span></a></td>
+    <td class="additions">+{{additions}}</td>
+    <td class="deletions">-{{deletions}}</td>
+    <td class="graph">
+    {{#graph}}
+      {{#plus}}<span class="add">■</span>{{/plus}}{{#minus}}<span class="del">■</span>{{/minus}}{{#normal}}<span class="norm">■</span>{{/normal}}
+    {{/graph}}
+    </td>
+  </tr>
+  {{/files}}
+</tbody>
+</table>
+
+<h3>Commits</h3>
+
+{{#commits}}
+<h4>
+{{{.}}}
+</h4>
+{{/commits}}
+
+<h3>Files</h3>
+
+{{#files}}
+<a name="{{fromName}}"></a>
+<div class="fileHeader">
+  <span class="total">{{total}}</span>
+  <span class="graph" title="{{additions}} additions & {{deletions}} deletions">
+  {{#graph}}
+    {{#plus}}<span class="add">■</span>{{/plus}}{{#minus}}<span class="del">■</span>{{/minus}}{{#normal}}<span class="norm">■</span>{{/normal}}
+  {{/graph}}
+  </span>
+  <span class="name">{{name}}</span>
+</div>
+<div class="diff">
+  <table cellpadding="0" cellspacing="0" border="0">
+  <tbody>
+    {{#lines}}
+    <tr class="{{type}}">
+      <td class="line"><code data-remove>{{fromLine}}</code></td>
+      <td class="line"><code data-remove>{{toLine}}</code></td>
+      <td class="content"><code data-remove>{{{content}}}</code></td>
+    </tr>
+    {{/lines}}
+  </tbody>
+  </table>
+</div>
+
+{{/files}}

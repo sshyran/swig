@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasmine Test Runner</title>
+    <link rel="stylesheet" href="{{{jasminePath}}}/jasmine-1.3.1.css">
+    <script>
+      // we've gotta declare this before errrrything else
+      targetExperience = '{{targetExperience}}';
+    </script>
+  </head>
+  <body>
+    <div id="jasmine"></div>
+
+    <script src="{{{jasminePath}}}/jasmine-1.3.1.js"></script>
+    <script src="{{{jasminePath}}}/jasmine-html-1.3.1.js"></script>
+    <script src="{{{libPath}}}/../jasmine-nyan-reporter.js"></script>
+
+  {{#scripts}}
+    <script src="{{{.}}}"></script>
+  {{/scripts}}
+    <script src="{{{libPath}}}/../html-runner.js"></script>
+
+    <script>
+      {{#servers}}
+      mockEndpoints.push({
+        method: '{{method}}',
+        path: '{{{path}}}',
+        code: {{responseCode}},
+        data: '{{{responseData}}}'
+      });
+      {{/servers}}
+
+      {{#specFiles}}
+      gilt.specs.addFile('{{{.}}}');
+      {{/specFiles}}
+
+      gilt.specs.start({
+        baseUrl: '{{{baseUrl}}}',
+        targetExperience: '{{targetExperience}}',
+        callback: function () {
+          if (window.__runner__) {
+
+            window.__runner__.run({
+              suppressConsole: {{verbose}},
+              reporters: [
+                new jasmine.NyanReporter({
+                  verbosity: 3,
+                  color: {{useColors}}
+                })
+              ]
+            });
+          }
+          else {
+            var env = jasmine.getEnv();
+
+            env.updateInterval = 1000;
+            env.addReporter(new jasmine.HtmlReporter());
+            env.execute();
+          }
+        }
+      });
+
+      {{#fixtures}}
+      window.fixtures['{{name}}'] = {{{fixture}}};
+      {{/fixtures}}
+
+    </script>
+
+  </body>
+</html>

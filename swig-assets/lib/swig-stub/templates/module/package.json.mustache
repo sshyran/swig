@@ -1,0 +1,24 @@
+{
+  "name": "@gilt-tech/{{group}}.{{name}}",
+  "group": "{{group}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "ssh://gerrit.gilt.com:29418/{{repo}}",
+      "path": "src/{{group}}/{{name}}"
+    }
+  ],
+  "maintainers": [
+
+  ],
+  "directories": {
+    "src": "js",
+    "test": "spec"
+  },
+  "dependencies": {
+    "@gilt-tech/common.logger": "1.x.x",
+    "@gilt-tech/vendor.underscore": "1.8.x"
+  }
+}

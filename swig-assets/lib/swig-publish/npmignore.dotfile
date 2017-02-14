@@ -1,0 +1,16 @@
+# this is an .npmignore file for publishing from temp
+
+.DS_Store
+.history
+.jshintrc
+.npmignore
+node_modules
+npm-debug.log
+
+# misc
+spec
+runner
+runner.html
+coverage
+docs
+complexity_report.md
