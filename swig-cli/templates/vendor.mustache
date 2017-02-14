@@ -1,0 +1,20 @@
+/*
+ * This module has been wrapped in a `gilt.define` function call
+ * to prevent document/window level and AMD conflicts, and to facilitate
+ * use within our RequireJS system.
+ *
+ * To view the code responsible, please reference:
+ *  https://github.com/gilt/gilt-swig/lib/pre-publish
+ *
+ * This template can be found at:
+ *  https://github.com/gilt/gilt-swig/templates/vender.mustache
+ */
+
+gilt.define('{{name}}', [], function () {
+
+  var exports = {}, define = null, require = null, {{global}} = null;
+
+{{{contents}}}
+
+  return exports.{{global}} || this.{{global}} || {{global}} || exports;
+});

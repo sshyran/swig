@@ -1,0 +1,25 @@
+{
+  "name": "",
+  "description": "",
+  "version": "0.0.1",
+  "homepage": "",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": {
+    "name": "Gilt Groupe",
+    "email": "info@gilt.com",
+    "url": "http://gilt.com/"
+  },
+  "contributors": [],
+  "gilt": {
+    "uiDependencies": {}
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "@gilt-tech/swig": "^1.0.0"
+  }
+}
