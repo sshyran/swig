@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-zk",
   "description": "A swig task that ensures zookeeper is running.",
   "version": "1.0.0",
-  "homepage": "https://github.com/gilt/gilt-swig-run",
+  "homepage": "https://github.com/gilt/gilt-swig-zk",
   "keywords": [
     "gulp",
     "swig",
@@ -11,10 +11,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-run.git"
+    "url": "https://github.com/gilt/gilt-swig-zk.git"
   },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig0-run/issues"
+    "url": "https://github.com/gilt/gilt-swig-zk/issues"
   },
   "author": {
     "name": "Gilt Groupe",
@@ -31,7 +31,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/gilt/gilt-swig-run/blob/master/LICENSE"
+      "url": "http://github.com/gilt/gilt-swig-zk/blob/master/LICENSE"
     }
   ],
   "engines": {

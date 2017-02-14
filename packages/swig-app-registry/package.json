@@ -3,7 +3,7 @@
   "description": "A swig task that fetches the application registry.",
   "deprecated": true,
   "version": "0.0.4",
-  "homepage": "https://github.com/gilt/gilt-swig-run",
+  "homepage": "https://github.com/gilt/gilt-swig-app-registry",
   "keywords": [
     "gulp",
     "swig",
@@ -12,10 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-run.git"
+    "url": "https://github.com/gilt/gilt-swig-app-registry.git"
   },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-run/issues"
+    "url": "https://github.com/gilt/gilt-swig-app-registry/issues"
   },
   "author": {
     "name": "Gilt Groupe",
@@ -32,7 +32,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/gilt/gilt-swig-run/blob/master/LICENSE"
+      "url": "http://github.com/gilt/gilt-swig-app-registry/blob/master/LICENSE"
     }
   ],
   "engines": {
