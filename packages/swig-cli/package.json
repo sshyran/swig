@@ -18,9 +18,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-default": "^0.2.0",
-    "@gilt-tech/swig-deps": "^0.1.0",
-    "@gilt-tech/swig-util": "^0.1.0",
+    "@gilt-tech/swig-default": "^1.9.9",
+    "@gilt-tech/swig-deps": "^1.9.9",
+    "@gilt-tech/swig-util": "^1.9.9",
     "co": "3.x",
     "colors": "*",
     "fs-extra": "^0.26.4",

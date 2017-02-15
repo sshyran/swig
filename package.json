@@ -1,4 +1,46 @@
 {
+  "author": {
+    "name": "Gilt Groupe",
+    "email": "info@gilt.com",
+    "url": "http://gilt.com/"
+  },
+  "contributors": [
+    {
+      "name": "Front End Community Krewe",
+      "email": "feck@gilt.com"
+    },
+    {
+      "name": "Andrew Powell",
+      "email": "powella@gilt.com",
+      "url": "https://github.com/shellscape/"
+    },
+    {
+      "name": "Rory Haddon",
+      "email": "rhaddon@gilt.com",
+      "url": "https://github.com/roryh/"
+    },
+    {
+      "name": "Federico Giovagnoli",
+      "email": "fgiovagnoli@gilt.com",
+      "url": "https://github.com/Meesayen/"
+    },
+    {
+      "name": "Nick Rogers",
+      "email": "nrogers@gilt.com",
+      "url": "https://github.com/njprrogers/"
+    },
+    {
+      "name": "Aidan Hollinshead",
+      "email": "ahollinshead@gilt.com",
+      "url": "https://github.com/ahollinshead/"
+    },
+    {
+      "name": "Riccardo Bellingeri",
+      "email": "rbellingeri@gilt.com",
+      "url": "https://github.com/rbelling/"
+    }
+  ],
+  "license": "MIT",
   "devDependencies": {
     "lerna": "2.0.0-beta.36"
   }
