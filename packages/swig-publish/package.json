@@ -1,51 +1,22 @@
 {
   "name": "@gilt-tech/swig-publish",
-  "description": "Publishes a Gilt UI Module, providing linting and spec automation.",
-  "version": "1.0.0",
-  "homepage": "https://github.com/gilt/gilt-swig-assets",
+  "description": "Publishes a UI Module, providing linting and spec automation.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-publish",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-assets.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-assets/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    },
-    {
-      "name": "Federico Giovagnoli",
-      "email": "fgiovagnoli@gilt.com",
-      "url": "https://github.com/Meesayen/"
-    },
-    {
-      "name": "Front End Community Krewe",
-      "email": "feck@gilt.com"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/gilt/gilt-swig-assets/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 6.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "co": "3.x",
     "globby": "*",
@@ -56,9 +27,5 @@
     "thunkify": "*",
     "underscore": "*"
   },
-  "devDependencies": {},
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
-  }
+  "devDependencies": {}
 }

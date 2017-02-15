@@ -3,5 +3,11 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0"
+  "publish": {
+    "ignore": [
+      "*.md",
+      "test/**"
+    ]
+  },
+  "version": "1.9.9"
 }

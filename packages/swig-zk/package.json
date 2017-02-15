@@ -1,42 +1,22 @@
 {
   "name": "@gilt-tech/swig-zk",
   "description": "A swig task that ensures zookeeper is running.",
-  "version": "1.0.0",
-  "homepage": "https://github.com/gilt/gilt-swig-zk",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-zk",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-zk.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-zk/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/gilt/gilt-swig-zk/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.12.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "co": "^3.1.0",
     "co-read": "^0.1.1",
@@ -44,9 +24,5 @@
     "thunkify": "^2.1.2",
     "underscore": "^1.8.3"
   },
-  "devDependencies": {},
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
-  }
+  "devDependencies": {}
 }

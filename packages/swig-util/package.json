@@ -1,42 +1,22 @@
 {
   "name": "@gilt-tech/swig-util",
   "description": "A collection of common utilities for use within swig tasks.",
-  "version": "0.1.6",
-  "homepage": "https://github.com/gilt/gilt-swig",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-util",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig.git"
-  },
   "bugs": {
     "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/gilt/gilt-swig/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.12.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.1",
     "cli-table": "^0.3.1",
@@ -54,9 +34,5 @@
     "thunkify": "^2.1.2",
     "underscore": "^1.7.0"
   },
-  "devDependencies": {},
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
-  }
+  "devDependencies": {}
 }

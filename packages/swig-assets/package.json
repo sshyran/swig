@@ -1,57 +1,22 @@
 {
   "name": "@gilt-tech/swig-assets",
-  "description": "Deploys Gilt assets.",
-  "version": "1.0.0",
-  "homepage": "https://github.com/gilt/gilt-swig-assets",
+  "description": "Deploys assets to S3.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-assets",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-assets.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-assets/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    },
-    {
-      "name": "Rory Haddon",
-      "email": "rhaddon@gilt.com",
-      "url": "https://github.com/roryh/"
-    },
-    {
-      "name": "Nick Rogers",
-      "email": "nrogers@gilt.com",
-      "url": "https://github.com/njprrogers/"
-    },
-    {
-      "name": "Federico Giovagnoli",
-      "email": "fgiovagnoli@gilt.com",
-      "url": "https://github.com/Meesayen/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/gilt/gilt-swig-assets/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 4.x.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "async-waterfall": "^0.1.5",
     "co": "3.x",
@@ -62,6 +27,5 @@
     "thunkify": "^2.1.2",
     "underscore": "*"
   },
-  "devDependencies": {},
-  "main": "index.js"
+  "devDependencies": {}
 }

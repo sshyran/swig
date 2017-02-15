@@ -1,22 +1,24 @@
 {
   "name": "@gilt-tech/swig-nova",
-  "version": "1.2.0",
   "description": "gilt-swig module for deploying with nova deployment tool",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-nova",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "management"
+  ],
+  "bugs": {
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gilt/gilt-swig-nova.git"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-nova/issues"
-  },
-  "homepage": "https://github.com/gilt/gilt-swig-nova#readme",
   "dependencies": {
-    "@gilt-tech/swig-assets": "*",
+    "@gilt-tech/swig-assets": "^1.9.9",
     "aws-sdk": "^2.5.3",
     "co": "^3.1.0",
     "inquirer": "^2.0.0",
@@ -24,5 +26,8 @@
     "underscore": "*",
     "yamljs": "^0.2.8",
     "yargs": "^5.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

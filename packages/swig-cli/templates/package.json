@@ -20,6 +20,6 @@
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.0",
-    "@gilt-tech/swig": "^1.0.0"
+    "@gilt-tech/swig": "^1.9.9"
   }
 }

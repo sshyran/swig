@@ -1,52 +1,22 @@
 {
   "name": "@gilt-tech/swig-minify",
-  "description": "Minifies Gilt front-end assets.",
-  "version": "1.1.0",
-  "homepage": "https://github.com/gilt/gilt-swig-assets",
+  "description": "Minifies front-end assets.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-minify",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-assets.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-assets/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    },
-    {
-      "name": "Federico Giovagnoli",
-      "email": "fgiovagnoli@gilt.com",
-      "url": "https://github.com/Meesayen/"
-    },
-    {
-      "name": "Riccardo Bellingeri",
-      "email": "rbellingeri@gilt.com",
-      "url": "https://github.com/rbelling/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/gilt/gilt-swig-assets/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 6.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "glob": "*",
     "gulp-autoprefixer": "^3.1.1",
@@ -65,9 +35,5 @@
     "source-map": "^0.5.6",
     "through2": "^0.6.3",
     "vinyl-sourcemaps-apply": "^0.2.1"
-  },
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
   }
 }

@@ -1,47 +1,22 @@
 {
   "name": "@gilt-tech/swig-spec",
   "description": "Runs specs (tests, expectations) for UI Modules and web apps.",
-  "version": "1.0.1",
-  "homepage": "https://github.com/gilt/gilt-swig-assets",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-spec",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-assets.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-assets/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    },
-    {
-      "name": "Rory Haddon",
-      "email": "rhaddon@gilt.com",
-      "url": "https://github.com/RoryH/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/gilt/gilt-swig-assets/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.12.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "chai": "1.x",
     "glob": "*",
@@ -64,10 +39,6 @@
   },
   "devDependencies": {},
   "peerDependencies": {
-    "@gilt-tech/swig-transpile-scripts": "^1.0.0"
-  },
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
+    "@gilt-tech/swig-transpile-scripts": "^1.9.9"
   }
 }

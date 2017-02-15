@@ -1,43 +1,22 @@
 {
   "name": "@gilt-tech/swig-app-registry",
   "description": "A swig task that fetches the application registry.",
-  "deprecated": true,
-  "version": "0.0.4",
-  "homepage": "https://github.com/gilt/gilt-swig-app-registry",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-app-registry",
   "keywords": [
     "gulp",
     "swig",
     "package",
-    "mangement"
+    "management"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gilt/gilt-swig-app-registry.git"
-  },
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig-app-registry/issues"
+    "url": "https://github.com/gilt/gilt-swig/issues"
   },
-  "author": {
-    "name": "Gilt Groupe",
-    "email": "info@gilt.com",
-    "url": "http://gilt.com/"
+  "main": "index.js",
+  "gilt": {
+    "scoped": true
   },
-  "contributors": [
-    {
-      "name": "Andrew Powell",
-      "email": "powella@gilt.com",
-      "url": "https://github.com/shellscape/"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/gilt/gilt-swig-app-registry/blob/master/LICENSE"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.12.x"
-  },
+  "license": "MIT",
   "dependencies": {
     "co": "3.x",
     "co-request": "*",
@@ -46,8 +25,5 @@
     "underscore": "*"
   },
   "devDependencies": {},
-  "main": "index.js",
-  "gilt": {
-    "scoped": true
-  }
+  "deprecated": true
 }
