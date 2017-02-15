@@ -1,0 +1,4 @@
+parser: "babel-eslint"
+extends: "@gilt-tech/eslint-config-gilt-base"
+rules:
+  "import/no-dynamic-require": "off"

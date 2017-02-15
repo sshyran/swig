@@ -37,7 +37,6 @@ module.exports = function (gulp) {
     };
 
   function load (moduleName) {
-
     if (argv.verbose) {
       console.log('Loading: ' + moduleName);
     }
@@ -50,12 +49,15 @@ module.exports = function (gulp) {
     return module;
   }
 
-  function loadAssetTasks () {
-    taskDeps = _.filter(Object.keys(thisPkg.dependencies), function (moduleName) {
-      return /^\@gilt-tech\/swig\-(?!util)/.test(moduleName);
-    });
-
-    taskDeps.forEach(load);
+  // This loads swig plugins listed as dependencies in the local package.json
+  // as well as those listed as devDependencies in the target app/module package.json
+  function loadPluginModules() {
+    const appCwd = process.cwd();
+    const devDeps = Object.keys(swig.pkg.devDependencies).map(m => `${appCwd}/node_modules/${m}`);
+    Object.keys(thisPkg.dependencies)
+        .concat(devDeps)
+        .filter(moduleName => /@gilt-tech\/swig-(?!util)/.test(moduleName))
+        .forEach(load);
   }
 
   function setupPaths () {
@@ -203,7 +205,7 @@ module.exports = function (gulp) {
     fs.mkdirSync(swig.temp);
   }
 
-  loadAssetTasks();
+  loadPluginModules();
 
   return swig;
 };
