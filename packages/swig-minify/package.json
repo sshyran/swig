@@ -10,7 +10,7 @@
     "management"
   ],
   "bugs": {
-    "url": "https://github.com/gilt/gilt-swig/issues"
+    "url": "https://github.com/gilt/swig/issues"
   },
   "main": "index.js",
   "license": "MIT",
