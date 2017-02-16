@@ -52,6 +52,9 @@ module.exports = function (gulp, swig) {
     }
   });
 
+  // Loading swig dependencies
+  swig.loadPlugins(require('./package.json').dependencies);
+
   function copyModules (paths, tempPath) {
 
     swig.log.info('', 'Copying modules to /public...');
@@ -314,11 +317,6 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('spec', function (done) {
-    if (!swig.tasks['install']) {
-      swig.log.error('The swig spec task requires the swig-install plugin, that is not installed.');
-      process.exit(1);
-    }
-
     var specsPath = path.join(swig.target.path, 'public/spec/', packageName),
       installTask = 'install-noop',
       specTasks;

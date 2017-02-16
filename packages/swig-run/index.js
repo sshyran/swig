@@ -22,11 +22,8 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  require('@gilt-tech/swig-zk')(gulp, swig);
-
-  if (!swig.tasks['transpile-scripts']) {
-    require('@gilt-tech/swig-transpile-scripts')(gulp, swig);
-  }
+  // Loading swig dependencies
+  swig.loadPlugins(require('./package.json').dependencies);
 
   var path = require('path'),
     spawn = require('child_process').spawn,

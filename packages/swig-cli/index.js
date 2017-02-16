@@ -35,28 +35,41 @@ module.exports = function (gulp) {
       target: {},
       tasks: {}
     };
+  const loadedPlugins = [];
 
-  function load (moduleName) {
+  function load(moduleName) {
+    // Avoiding loading the same plugin more than once
+    if (loadedPlugins.find(m => m === path.basename(moduleName))) return;
+
     if (argv.verbose) {
-      console.log('Loading: ' + moduleName);
+      console.log(`Loading: ${path.basename(moduleName)}`);
     }
 
-    var module = require(moduleName)(gulp, swig) || {};
+    try {
+      require(moduleName)(gulp, swig);
+    } catch (e) {
+      // It most likely happened that the user is using swig via an `npm link`d version of the
+      // module. In that case the require resolve paths are relative to the linked module folder
+      // instead of the target app.
+      // Let's attempt to require the module via the module.parent.require function and see what
+      // happens.
+      module.parent.require(moduleName)(gulp, swig);
+    }
 
-    module.path = path.dirname(require.resolve(moduleName));
-    module.pkg = require(path.join(module.path, '/package.json'));
-
-    return module;
+    loadedPlugins.push(path.basename(moduleName));
   }
 
   // This loads swig plugins listed as dependencies in the local package.json
   // as well as those listed as devDependencies in the target app/module package.json
-  function loadPluginModules() {
-    const appCwd = process.cwd();
-    const devDeps = Object.keys(swig.pkg.devDependencies).map(m => `${appCwd}/node_modules/${m}`);
-    Object.keys(thisPkg.dependencies)
-        .concat(devDeps)
-        .filter(moduleName => /@gilt-tech\/swig-(?!util)/.test(moduleName))
+  function loadPlugins(deps) {
+    let pluginsList = deps;
+    if (!Array.isArray(pluginsList)) {
+      if (typeof pluginsList !== 'object') {
+        return;
+      }
+      pluginsList = Object.keys(pluginsList);
+    }
+    pluginsList.filter(moduleName => /@gilt-tech\/swig-(?!util)/.test(moduleName))
         .forEach(load);
   }
 
@@ -188,6 +201,7 @@ module.exports = function (gulp) {
 
   swig.util = require('@gilt-tech/swig-util')(swig, gulp);
   swig.tell = tell;
+  swig.loadPlugins = loadPlugins;
 
   findSwigRc();
   checkLocalVersion();
@@ -205,7 +219,16 @@ module.exports = function (gulp) {
     fs.mkdirSync(swig.temp);
   }
 
-  loadPluginModules();
+  // Loading swig-cli essential swig plugins
+  loadPlugins(thisPkg.dependencies);
+
+  // Loading target app specified plugins
+  const targetAppCwd = process.cwd();
+  const targetAppDeps = Object.keys(swig.pkg.devDependencies)
+      .concat(Object.keys(swig.pkg.dependencies))
+      .map(m => `${targetAppCwd}/node_modules/${m}`);
+  loadPlugins(targetAppDeps);
+
 
   return swig;
 };

@@ -52,6 +52,9 @@ module.exports = function(gulp, swig) {
   let novaEnv;
   let deployVersion;
 
+  // Loading swig dependencies
+  swig.loadPlugins(require('./package.json').dependencies);
+
   /**
    * @desc  Output help & instructions to console.
    */
