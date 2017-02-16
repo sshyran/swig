@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-util",
   "description": "A collection of common utilities for use within swig tasks.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-util",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-util",
   "keywords": [
     "gulp",
     "swig",

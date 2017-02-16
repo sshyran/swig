@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-stub",
   "description": "Creates a new UI Module or Node web app.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-stub",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-stub",
   "keywords": [
     "gulp",
     "swig",

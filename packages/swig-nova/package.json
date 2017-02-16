@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-nova",
   "description": "gilt-swig module for deploying with nova deployment tool",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-nova",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-nova",
   "keywords": [
     "gulp",
     "swig",

@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-spec",
   "description": "Runs specs (tests, expectations) for UI Modules and web apps.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-spec",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-spec",
   "keywords": [
     "gulp",
     "swig",

@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-default",
   "description": "Default task of Swig",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-default",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-default",
   "keywords": [
     "gulp",
     "swig",

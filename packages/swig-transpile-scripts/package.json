@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-transpile-scripts",
   "description": "Transpile ES* scripts into ES5.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-transpile-scripts",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-transpile-scripts",
   "keywords": [
     "gulp",
     "swig",

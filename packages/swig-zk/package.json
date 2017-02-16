@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-zk",
   "description": "A swig task that ensures zookeeper is running.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-zk",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-zk",
   "keywords": [
     "gulp",
     "swig",

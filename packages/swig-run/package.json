@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-run",
   "description": "",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-run",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-run",
   "keywords": [
     "gulp",
     "swig",

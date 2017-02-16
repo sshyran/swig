@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-app-registry",
   "description": "A swig task that fetches the application registry.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-app-registry",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-app-registry",
   "keywords": [
     "gulp",
     "swig",

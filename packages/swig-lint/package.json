@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-lint",
   "description": "Lints front-end assets.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-lint",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-lint",
   "keywords": [
     "gulp",
     "swig",

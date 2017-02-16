@@ -2,7 +2,7 @@
   "name": "@gilt-tech/swig-release-email",
   "description": "Sends an email to the organization, informing of a new module version.",
   "version": "1.9.9",
-  "repository": "https://github.com/gilt/gilt-swig/tree/master/packages/swig-release-email",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-release-email",
   "keywords": [
     "gulp",
     "swig",
