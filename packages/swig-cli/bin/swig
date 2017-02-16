@@ -30,7 +30,8 @@ white=$(tput setaf 7)
 dir=`dirname $command`
 bin=`perl -e "print readlink '$command'"`
 dir=`dirname $dir/$bin`
-pkg=$(cat $dir/../package.json)
+swigCliDir="./node_modules/@gilt-tech/swig"
+pkg=$(cat $swigCliDir/package.json)
 
 function version {
   prop='version'
@@ -52,18 +53,18 @@ if [ "$NODE_ENV" != "production" ]; then
 fi
 
 if [ "$firstParam" == "init" ]; then
-  node --harmony "$dir/../lib/init.js" $secondParam
+  node "$swigCliDir/lib/init.js" $secondParam
   # --use-yarn
   exit
 fi
 
 if [ "$firstParam" == "update" ]; then
-  node --harmony "$dir/../lib/update.js"
+  node "$swigCliDir/lib/update.js"
   exit
 fi
 
 if [ "$firstParam" == "pre-publish" ]; then
-  node --harmony "$dir/../lib/pre-publish" $args
+  node "$swigCliDir/lib/pre-publish" $args
   # --vendor
   # --less
   exit
@@ -75,12 +76,6 @@ if [ "$firstParam" == "help" ]; then
   set -- "$firstParam" "--task=$secondParam"
 fi
 
-if [ ! -e "`which gulp`" ]; then
-  echo ".  ${gray}You don't have gulp installed globally, doing that now:${reset}"
-  echo ".  ${gray}Installing with sudo...${reset}"
-  sudo npm install -g gulp --registry=https://registry.npmjs.org/ --loglevel=warn
-  echo ".  ${gray}Global gulp installed.${reset}"
-fi
-
 # pass control to gulp
-node --harmony "$dir/../lib/update.js" && gulp $args
+node "$swigCliDir/lib/update.js"
+node "$swigCliDir/index.js" $args

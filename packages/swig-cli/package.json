@@ -18,6 +18,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "gulp": "^3.9.0",
     "@gilt-tech/swig-default": "^1.9.9",
     "@gilt-tech/swig-deps": "^1.9.9",
     "@gilt-tech/swig-util": "^1.9.9",
@@ -37,7 +38,6 @@
     "yargs": "*"
   },
   "devDependencies": {
-    "gulp": "^3.9.0",
     "gulp-david": "^1.0.0",
     "gulp-jshint": "^2.0.0",
     "gulp-util": "^3.0.6",
