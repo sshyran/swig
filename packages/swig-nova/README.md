@@ -10,12 +10,6 @@ Install module and save as a dev dependency
 npm install @gilt-tech/swig-nova --save-dev
 ```
 
-Add line to gulp file to load module for use:
-
-```
-printf "\nrequire('@gilt-tech/swig-nova')(gulp, swig);" >> gulpfile.js
-```
-
 
 ### Usage
 
@@ -38,5 +32,5 @@ Options:
 
 Links:
 
-* [swig](https://github.com/gilt/gilt-swig)
+* [swig](https://github.com/gilt/swig)
 * [nova deploy tool](https://github.com/gilt/nova)
