@@ -13,9 +13,6 @@
     "url": "https://github.com/gilt/gilt-swig/issues"
   },
   "main": "index.js",
-  "gilt": {
-    "scoped": true
-  },
   "license": "MIT",
   "dependencies": {
     "babel-eslint": "^7.0.0",
