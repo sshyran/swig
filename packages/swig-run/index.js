@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,7 +13,6 @@
 */
 
 module.exports = function (gulp, swig) {
-
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
     flags: {
@@ -25,77 +23,75 @@ module.exports = function (gulp, swig) {
   // Loading swig dependencies
   swig.loadPlugins(require('./package.json').dependencies);
 
-  var path = require('path'),
-    spawn = require('child_process').spawn,
-    fs = require('fs'),
-    _ = require('underscore'),
-    forever = require('forever'),
+  const path = require('path');
+  const spawn = require('child_process').spawn;
+  const fs = require('fs');
+  const _ = require('underscore');
+  const forever = require('forever');
 
-    node = {
-      command: path.join(__dirname, '/lib/command-node'),
-      forever: path.join(__dirname, '/lib/command-forever'),
-      args: [],
-      env: {},
-      valid: function () {
-        var pkg = swig.pkg,
-          errors = [];
+  const node = {
+    command: path.join(__dirname, '/lib/command-node'),
+    forever: path.join(__dirname, '/lib/command-forever'),
+    args: [],
+    env: {},
+    valid: function () {
+      const pkg = swig.pkg;
+      const errors = [];
 
-        if (!pkg) {
-          errors.push('  package.json not found!');
-        }
-        else {
-          if (!pkg.name) {
-            errors.push('  package.json Name missing!');
-          }
-
-          if (!pkg.version) {
-            errors.push('  package.json Version missing!');
-          }
-
-          if (!pkg.description) {
-            errors.push('  package.json Description missing!');
-          }
+      if (!pkg) {
+        errors.push('  package.json not found!');
+      } else {
+        if (!pkg.name) {
+          errors.push('  package.json Name missing!');
         }
 
-        return errors;
-      },
-      exists: function () {
-        swig.log.task('Looking for app.js');
-        return fs.existsSync(path.join(process.cwd(), 'app.js'));
+        if (!pkg.version) {
+          errors.push('  package.json Version missing!');
+        }
+
+        if (!pkg.description) {
+          errors.push('  package.json Description missing!');
+        }
       }
-    };
 
-  function run (cb) {
+      return errors;
+    },
+    exists: function () {
+      swig.log.task('Looking for app.js');
+      return fs.existsSync(path.join(process.cwd(), 'app.js'));
+    }
+  };
 
-    var env = _.extend(process.env, node.env || {}),
-      cmd = swig.argv.forever ? node.forever : node.command,
-      cp = spawn(cmd, node.args, env);
+  function run(cb) {
+    const env = _.extend(process.env, node.env || {});
+    const cmd = swig.argv.forever ? node.forever : node.command;
+    const cp = spawn(cmd, node.args, env);
 
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stderr);
 
-    cp.on('error', function (err) {
+    cp.on('error', (err) => {
       swig.log.error('swig-app', 'Error:');
       swig.log(err);
     });
 
-    cp.on('exit', function (code) {
+    cp.on('exit', () => {
       cb();
     });
 
     // handles CTL+C so that only the node.js instance is exited and not gulp.
-    process.on('SIGINT', function () {
+    process.on('SIGINT', () => {
       cp.kill();
       swig.log();
       swig.log.success(null, 'Terminating App');
 
-      var runner = forever.stop('app.js', false);
+      const runner = forever.stop('app.js', false);
 
-      runner.on('stop', function (process) {
+      runner.on('stop', () => {
         swig.log.success(null, 'Stopped forever Daemon');
       });
 
-      runner.on('error', function (err) {
+      runner.on('error', () => {
         swig.log.error('forever', 'Error stopping the forever Daemon');
         process.exit(1);
       });
@@ -103,19 +99,17 @@ module.exports = function (gulp, swig) {
   }
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['transpile-scripts', 'watch-scripts'], function (cb) {
-
-    var errors;
+  gulp.task('run', ['transpile-scripts', 'watch-scripts'], (cb) => {
+    let errors;
 
     swig.log();
-    swig.log('NOTE:'.yellow + ' Currently this tool is limited to node.js apps.\n');
+    swig.log(`${'NOTE:'.yellow} Currently this tool is limited to node.js apps.\n`);
 
     if (node.exists()) {
       swig.log.task('Checking validity of the app');
       errors = node.valid();
 
       if (!errors.length) {
-
         if (swig.argv.debug) {
           node.args.push('--debug');
         }
@@ -123,15 +117,11 @@ module.exports = function (gulp, swig) {
         swig.log.task('Running app');
         swig.log();
         run(cb);
+      } else {
+        swig.log.error('swig-app', `Couldn't start your app due to the following:\n${errors.join('\n')}`);
       }
-      else {
-        swig.log.error('swig-app', 'Couldn\'t start your app due to the following:\n' + errors.join('\n'));
-      }
-    }
-    else {
+    } else {
       swig.log.error('swig-app', 'No node.js apps found in this directory.');
     }
-
   });
-
 };

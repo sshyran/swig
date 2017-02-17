@@ -17,6 +17,7 @@
   "dependencies": {
     "async-waterfall": "^0.1.5",
     "co": "3.x",
+    "globby": "^6.1.0",
     "gulp-util": "^3.0.4",
     "mime": "^1.3.4",
     "s3": "^4.4.0",

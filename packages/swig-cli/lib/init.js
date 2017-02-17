@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-'use strict';
+
 /*
    ________  ___       __   ___  ________
   |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -15,31 +15,32 @@
      Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-var fs = require('fs'),
-  path = require('path'),
-  exec = require('child_process').exec,
-  thisPkg = require('../package.json'),
-  execOpts = {
-    maxBuffer: 500*1024       // default is 200*1024
-  },
-  installError = null,
-  templates = {
-    pkg: fs.readFileSync(path.join(__dirname, '../templates/package.json'))
-  },
-  paths = {
-    pkg: path.join(process.cwd(), 'package.json')
-  },
-  installCommand = 'npm install --loglevel=warn 2>&1',
-  isUsingYarn = process.argv.includes('--use-yarn'),
-  installer = 'npm',
-  pkg;
+const fs = require('fs');
+const path = require('path');
+const exec = require('child_process').exec;
+const thisPkg = require('../package.json');
+require('colors');
+
+const execOpts = {
+  maxBuffer: 500 * 1024       // default is 200*1024
+};
+const templates = {
+  pkg: fs.readFileSync(path.join(__dirname, '../templates/package.json'))
+};
+const paths = {
+  pkg: path.join(process.cwd(), 'package.json')
+};
+const isUsingYarn = process.argv.includes('--use-yarn');
+let installCommand = 'npm install --loglevel=warn 2>&1';
+let installError = null;
+let installer = 'npm';
+let pkg;
 
 if (isUsingYarn) {
   installCommand = 'yarn install 2>&1';
   installer = 'yarn';
 }
 
-require('colors');
 
 console.log('\nSwig is about to make your project funky fresh...'.cyan);
 
@@ -53,8 +54,7 @@ if (fs.existsSync(paths.pkg)) {
     pkg.devDependencies['@gilt-tech/swig'] = `^${thisPkg.version}`;
     fs.writeFileSync(paths.pkg, JSON.stringify(pkg, null, 2));
   }
-}
-else {
+} else {
   console.log('Creating a package.json for great justice.');
   fs.writeFileSync(paths.pkg, templates.pkg);
 }
@@ -62,13 +62,13 @@ else {
 console.log(`Running ${installer} install...`.yellow);
 
 // run ui install
-var cp = exec(installCommand, execOpts, function (error, stdout, stderr){
+const cp = exec(installCommand, execOpts, (error) => {
   if (error) {
     installError = error.toString();
   }
 });
 
-cp.on('close', function () {
+cp.on('close', () => {
   if (installError !== null) {
     console.log((`Swig initialization failed on ${installer} install. ${installError}`).red);
   } else {
@@ -76,14 +76,14 @@ cp.on('close', function () {
   }
 });
 
-(function capture (stdout) {
-  var buff = '';
-  stdout.on('data', function (data) {
+(function capture(stdout) {
+  let buff = '';
+  stdout.on('data', (data) => {
     buff += data.toString('utf8');
 
     if (buff.indexOf('\n') > -1) {
-      console.log('  ' + buff.trim());
+      console.log(`  ${buff.trim()}`);
       buff = '';
     }
   });
-})(cp.stdout);
+}(cp.stdout));

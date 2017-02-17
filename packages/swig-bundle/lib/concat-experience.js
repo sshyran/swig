@@ -1,7 +1,5 @@
 // modified from https://raw.githubusercontent.com/wearefractal/gulp-concat/master/index.js
 
-'use strict';
-
 const through = require('through2');
 const path = require('path');
 const gutil = require('gulp-util');
@@ -15,12 +13,12 @@ const PluginError = gutil.PluginError;
 
 // file can be a vinyl file object or a string
 // when a string it will construct a new one
-module.exports = function (file, options) {
+module.exports = function (file, opts) {
   if (!file) {
     throw new PluginError('gulp-concat', 'Missing file optionsion for gulp-concat');
   }
 
-  options = options || {};
+  const options = opts || {};
 
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
   if (typeof options.newLine !== 'string') {
@@ -42,16 +40,16 @@ module.exports = function (file, options) {
     throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
   }
 
-  function fixName (modulePath) {
-    modulePath = modulePath
-                  .replace(options.basePath, '')
-                  .substring(1)
-                  .replace(/\//g, '.');
+  function fixName(modulePath) {
+    const moduleName = modulePath
+        .replace(options.basePath, '')
+        .substring(1)
+        .replace(/\//g, '.');
 
-    const parts = modulePath.split('.');
+    const parts = moduleName.split('.');
 
     // remove '.js' from the module name
-    if (parts[parts.length - 1] === 'js' && modulePath !== 'main.js') {
+    if (parts[parts.length - 1] === 'js' && moduleName !== 'main.js') {
       parts.splice(-1, 1);
     }
 
@@ -64,11 +62,11 @@ module.exports = function (file, options) {
     return parts.join('.');
   }
 
-  function pad (what, howMany) {
+  function pad(what, howMany) {
     return sprintf(`%${howMany}s%s`, '', what);
   }
 
-  function bufferContents (_file, enc, cb) {
+  function bufferContents(_file, enc, cb) {
     // ignore empty files
     if (_file.isNull()) {
       cb();
@@ -112,7 +110,7 @@ module.exports = function (file, options) {
     cb();
   }
 
-  function applyTocSourceMap (code, _fileName, _toc) {
+  function applyTocSourceMap(code, _fileName, _toc) {
     const sourceMap = new SourceMapGenerator({
       file: _fileName
     });
@@ -137,7 +135,7 @@ module.exports = function (file, options) {
     applySourceMap(code, sourceMap.toString());
   }
 
-  function endStream (cb) {
+  function endStream(cb) {
     // no files passed in, no file goes out
     if (!firstFile || !concat) {
       cb();

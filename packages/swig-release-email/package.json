@@ -17,7 +17,6 @@
   "dependencies": {
     "co": "3.x",
     "co-exec": "^1.1.0",
-    "gulp-util": "^3.0.2",
     "inline-css": "^2.0.0",
     "minimize": "^1.2.0",
     "mustache": "^2.2.0",

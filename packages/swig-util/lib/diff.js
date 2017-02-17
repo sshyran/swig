@@ -1,66 +1,64 @@
-
 module.exports = function (swig) {
-
-  function normals (lines, start, end) {
-    var slice = lines.slice(start, end),
-      allNormal = true,
-      results = [];
+  function normals(lines, start, end) {
+    const slice = lines.slice(start, end);
+    const results = [];
+    let allNormal = true;
 
     // make sure the last three were 'normal' lines.
-    slice.forEach(function (line) {
+    slice.forEach((line) => {
       if (line.type === 'add' || line.type === 'del') {
         allNormal = false;
       }
     });
 
     if (allNormal) {
-      slice.forEach(function (line) {
-        results.push({ type: line.type, fromLine: line.ln1, toLine: line.ln2, content: line.content });
+      slice.forEach((line) => {
+        results.push({
+          type: line.type,
+          fromLine: line.ln1,
+          toLine: line.ln2,
+          content: line.content
+        });
       });
     }
 
     return results;
   }
 
-  swig.diff = function diff (gitDiff) {
+  swig.diff = function diff(gitDiff) {
+    const parse = require('parse-diff');
+    const result = {
+      additions: 0,
+      deletions: 0,
+      files: [],
+      fileCount: 0,
+    };
 
-    var fs = require('fs'),
-      path = require('path'),
-      parse = require('parse-diff'),
-      result = {
-        additions: 0,
-        deletions: 0,
-        files: [],
-        fileCount: 0,
-      },
-
-      files = parse(gitDiff);
+    const files = parse(gitDiff);
 
     result.fileCount = files.length;
 
-    files.forEach(function (file) {
+    files.forEach((file) => {
+      const fileResults = {
+        name: file.to,
+        fromName: file.from === '/dev/null' ? file.to : file.from,
+        additions: file.additions,
+        deletions: file.deletions,
+        lines: []
+      };
+      let line;
+      let prev;
+      let next;
 
-      var fileResults = {
-          name: file.to,
-          fromName: file.from === '/dev/null' ? file.to : file.from,
-          additions: file.additions,
-          deletions: file.deletions,
-          lines: []
-        },
-        line,
-        prev,
-        next;
-
-      file.chunks.forEach(function (chunk) {
+      file.chunks.forEach((chunk) => {
         fileResults.lines.push({ type: 'chunk', fromLine: null, toLine: null, content: chunk.content });
 
-        for (var i = 0; i < chunk.changes.length; i++) {
-            line = chunk.changes[i];
-            prev = [];
-            next = [];
+        for (let i = 0; i < chunk.changes.length; i++) {
+          line = chunk.changes[i];
+          prev = [];
+          next = [];
 
           if (line.type === 'add' || line.type === 'del') {
-
             prev = normals(chunk.changes, Math.max(i - 3, 0), i);
             fileResults.lines = fileResults.lines.concat(prev);
 
@@ -75,7 +73,12 @@ module.exports = function (swig) {
           }
 
           if (line.type === 'chunk') {
-            fileResults.lines.push({ type: line.type, fromLine: null, toLine: null, content: line.content });
+            fileResults.lines.push({
+              type: line.type,
+              fromLine: null,
+              toLine: null,
+              content: line.content
+            });
           }
         }
       });

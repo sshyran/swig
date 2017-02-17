@@ -1,4 +1,4 @@
-'use strict';
+
 
 /*
  ________  ___       __   ___  ________
@@ -27,7 +27,7 @@ module.exports = function (gulp, swig) {
   const handlebars = require('gulp-handlebars');
   const basePath = path.join(swig.target.path, '/public/');
 
-  function renameFile (file) {
+  function renameFile(file) {
     file.basename = `${file.basename.replace('.src', '')}.min`;
     return file;
   }
@@ -61,9 +61,9 @@ module.exports = function (gulp, swig) {
     const autoprefixerCfg = {
       // https://github.com/postcss/autoprefixer#options
       browsers: [
-        "last 2 versions",
-        "ie >= 10",
-        "iOS >= 8"
+        'last 2 versions',
+        'ie >= 10',
+        'iOS >= 8'
       ],
       // should Autoprefixer [remove outdated] prefixes. Default is true.
       remove: true

@@ -1,20 +1,15 @@
+module.exports = function () {
+  return function handlebarsLint() {
+    const through = require('through2');
+    const gutil = require('gulp-util');
+    const Handlebars = require('handlebars');
+    const XRegExp = require('xregexp').XRegExp;
+    const stylish = require('jshint-stylish');
+    let fileCount = 0;
+    const hasErrors = false;
+    const messages = [];
 
-'use strict';
-
-module.exports = function (gulp) {
-
-  return function handlebarsLint () {
-
-    var through = require('through2'),
-      gutil = require('gulp-util'),
-      Handlebars = require('handlebars'),
-      XRegExp = require('xregexp').XRegExp,
-      stylish = require('jshint-stylish'),
-      fileCount = 0,
-      hasErrors = false,
-      messages = [];
-
-    return through.obj(function (file, enc, cb) {
+    return through.obj((file, enc, cb) => {
       if (file.isNull()) {
         cb(null, file);
         return;
@@ -27,25 +22,21 @@ module.exports = function (gulp) {
 
       fileCount++;
 
-      var contents = file.contents.toString(),
-        regex = XRegExp('Parse error on line (?<line>[0-9]+)+:\n' + '[^\n]*\n' + '[^\n]*\n' + '(?<message>.*)');
+      const contents = file.contents.toString();
+      const regex = XRegExp('Parse error on line (?<line>[0-9]+)+:\n[^\n]*\n[^\n]*\n(?<message>.*)');
 
       try {
         Handlebars.precompile(contents, {});
-      }
-      catch (e) {
-
-        XRegExp.forEach(e.message, regex, function(match) {
-          return messages.push({
-            file: file.path,
-            error: {
-              character: 1,
-              code: 'E',
-              line: match.line - 1,
-              reason: match.message
-            }
-          });
-        });
+      } catch (e) {
+        XRegExp.forEach(e.message, regex, match => messages.push({
+          file: file.path,
+          error: {
+            character: 1,
+            code: 'E',
+            line: match.line - 1,
+            reason: match.message
+          }
+        }));
 
         stylish.reporter(messages);
         process.exit(1);
@@ -53,10 +44,10 @@ module.exports = function (gulp) {
 
       cb(null, file);
     },
-    function flush (cb) {
+    (cb) => {
       if (!hasErrors) {
         console.log('');
-        console.log('  ' + fileCount + ' Handlebars files lint-free\n');
+        console.log(`  ${fileCount} Handlebars files lint-free\n`);
       }
       cb();
     });

@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,38 +13,34 @@
 */
 
 module.exports = function (gulp, swig, options) {
+  const _ = require('underscore');
+  const file = require('gulp-file');
+  const fs = require('fs');
+  const path = require('path');
+  const jasmine = require('gulp-jasmine-phantomjs');
+  const mustache = require('mustache');
 
-  var _ = require('underscore'),
-    file = require('gulp-file'),
-    fs = require('fs'),
-    path = require('path'),
-    jasmine = require('gulp-jasmine-phantomjs'),
-    mustache = require('mustache'),
-    gutil = require('gulp-util'),
+  const jasminePath = path.join(path.dirname(require.resolve('gulp-jasmine-phantomjs')), 'vendor/jasmine-1.3.1');
 
-    jasminePath = path.join(path.dirname(require.resolve('gulp-jasmine-phantomjs')), 'vendor/jasmine-1.3.1'),
+  const runnerPath = path.join(__dirname, '../../templates/jasmine-runner.mustache');
+  let runner = fs.readFileSync(runnerPath, 'utf-8');
 
-    runnerPath = path.join(__dirname, '../../templates/jasmine-runner.mustache'),
-    runner = fs.readFileSync(runnerPath, 'utf-8'),
+  swig.log.info('', 'Rendering Runner...\n');
 
-    stream;
+  options = _.extend(options, {
+    jasminePath: jasminePath,
+    libPath: __dirname
+  });
 
-    swig.log.info('', 'Rendering Runner...\n');
+  runner = mustache.render(runner, options);
 
-    options = _.extend(options, {
-      jasminePath: jasminePath,
-      libPath: __dirname
-    });
+  swig.log.task('Running Specs with PhantomJS+Jasmine');
+  swig.log('');
 
-    runner = mustache.render(runner, options);
+  const stream = file('runner.html', runner, { src: true });
 
-    swig.log.task('Running Specs with PhantomJS+Jasmine');
-    swig.log('');
-
-    stream = file('runner.html', runner, { src: true });
-
-    if (!swig.argv.browser) {
-      return stream
+  if (!swig.argv.browser) {
+    return stream
         .pipe(gulp.dest(options.runnerPath))
         .pipe(jasmine({
           verbose: options.verbose,
@@ -55,7 +50,7 @@ module.exports = function (gulp, swig, options) {
             ignoreSslErrors: true
           }
         }));
-    }
+  }
 
-    return stream;
+  return stream;
 };

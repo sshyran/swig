@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,16 +15,12 @@
 */
 
 module.exports = function (swig) {
+  const through = require('through2');
+  const gutil = require('gulp-util');
+  let fileCount = 0;
+  let errors = false;
 
-  var _ = require('underscore'),
-    through = require('through2'),
-    gutil = require('gulp-util'),
-    res,
-    fileCount = 0,
-    errors = false;
-
-  res = through.obj(function (file, enc, cb) {
-
+  const res = through.obj((file, enc, cb) => {
     if (file.isNull()) {
       cb(null, file);
       return;
@@ -43,20 +40,18 @@ module.exports = function (swig) {
 
     cb(null, file);
   },
-  function flush (cb) {
+  (cb) => {
     if (!errors) {
-      if (fileCount){
-        swig.log.info('', fileCount + ' files lint-free.\n');
-      }
-      else {
+      if (fileCount) {
+        swig.log.info('', `${fileCount} files lint-free.\n`);
+      } else {
         swig.log.info('', 'No files to lint.\n');
       }
     }
     cb();
   });
 
-  res.fail = function handlebarsFailure (e) {
-
+  res.fail = function handlebarsFailure(e) {
     // As of Handlebars 4.x, it is throwing two different kinds of errors.
     // A parse error:
     //
@@ -79,17 +74,17 @@ module.exports = function (swig) {
 
     errors = true;
 
-    var message = e.message,
-      file = e.fileName.replace(process.cwd(), '').underline,
-      lines = message.split('\n'),
-      pad = swig.log.padding + swig.log.padding + ' ',
-      error,
-      badCode,
-      position,
-      expected,
-      matches,
-      lineNumber,
-      linePad;
+    let message = e.message;
+    const file = e.fileName.replace(process.cwd(), '').underline;
+    const lines = message.split('\n');
+    const pad = `${swig.log.padding + swig.log.padding} `;
+    let error;
+    let badCode;
+    let position;
+    let expected;
+    let matches;
+    let lineNumber;
+    let linePad;
 
     swig.log();
     swig.log.error(null, file);
@@ -100,18 +95,17 @@ module.exports = function (swig) {
       badCode = lines[1];
       position = lines[2];
       expected = lines[3] || 'Something went awry.';
-      matches = error.match(/(line (\d)+)\:/);
+      matches = error.match(/(line (\d)+):/);
       lineNumber = matches[1] || 'line ???';
       linePad = (new Array(lineNumber.length + 1)).fill(' ').join('');
 
-      swig.log(pad + lineNumber.grey + ' ' + badCode.blue);
+      swig.log(`${pad + lineNumber.grey} ${badCode.blue}`);
       swig.log(pad + linePad + position);
       swig.log(pad + linePad + expected.cyan);
-    }
-    // we're dealing with some other error
-    else {
+    } else {
+      // we're dealing with some other error
       message = message.replace(/ - \d+:\d+/, '');
-      swig.log(pad + ('line ' + e.lineNumber + '  col ' + e.column).grey + '  ' + message.blue);
+      swig.log(`${pad + (`line ${e.lineNumber}  col ${e.column}`).grey}  ${message.blue}`);
     }
 
     swig.log();

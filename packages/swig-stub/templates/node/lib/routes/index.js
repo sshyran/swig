@@ -1,5 +1,4 @@
 module.exports = function (app, router) {
-
   return {
     get: {
       '': function* checkout(next, controller, locals) {

@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -42,7 +41,7 @@ module.exports = function (gulp, swig) {
   let files;
   let isBetaPublish = false;
 
-  function* gitPublisher () {
+  function* gitPublisher() {
     swig.log.info('', 'Fetching Author\'s Email Address');
 
     const address = yield git.exec('config --get user.email');
@@ -53,7 +52,7 @@ module.exports = function (gulp, swig) {
 
   // checks package.json properties 'maintainers' and 'publishedBy' for the
   // current user and adds them if they're not found.
-  function* checkPublisher (tempPath) {
+  function* checkPublisher(tempPath) {
     const publisher = yield gitPublisher();
     let publisherFound = false;
     let packagePath;
@@ -90,15 +89,15 @@ module.exports = function (gulp, swig) {
       fs.writeFileSync(packagePath, packageJson, 'utf-8');
       swig.pkg = require(packagePath);
 
-      swig.log.verbose('Writing publisher info to: ' +
-          path.join(tempPath, 'package.json').grey);
+      swig.log.verbose(`Writing publisher info to: ${
+          path.join(tempPath, 'package.json').grey}`);
 
       swig.fs._fs.copySync(packagePath, path.join(tempPath, 'package.json'));
 
       // after package.json destined for publish has been safely copied away,
       // lets restore the original from version control
-      swig.log.info('', 'Restoring ' + 'package.json'.grey + ' post publish.');
-      yield git.exec('checkout -- ' + packagePath);
+      swig.log.info('', `Restoring ${'package.json'.grey} post publish.`);
+      yield git.exec(`checkout -- ${packagePath}`);
     }
 
     return publisher;
@@ -119,7 +118,7 @@ module.exports = function (gulp, swig) {
     swig.log('');
     swig.log.task('Checking Repo State');
 
-    const result = yield git.exec('status --porcelain ' + swig.target.path);
+    const result = yield git.exec(`status --porcelain ${swig.target.path}`);
 
     if (result.length) {
       swig.log.error('',
@@ -185,15 +184,15 @@ module.exports = function (gulp, swig) {
 
       if (_.contains(result, tagName)) {
         swig.log.error('publish-verify',
-          'It looks like you\'ve already published this module.\n   The tag: ' +
-          tagName + ', already exists.\n' +
+          `It looks like you've already published this module.\n   The tag: ${
+          tagName}, already exists.\n` +
           '   If you believe that was in error, you can delete the tag and try again, but tread carefully!'
         );
         process.exit(1);
       }
     } catch (e) {
-      swig.log.error('[publish-tag]', 'Failed to tag ' + (swig.pkg.name + '@' +
-          swig.pkg.version).magenta + '\n  ' + e);
+      swig.log.error('[publish-tag]', `Failed to tag ${(`${swig.pkg.name}@${
+          swig.pkg.version}`).magenta}\n  ${e}`);
 
       process.exit(1);
     }
@@ -240,7 +239,7 @@ module.exports = function (gulp, swig) {
 
     _.each(files, co(function* (file) {
       swig.log.info('', file.replace(tempPath, '').grey);
-      result = yield swig.exec('xattr -c ' + file);
+      result = yield swig.exec(`xattr -c ${file}`);
     }));
 
     yield checkPublisher(tempPath);
@@ -304,19 +303,19 @@ module.exports = function (gulp, swig) {
     try {
       // run npm against the temp module location, redirect stderr to stdout
       npmCommand = [
-        'cd ' + tempPath,
+        `cd ${tempPath}`,
         `npm publish .${tagFlag} --loglevel=info 2>&1`
       ].join('; ');
 
-      swig.log.info('', 'NPM Command:\n  ' +
-          npmCommand.split('; ').join(';\n  '));
+      swig.log.info('', `NPM Command:\n  ${
+          npmCommand.split('; ').join(';\n  ')}`);
 
       swig.log.info('', 'Publishing Module');
 
       result = yield swig.exec(npmCommand, null, {
         stdout(data) {
           streamResult += data;
-          if(swig.argv.verbose) {
+          if (swig.argv.verbose) {
             console.log(data);
           }
         }
@@ -326,8 +325,8 @@ module.exports = function (gulp, swig) {
         swig.log.error('', 'Sad Pandas. Publish Failed.');
 
         if (streamResult) {
-          swig.log.info('', 'Command Output:\n    ' +
-              streamResult.split('\n').join('\n    ').grey);
+          swig.log.info('', `Command Output:\n    ${
+              streamResult.split('\n').join('\n    ').grey}`);
         }
       } else {
         swig.log.success('', 'Module published to npm successfully.');
@@ -337,8 +336,8 @@ module.exports = function (gulp, swig) {
       swig.log.error('', 'Sad Pandas. Publish Failed:');
       swig.log.error('', e.stack);
       if (streamResult) {
-        swig.log.info('', 'Command Output:\n    ' +
-            streamResult.split('\n').join('\n    ').grey);
+        swig.log.info('', `Command Output:\n    ${
+            streamResult.split('\n').join('\n    ').grey}`);
       }
       process.exit(1);
     }
@@ -348,20 +347,18 @@ module.exports = function (gulp, swig) {
     swig.log('');
     swig.log.task('Tagging Module Version');
 
-    let result;
-
     try {
       swig.log.info('', 'Fetching Tags');
-      result = yield git.exec('fetch --tags');
+      yield git.exec('fetch --tags');
 
-      swig.log.info('', 'Tagging: ' + tagName);
-      result = yield git.exec('tag ' + tagName);
+      swig.log.info('', `Tagging: ${tagName}`);
+      yield git.exec(`tag ${tagName}`);
 
       swig.log.info('', 'Pushing Tags');
-      result = yield git.exec('push --tags');
+      yield git.exec('push --tags');
     } catch (e) {
-      swig.log.error('[publish-tag-version]', 'Failed to tag ' +
-          (swig.pkg.name + '@' + swig.pkg.version).magenta + '\n  ' + e);
+      swig.log.error('[publish-tag-version]', `Failed to tag ${
+          (`${swig.pkg.name}@${swig.pkg.version}`).magenta}\n  ${e}`);
       process.exit(1);
     }
 

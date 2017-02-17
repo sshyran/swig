@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -13,25 +14,25 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function (gulp, swig) {
-
-  var _ = require('underscore'),
-    fs = require('fs'),
-    path = require('path'),
-    through = require('through2'),
-    regex = require('./mock-regex');
+module.exports = function () {
+  const _ = require('underscore');
+  const fs = require('fs');
+  const path = require('path');
+  const through = require('through2');
+  const regex = require('./mock-regex');
 
   if (!String.prototype.scan) {
     // http://stackoverflow.com/a/13895463
+    // eslint-disable-next-line
     String.prototype.scan = function (re) {
       if (!re.global) {
-        throw 'regex must have \'global\' flag set';
+        throw new Error('regex must have \'global\' flag set');
       }
-      var s = this;
-      var m, r = [];
-      /* jshint boss: true */
+      const s = this;
+      const r = [];
+      let m;
+      // eslint-disable-next-line
       while (m = re.exec(s)) {
-        /* jshint boss: false */
         m.shift();
         r.push(m);
       }
@@ -39,22 +40,19 @@ module.exports = function (gulp, swig) {
     };
   }
 
-  function extract (file, content) {
-
-    var mixins,
-      variables,
-      imports;
+  function extract(file, content) {
+    let mixins;
+    let variables;
+    let imports;
 
     mixins = _.flatten(content.scan(regex.mixin).concat(content.scan(regex.altMixin)));
     mixins = _.uniq(mixins);
-    mixins = _.reject(mixins, function (mixin) {
-      return regex.hex.test(mixin);
-    });
-    mixins = _.map(mixins, function (mixin) {
+    mixins = _.reject(mixins, mixin => regex.hex.test(mixin));
+    mixins = _.map(mixins, (mixin) => {
       // in the event that the mixin regex returns something like
       // '#gradient > .vertical', we need the last bit to create
       // the mixin mock
-      var matches = mixin.match(/(\.[a-z]+)/ig);
+      const matches = mixin.match(/(\.[a-z]+)/ig);
 
       if (matches && matches.length) {
         return matches[matches.length - 1];
@@ -67,22 +65,21 @@ module.exports = function (gulp, swig) {
 
     variables = _.flatten(content.scan(regex.variable));
     variables = _.uniq(variables);
-    variables = _.reject(variables, function (variable) {
-      return _.include(['import', 'media'], variable);
-    });
+    variables = _.reject(variables, variable => _.include(['import', 'media'], variable));
 
-    imports = _.uniq(_.flatten(content.scan(regex['import'])));
-    imports = _.map(imports, function (imp) {
-
+    imports = _.uniq(_.flatten(content.scan(regex.import)));
+    imports = _.map(imports, (imp) => {
       imp = path.join(path.dirname(file), imp.slice(1, -1));
 
       if (fs.exists(imp)) {
+        // FIXME: is this function `extractMixinsAndVariables` defined somewhere globally??
+        // eslint-disable-next-line
         return extractMixinsAndVariables(imp, fs.readFileSync(imp));
       }
     });
     imports = _.compact(imports);
 
-    _.each(imports, function (data) {
+    _.each(imports, (data) => {
       [].push.apply(mixins, data.mixins);
       [].push.apply(variables, data.variables);
     });
@@ -93,66 +90,62 @@ module.exports = function (gulp, swig) {
     };
   }
 
-  function mock (file, content, data) {
+  function mockFn(file, content, data) {
+    let mock = _.map(data.mixins, (mixin) => {
+      let curlies = 0;
 
-    var mock = _.map(data.mixins, function (mixin) {
-      var curlies = 0;
+      mixin = `${mixin
+      .replace(/(\w+)(\.\w+)/g, '$1 $2') // take overqualified selectors (e.g. .foo.bar) and split them up (e.g. .foo .bar)
+      .replace(/>|\s+/g, () => { curlies += 1; return '{'; })
+      .replace(/\{{2,}/g, (c) => { curlies -= (c.length - 1); return '{'; })
+      }(){}`;
 
-      mixin = mixin
-        .replace(/(\w+)(\.\w+)/g, '$1 $2') // take overqualified selectors (e.g. .foo.bar) and split them up (e.g. .foo .bar)
-        .replace(/>|\s+/g, function () { curlies += 1; return '{'; })
-        .replace(/\{{2,}/g, function (c) { curlies -= (c.length - 1); return '{'; }) +
-        '(){}';
-
-      mixin += _.reduce(_.range(curlies), function (c) { return c + '}'; }, '');
+      mixin += _.reduce(_.range(curlies), c => `${c}}`, '');
 
       return mixin;
-    }),
-    mockLength;
+    });
 
-    mock = mock.concat(_.map(data.variables, function (variable) {
-      var value = 'none'; // default value -- acceptable in all CSS contexts (IIRC)
+    mock = mock.concat(_.map(data.variables, (variable) => {
+      let value = 'none'; // default value -- acceptable in all CSS contexts (IIRC)
 
       // detect if the variable is being used in a LESS context where an
       // internal functions will attempt to perform operations on it, e.g.
       // math, or color manipulation
       if (
-        content.match(new RegExp('@' + variable + '\\s*[/+*-]')) ||
-        content.match(new RegExp('[/+*-]\\s*@' + variable)) ||
-        content.match(new RegExp('fade(?:in|out)\\(@' + variable)) // this list is FAR from complete. the full list is... long... very.
+        content.match(new RegExp(`@${variable}\\s*[/+*-]`)) ||
+        content.match(new RegExp(`[/+*-]\\s*@${variable}`)) ||
+        content.match(new RegExp(`fade(?:in|out)\\(@${variable}`)) // this list is FAR from complete. the full list is... long... very.
       ) {
         value = '#fff'; // all math functions in less will accept a color as an operand
       }
 
-      return '@' + variable + ': ' + value + ';';
+      return `@${variable}: ${value};`;
     }));
 
     mock = mock.join('\n').trim();
-    mockLength = (data.mixins.length + data.variables.length + 1);
-    mock = '// mock-length: ' + mockLength + '\n' + mock + '\n';
+    const mockLength = (data.mixins.length + data.variables.length + 1);
+    mock = `// mock-length: ${mockLength}\n${mock}\n`;
     file.mock = mock;
     file.mockLength = mockLength;
 
-    content = mock + content.replace(regex['import'], '');
+    content = mock + content.replace(regex.import, '');
     return content;
   }
 
-  return function plugin () {
-
-    var content,
-      data;
+  return function plugin() {
+    let content;
+    let data;
 
     return through.obj(function (file, enc, cb) {
       if (file.isBuffer()) {
         content = file.contents.toString();
         data = extract(file.path, content);
-        content = mock(file, content, data)
+        content = mockFn(file, content, data);
         file.contents = new Buffer(content);
       }
 
       this.push(file);
       cb();
     });
-
   };
 };

@@ -1,4 +1,4 @@
-'use strict';
+
 
 /*
  ________  ___       __   ___  ________
@@ -83,7 +83,7 @@ module.exports = function (gulp, swig) {
 
   swig.tell('bundle', { description: 'Bundles Gilt javascript assets.' });
 
-  function indent (what) {
+  function indent(what) {
     let result = '';
     _.each(what.split('\n'), (line) => {
       if (line.trim().length) {
@@ -100,8 +100,8 @@ module.exports = function (gulp, swig) {
   // faster than an AST and isn't an insanely massive regex.
   let evalResults = [];
   const gilt = {
-    define: function swigGiltDefine (name, deps, method, options) {
-      options = options || {};
+    define: function swigGiltDefine(name, deps, method, opts) {
+      const options = opts || {};
 
       const result = {
         moduleName: name,
@@ -126,7 +126,7 @@ module.exports = function (gulp, swig) {
   // eslint-disable-next-line
   const createModule = gilt.define;
 
-  function cleanTree (object) {
+  function cleanTree(object) {
     _.each(object, (value, property) => {
       if (property !== 'dependencies') {
         delete object[property];
@@ -140,7 +140,7 @@ module.exports = function (gulp, swig) {
 
   // uses npm to tell us which modules are installed
   // we run this on the node_modules directory in temp because npm can make sense of it.
-  function* getDependencyGraph (name) {
+  function* getDependencyGraph(name) {
     const commands = [
       `cd ${swig.temp}`,
       `npm la --json --quiet${name || ''}`
@@ -153,7 +153,7 @@ module.exports = function (gulp, swig) {
     return result.dependencies;
   }
 
-  function examineModules () {
+  function examineModules() {
     const bundles = [];
     const glob = [
       path.join(swig.target.path, '/public/js/**/*.js'),
@@ -222,8 +222,8 @@ module.exports = function (gulp, swig) {
     return bundles;
   }
 
-  function getBundleDependencies (bundle, deps) {
-    deps = deps || modules.dependencies;
+  function getBundleDependencies(bundle, dependencies) {
+    const deps = dependencies || modules.dependencies;
 
     _.each(deps, (object, moduleName) => {
       // sometimes modules are REALLY REALLY DUMB and like to name their
@@ -241,8 +241,8 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function flattenDependencies (deps) {
-    deps = deps || modules.dependencies;
+  function flattenDependencies(dependencies) {
+    const deps = dependencies || modules.dependencies;
 
     _.each(deps, (dep, moduleName) => {
       modules.flatDependencies.push(moduleName);
@@ -251,8 +251,8 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function flattenBundleDependencies (bundle, deps) {
-    deps = deps || bundle.dependencies;
+  function flattenBundleDependencies(bundle, dependencies) {
+    const deps = dependencies || bundle.dependencies;
 
     _.each(deps, (dep, moduleName) => {
       bundle.exclusiveDependencies.push(moduleName);
@@ -261,7 +261,7 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function findExclusiveDependencies (bundle) {
+  function findExclusiveDependencies(bundle) {
     _.each(bundle.dependencies, (moduleName) => {
       const spokenFor = _.contains(modules.bundles.spokenFor, moduleName);
 
@@ -272,9 +272,9 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function cleanDependencies (deps) {
+  function cleanDependencies(dependencies) {
     // these are already present in main.js
-    deps = _.difference(deps, [
+    let deps = _.difference(dependencies, [
       '@gilt-tech/internal.require',
       '@gilt-tech/internal.gilt_require',
       '@gilt-tech/internal.json',
@@ -290,7 +290,7 @@ module.exports = function (gulp, swig) {
     return deps;
   }
 
-  function findBundleDependencies () {
+  function findBundleDependencies() {
     _.each(modules.bundles, (bundle) => {
       getBundleDependencies(bundle);
 
@@ -306,8 +306,8 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  function buildBundle (glob, bundle) {
-    bundle = bundle || { name: 'main' };
+  function buildBundle(glob, bundleIn) {
+    const bundle = bundleIn || { name: 'main' };
 
     const streams = _.map(['full', 'intermediate', 'minimal'], (experience) => {
       const stream =

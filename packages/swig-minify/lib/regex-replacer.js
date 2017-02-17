@@ -1,5 +1,3 @@
-'use strict';
-
 // modified from https://bitbucket.org/lsystems/regexp-sourcemaps
 // Changed:
 //  - Added possibility to pass a function as a replacement parameter
@@ -19,7 +17,7 @@ function Position(file, line, column) {
 }
 
 // Advance in the file to move the cursor after content
-Position.prototype.forward = function(content) {
+Position.prototype.forward = function (content) {
   const lines = content.split(lineMatcher);
 
   if (lines.length <= 1) {
@@ -33,14 +31,13 @@ Position.prototype.forward = function(content) {
 };
 
 // Add content to a node (needs to be added line per line)
-Position.prototype.add = function(node, content, autoForward) {
-  autoForward = autoForward === undefined ? true : !!autoForward;
-
+Position.prototype.add = function (node, content, autoForward = true) {
   const pos = autoForward ? this : new Position(this.file, this.line, this.column);
 
   let sub;
 
-  let lastIndex = lineMatcher.lastIndex = 0;
+  let lastIndex = 0;
+  lineMatcher.lastIndex = 0;
   while (lineMatcher.exec(content)) {
     sub = content.substring(lastIndex, lineMatcher.lastIndex);
     node.add(new SourceNode(pos.line, pos.column, pos.file, sub));
@@ -58,6 +55,7 @@ Position.prototype.add = function(node, content, autoForward) {
 };
 
 // Regexp replacer with sourcemap support
+// eslint-disable-next-line
 const Replacer = module.exports = function Replacer(regexp, replace, regexpName) {
   // Handle params
   if (typeof replace !== 'string') {
@@ -75,7 +73,7 @@ const Replacer = module.exports = function Replacer(regexp, replace, regexpName)
 };
 
 // Create a replace node depending on the current pos & match
-Replacer.prototype.createReplaceNode = function(pos, match) {
+Replacer.prototype.createReplaceNode = function (pos, match) {
   const node = new SourceNode();
   let varMatch;
   const replacePos = new Position(this.$regexpName);
@@ -83,7 +81,8 @@ Replacer.prototype.createReplaceNode = function(pos, match) {
       ? this.$replace()
       : this.$replace;
 
-  let lastIndex = varMatcher.lastIndex = 0;
+  let lastIndex = 0;
+  varMatcher.lastIndex = 0;
   // eslint-disable-next-line
   while ((varMatch = varMatcher.exec($replace))) {
     const parValue = match[varMatch[2] || varMatch[1]];
@@ -102,9 +101,7 @@ Replacer.prototype.createReplaceNode = function(pos, match) {
 };
 
 // Replace the provided content
-Replacer.prototype.replace = function(content, file) {
-  file = file || 'content';
-
+Replacer.prototype.replace = function (content, file = 'content') {
   const filePos = new Position(file);
 
   let match;
@@ -115,7 +112,8 @@ Replacer.prototype.replace = function(content, file) {
     node.setSourceContent(this.$regexpName, this.$replace);
   }
 
-  let lastIndex = this.$regexp.lastIndex = 0;
+  let lastIndex = 0;
+  this.$regexp.lastIndex = 0;
 
   // eslint-disable-next-line
   while ((match = this.$regexp.exec(content))) {

@@ -2,3 +2,7 @@ parser: "babel-eslint"
 extends: "@gilt-tech/eslint-config-gilt-base"
 rules:
   "import/no-dynamic-require": "off"
+  "import/no-extraneous-dependencies": "off"
+  "no-restricted-syntax": "off"
+  "no-param-reassign": "off"
+  "no-console": "off"

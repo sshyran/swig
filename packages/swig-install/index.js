@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,32 +15,30 @@
 */
 
 module.exports = function (gulp, swig) {
-  var _ = require('underscore'),
-    path = require('path'),
-    fs = require('fs'),
-    co = require('co'),
-    installCommand = swig.argv.useYarn
-        ? 'yarn install --json'
-        : 'npm install --loglevel=info --parseable=true 2>&1',
-    buffer,
-    errors,
-    regex = {
-      requested: /npm http[s]? request GET (.+)/,
-      installed: /npm info lifecycle (.+)~install: (\@gilt-tech\/(.+)\@([\d|\.]+))$/,
-      error: /npm ERR! code (.+)/,
-      fourohfour: /npm ERR! 404 Not found : (\@gilt-tech\/.+)/,
-      noversion: /npm ERR! No compatible version found\: (.+)/,
-      yarnModule: /\@gilt-tech\/(.+)\@\~?\^?([\d|\.|\*]+)/
-    },
-    downloaded = [];
+  const _ = require('underscore');
+  const path = require('path');
+  const co = require('co');
+  const installCommand = swig.argv.useYarn
+      ? 'yarn install --json'
+      : 'npm install --loglevel=info --parseable=true 2>&1';
+
+  const regex = {
+    requested: /npm http[s]? request GET (.+)/,
+    installed: /npm info lifecycle (.+)~install: (@gilt-tech\/(.+)@([\d|.]+))$/,
+    error: /npm ERR! code (.+)/,
+    fourohfour: /npm ERR! 404 Not found : (@gilt-tech\/.+)/,
+    noversion: /npm ERR! No compatible version found: (.+)/,
+    yarnModule: /@gilt-tech\/(.+)@~?\^?([\d|.|*]+)/
+  };
+  const downloaded = [];
 
   swig.tell('install', { description: 'Installs and organizes Gilt front-end assets. aka. ui-install' });
 
-  function processYarnLine (line) {
+  function processYarnLine(line) {
     if (!line) return;
     let moduleName;
     const l = JSON.parse(line);
-    if (l.type === 'step') swig.log.info(null, l.data.message)
+    if (l.type === 'step') swig.log.info(null, l.data.message);
     if (l.type === 'activityTick') {
       if (regex.yarnModule.test(l.data.name)) {
         moduleName = l.data.name.replace(regex.yarnModule, '$1 v$2');
@@ -47,14 +46,14 @@ module.exports = function (gulp, swig) {
         if (!_.contains(downloaded, moduleName)) {
           downloaded.push(moduleName);
 
-          swig.log(swig.log.strip(swig.log.symbols.download).green + '  ' + moduleName);
+          swig.log(`${swig.log.strip(swig.log.symbols.download).green}  ${moduleName}`);
         }
       }
     }
   }
 
   // processes output from npm install commands
-  function process (line) {
+  function process(line) {
     if (swig.argv.useYarn) {
       try {
         processYarnLine(line);
@@ -63,7 +62,7 @@ module.exports = function (gulp, swig) {
         // and processing them one by one.
         if (/\n/.test(line)) {
           const lines = line.split(/\n/);
-          lines.forEach(_line => {
+          lines.forEach((_line) => {
             processYarnLine(_line);
           });
         }
@@ -75,45 +74,40 @@ module.exports = function (gulp, swig) {
 
     swig.log.verbose(line);
 
-    var matches,
-      moduleName;
+    let moduleName;
 
     if (regex.requested.test(line)) {
       moduleName = line.replace(regex.requested, '$1');
 
-      swig.log.verbose(swig.log.padding + swig.log.padding + '→'.white + '  ' + moduleName);
-    }
-    else if (regex.installed.test(line)) {
+      swig.log.verbose(`${swig.log.padding + swig.log.padding + '→'.white}  ${moduleName}`);
+    } else if (regex.installed.test(line)) {
       moduleName = line.replace(regex.installed, '$3 v$4');
 
       if (!_.contains(downloaded, moduleName)) {
         downloaded.push(moduleName);
 
-        swig.log(swig.log.strip(swig.log.symbols.download).green + '  ' + moduleName);
+        swig.log(`${swig.log.strip(swig.log.symbols.download).green}  ${moduleName}`);
       }
-    }
-    else if (regex.fourohfour.test(line)) {
+    } else if (regex.fourohfour.test(line)) {
       swig.log();
-      swig.log.error('install', 'Module not found: ' + line.replace(regex.fourohfour, '$1'));
-    }
-    else if (regex.noversion.test(line)) {
+      swig.log.error('install', `Module not found: ${line.replace(regex.fourohfour, '$1')}`);
+    } else if (regex.noversion.test(line)) {
       swig.log();
       swig.log.error('install', line.replace(regex.noversion, '$1'));
       swig.log('\nTry specifying a different version. use `npm view <module>` to display available versions for a module.\n');
-    }
-    else if (regex.error.test(line)) {
+    } else if (regex.error.test(line)) {
       swig.log();
       swig.log.error('install', line.replace(regex.error, '$1'));
     }
   }
 
-  function * local() {
+  function* local() {
     if (swig.argv.module) {
       swig.log.info('', 'Skipping Node Modules');
       return;
     }
 
-    var pkg = swig.pkg;
+    const pkg = swig.pkg;
 
     swig.log();
     swig.log.task('Installing Node Modules');
@@ -123,7 +117,7 @@ module.exports = function (gulp, swig) {
       return;
     }
 
-    var output = yield swig.exec(installCommand, null, {
+    const output = yield swig.exec(installCommand, null, {
       stdout: function (data) {
         process(data);
       }
@@ -133,14 +127,14 @@ module.exports = function (gulp, swig) {
       swig.log.info(null, 'Node Modules are up to date.');
     }
 
-    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1){
-      swig.log.error('install:local', 'One or more modules failed to install from npm.\n ' +
-        swig.log.padLeft('For more info, look here: ' + path.join(swig.target.path, 'npm_debug.log').grey, 7));
+    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1) {
+      swig.log.error('install:local', `One or more modules failed to install from npm.\n ${
+        swig.log.padLeft(`For more info, look here: ${path.join(swig.target.path, 'npm_debug.log').grey}`, 7)}`);
     }
   }
 
-  function * ui () {
-    var pkg = swig.pkg;
+  function* ui() {
+    const pkg = swig.pkg;
 
     swig.log();
     swig.log.task('Installing Gilt UI Dependencies');
@@ -150,45 +144,43 @@ module.exports = function (gulp, swig) {
       return;
     }
 
-    var commands = [
-      'cd ' + swig.temp,
+    const commands = [
+      `cd ${swig.temp}`,
       'rm -rf node_modules',
       installCommand + (swig.argv.useYarn ? ' --no-lockfile' : '')
     ];
 
-    var output = yield swig.exec(commands.join('; '), null, {
+    const output = yield swig.exec(commands.join('; '), null, {
       stdout: function (data) {
         process(data);
       }
     });
 
-    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1){
-      swig.log.error('install:ui', 'One or more modules failed to install from npm.\n ' +
-        swig.log.padLeft('For more info, look here: ' + path.join(swig.temp, 'npm_debug.log').grey, 7));
+    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1) {
+      swig.log.error('install:ui', `One or more modules failed to install from npm.\n ${
+        swig.log.padLeft(`For more info, look here: ${path.join(swig.temp, 'npm_debug.log').grey}`, 7)}`);
     }
   }
 
   // this is a plain old noop task for conditionally executing install.
-  gulp.task('install-noop', function (done) {
+  gulp.task('install-noop', (done) => {
     done();
   });
 
-  gulp.task('install', co(function * () {
-
+  gulp.task('install', co(function* () {
     if (!swig.pkg) {
       swig.log.error('install', 'Couldn\'t find package.json, not installing anything.');
       return;
     }
 
-    var processPublic = require('./lib/public-directory')(gulp, swig),
-      packageMerge = require('./lib/package-merge')(gulp, swig),
-      mergeModules = require('./lib/merge-modules')(gulp, swig);
+    const processPublic = require('./lib/public-directory')(gulp, swig);
+    const packageMerge = require('./lib/package-merge')(gulp, swig);
+    const mergeModules = require('./lib/merge-modules')(gulp, swig);
 
     packageMerge();
     yield local();
     yield ui();
     mergeModules();
     processPublic();
-
   }));
 };

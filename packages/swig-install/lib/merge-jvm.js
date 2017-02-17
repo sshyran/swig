@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -15,11 +16,12 @@
 
 // handles merging module packages for jvm apps
 module.exports = function (gulp, swig, util) {
-
-  return function jvm () {
-    var Zip = require('adm-zip'),
-      glob = require('glob'),
-      deps;
+  return function jvm() {
+    const _ = require('underscore');
+    const path = require('underscore');
+    const Zip = require('adm-zip');
+    const glob = require('glob');
+    let deps;
 
     swig.log();
     swig.log.task('Merging JVM App Package(s)');
@@ -28,20 +30,19 @@ module.exports = function (gulp, swig, util) {
 
     _.each(
       glob.sync(path.join(swig.cwd, '/lib/**/com.gilt*.jar')),
-      function (jarPath) {
-
-        var jar = new Zip(jarPath),
-          jarName = jarPath.match(/\/(com\.gilt.*)\.jar$/)[1],
-          pkg = jar.getEntry('package.json');
+      (jarPath) => {
+        const jar = new Zip(jarPath);
+        const jarName = jarPath.match(/\/(com\.gilt.*)\.jar$/)[1];
+        let pkg = jar.getEntry('package.json');
 
         if (!pkg) {
           pkg = jar.getEntry('src/package.json');
         }
 
         if (pkg) {
-          swig.log.task('Extracting dependencies from ' + jarName.bold);
+          swig.log.task(`Extracting dependencies from ${jarName.bold}`);
 
-          deps = extract(JSON.parse(jar.readAsText(pkg)), deps, jarName);
+          deps = util.extract(JSON.parse(jar.readAsText(pkg)), deps, jarName);
         }
       }
     );
@@ -50,8 +51,7 @@ module.exports = function (gulp, swig, util) {
 
     if (deps) {
       util.generate(deps);
-    }
-    else {
+    } else {
       swig.log.error('install:merge-jvm', 'JVM validation of dependencies failed.');
       process.exit(0);
     }

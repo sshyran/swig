@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -15,18 +16,16 @@
 
 // handles merging module packages for node apps
 module.exports = function (gulp, swig, util) {
-
-  return function node () {
-    var _ = require('underscore'),
-      path = require('path'),
-      uiDeps,
-      pkg;
+  return function node() {
+    const _ = require('underscore');
+    const path = require('path');
+    let uiDeps;
 
     swig.log();
     swig.log.task('Merging Node App Package(s)');
     swig.log.info(null, 'Extracting dependencies');
 
-    pkg = _.extend({}, swig.pkg);
+    const pkg = _.extend({}, swig.pkg);
 
     // we don't want dependencies mixed with uiDeps in node apps
     if (swig.project.type !== 'module' && pkg.dependencies) {
@@ -38,8 +37,7 @@ module.exports = function (gulp, swig, util) {
 
     if (uiDeps) {
       util.generate(uiDeps);
-    }
-    else {
+    } else {
       swig.log.error('merge-node', 'Node validation of dependencies failed.');
       process.exit(0);
     }

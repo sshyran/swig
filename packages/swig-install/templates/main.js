@@ -1,19 +1,20 @@
-{{preamble}}
-// The createConfig definition has been moved to internal.gilt_require.
-// hook the existing require callback, if one has already been setup inline,
-// to ensure that inline config pairs are defined first.
+module.exports = function renderTemplate(preamble, configs, files) {
+  return `
+  ${preamble}
 
-require = require || {};
+  require = require || {};
 
-var _cb = require.callback;
+  var _cb = require.callback;
 
-require.callback = function () {
-  _cb && _cb();
-  var configs = {{configs}};
-  for (var key in configs) {
-    if (Object.prototype.hasOwnProperty.call(configs, key)) {
-      gilt.define(key, configs[key]);
+  require.callback = function () {
+    _cb && _cb();
+    var configs = ${configs};
+    for (var key in configs) {
+      if (Object.prototype.hasOwnProperty.call(configs, key)) {
+        gilt.define(key, configs[key]);
+      }
     }
-  }
+  };
+  ${files}
+  `;
 };
-{{files}}

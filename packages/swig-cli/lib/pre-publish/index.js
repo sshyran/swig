@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
    ________  ___       __   ___  ________
   |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -17,41 +18,40 @@
           that files are expendable and that no cleanup is necessary.
 */
 
-var _ = require('underscore'),
-  path = require('path'),
-  fs = require('fs'),
-  argv = require('yargs').argv,
+const argv = require('yargs').argv;
 
-  // this is a big hack
-  log = require('@gilt-tech/swig-util/lib/log')({ env: 'development', argv: argv }),
+// this is a big hack
+const log = require('@gilt-tech/swig-util/lib/log')({ env: 'development', argv: argv });
 
-  rPublish = /^(run\s?)?pu(b(l(i(sh?)?)?)?)?$/;
+const rPublish = /^(run\s?)?pu(b(l(i(sh?)?)?)?)?$/;
 
 require('colors');
 
-function bail (){
+function bail() {
   log('\nPre-publish tasks only run when triggered by `npm publish`.');
   process.exit(1);
 }
 
 // test to see if we're in the pre-publish task as a result of `npm publish`
 if (!argv.force) {
+  let npmConfigArgv;
   try {
-    var npm_config_argv = JSON.parse(process.env.npm_config_argv);
+    npmConfigArgv = JSON.parse(process.env.npmConfigArgv);
   } catch (e) {
     bail();
   }
 
-  /*jshint -W018 */
-  if (typeof npm_config_argv !== 'object' || !npm_config_argv.cooked || !npm_config_argv.cooked instanceof Array) {
+  /* jshint -W018 */
+  if (typeof npmConfigArgv !== 'object' || !npmConfigArgv.cooked || !(npmConfigArgv.cooked instanceof Array)) {
     bail();
   }
 
-  var arg;
-  while ((arg = npm_config_argv.cooked.shift()) !== undefined) {
+  let arg;
+  // eslint-disable-next-line
+  while ((arg = npmConfigArgv.cooked.shift()) !== undefined) {
     arg = arg.trim();
 
-    if (/^-/.test(arg)){
+    if (/^-/.test(arg)) {
       continue;
     }
 

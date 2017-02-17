@@ -1,4 +1,4 @@
-'use strict';
+
 
 /*
  ________  ___       __   ___  ________
@@ -40,10 +40,9 @@
   //   \s*,\s*
   // /x
 
-const
-  eslint = require('gulp-eslint'),
-  fs = require('fs'),
-  path = require('path');
+const eslint = require('gulp-eslint');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = function lintersSetup(gulp, swig) {
   if (!swig.pkg) {
@@ -55,11 +54,10 @@ module.exports = function lintersSetup(gulp, swig) {
   let paths;
 
   gulp.task('lint-setup', (done) => {
-    let
-      baseName,
-      baseSource;
+    let baseName;
+    let baseSource;
 
-    function source (type, extension) {
+    function source(type, extension) {
       return baseSource
               .replace(/\{type\}/g, type)
               .replace(/\{extension\}/g, extension);
@@ -82,17 +80,18 @@ module.exports = function lintersSetup(gulp, swig) {
     if (swig.project.type === 'webapp') {
       paths.css = [
         paths.css,
-        '!' + path.join(swig.target.path,
+        `!${path.join(swig.target.path,
           'public/css/',
           baseName,
           '/src/**/reset.{css,less}'
-        )
+        )}`
       ];
     }
 
     // some hacky shit so that package-version task can be loaded
     // normally from another file, but still have access to this.
     // minor minor namespace pollution for simplicity. please don't follow this pattern.
+    // eslint-disable-next-line
     swig.linter = { paths: paths };
 
     done();
@@ -105,26 +104,20 @@ module.exports = function lintersSetup(gulp, swig) {
   gulp.task('lint-script', ['lint-setup'], () => {
     swig.log.task('Linting Javascript', { noNewline: true });
 
-    let eslintrc = path.join(__dirname, '.eslintrc.yml');
-    const
-      localEslintrc = [
-        '.eslintrc.js',
-        '.eslintrc.yml',
-        '.eslintrc.yaml',
-        '.eslintrc.json',
-        '.eslintrc'
-      ].map(f => path.join(process.cwd(), f)).find(f => fs.existsSync(f)),
+    const failReporter = require('./lib/reporters/eslint-fail-reporter')(gulp, swig);
+    const eslintrc = path.join(process.cwd(), '.eslintrc.yml');
+    if (!fs.existsSync(eslintrc)) {
+      swig.log('You do not seem to have an .eslintrc.yml configuration in your app folder.');
+      swig.log('Please create such file and add the following to it:');
+      swig.log('');
+      swig.log('parser: "babel-eslint"');
+      swig.log('extends: "@gilt-tech/eslint-config-gilt-base"');
+      swig.log('');
+      swig.log('Also run the following command:');
+      swig.log('');
+      swig.log('npm i -D eslint babel-eslint eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react @gilt-tech/eslint-config-gilt');
 
-      failReporter = require('./lib/reporters/eslint-fail-reporter')(gulp, swig);
-
-    if (localEslintrc) {
-      eslintrc = localEslintrc;
-      swig.log.info('', 'Using local .eslintrc config');
-    }
-
-    if (swig.pkg.eslintConfig) {
-      eslintrc = swig.pkg.eslintConfig;
-      swig.log.info('', 'Using local package.json eslintConfig');
+      process.exit(1);
     }
 
     return gulp.src([
@@ -139,10 +132,9 @@ module.exports = function lintersSetup(gulp, swig) {
   gulp.task('lint-css', ['lint-setup'], () => {
     swig.log.task('Linting CSS and LESS');
 
-    const
-      buffer = require('gulp-buffer'),
-      lesshint = require('gulp-lesshint'),
-      reporter = require('./lib/reporters/lesshint-reporter')(swig);
+    const buffer = require('gulp-buffer');
+    const lesshint = require('gulp-lesshint');
+    const reporter = require('./lib/reporters/lesshint-reporter')(swig);
 
     return gulp.src(paths.css)
       .pipe(buffer())
@@ -156,9 +148,8 @@ module.exports = function lintersSetup(gulp, swig) {
   gulp.task('lint-handlebars', ['lint-setup'], () => {
     swig.log.task('Linting Handlebars Templates');
 
-    const
-      handlebars = require('gulp-handlebars'),
-      reporter = require('./lib/reporters/handlebars-reporter')(swig);
+    const handlebars = require('gulp-handlebars');
+    const reporter = require('./lib/reporters/handlebars-reporter')(swig);
 
     return gulp.src(paths.templates)
       .pipe(handlebars())

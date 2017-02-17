@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,56 +15,49 @@
 */
 
 module.exports = function (gulp, swig) {
+  const through = require('through2');
 
-  var through = require('through2');
+  function plugin() {
+    const regex = /\$\$PACKAGE_VERSION\$\$/;
+    let success = true;
+    let fileCount = 0;
+    let skippedCount = 0;
+    let content;
 
-  function plugin () {
-
-    var regex = /\$\$PACKAGE_VERSION\$\$/,
-      success = true,
-      fileCount = 0,
-      skippedCount = 0,
-      content;
-
-    return through.obj(function (file, enc, cb) {
-
+    return through.obj((file, enc, cb) => {
       if (file.isBuffer()) {
         content = file.contents.toString();
         if (content.indexOf('createModule') > -1 || content.indexOf('gilt.define') > -1) {
-
           fileCount++;
 
           if (!regex.test(content)) {
             success = false;
             swig.log.warn(null, file.path);
-          }
-          else {
+          } else {
             // listing all of the files that were successful is awefully verbose
+            // eslint-disable-next-line
             if (swig.argv.verbose || swig.argv.poolparty) {
               swig.log.success(null, file.path);
             }
           }
-        }
-        else {
+        } else {
           skippedCount++;
         }
       }
 
       cb();
-    }, function (cb) {
+    }, (cb) => {
       if (!success) {
         swig.log();
-        swig.log.warn('Please make sure you\'re retuning an object containing ' + '"version: \'$$PACKAGE_VERSION$$\'"\n'.bold);
-      }
-      else {
+        swig.log.warn(`Please make sure you're retuning an object containing ${'"version: \'$$PACKAGE_VERSION$$\'"\n'.bold}`);
+      } else {
         if (skippedCount > 0) {
-          swig.log.info('', 'Skipped ' + skippedCount + ' files.\n');
+          swig.log.info('', `Skipped ${skippedCount} files.\n`);
         }
 
-        if (fileCount){
-          swig.log.info('', fileCount + ' files lint-free.\n');
-        }
-        else if (skippedCount < fileCount) {
+        if (fileCount) {
+          swig.log.info('', `${fileCount} files lint-free.\n`);
+        } else if (skippedCount < fileCount) {
           swig.log.info('', 'No files to lint.\n');
         }
       }
@@ -71,14 +65,12 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  gulp.task('lint-package-version', ['lint-setup'], function () {
-
+  gulp.task('lint-package-version', ['lint-setup'], () => {
     swig.log.task('Linting Package Version variable in scripts');
 
     return gulp.src([
-        swig.linter.paths.js,
-        '!' + swig.linter.paths.js.replace('/**/', '/spec/**/')
-      ]).pipe(plugin());
+      swig.linter.paths.js,
+      `!${swig.linter.paths.js.replace('/**/', '/spec/**/')}`
+    ]).pipe(plugin());
   });
-
 };

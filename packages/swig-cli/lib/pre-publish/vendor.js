@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
    ________  ___       __   ___  ________
   |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,42 +15,39 @@
 */
 
 module.exports = function (log) {
-  var _ = require('underscore'),
-    path = require('path'),
-    fs = require('fs'),
-    glob = require('globby'),
-    mustache = require('mustache'),
+  const path = require('path');
+  const fs = require('fs');
+  const glob = require('globby');
+  const mustache = require('mustache');
 
-    cwd = process.cwd(),
-    targetPath = 'js',
-    encoding = 'utf-8',
+  const cwd = process.cwd();
+  const targetPath = 'js';
+  const encoding = 'utf-8';
 
-    template = fs.readFileSync(path.join(__dirname, '../../templates/vendor.mustache'), encoding),
-    files;
+  const template = fs.readFileSync(path.join(__dirname, '../../templates/vendor.mustache'), encoding);
 
   log();
   log.task('Wrapping Vendor Module');
 
-  files = glob.sync([path.join(cwd, targetPath, '**/*.js')]);
+  const files = glob.sync([path.join(cwd, targetPath, '**/*.js')]);
 
   if (!files.length) {
     log.info('', 'No files to wrap!');
     return;
   }
 
-  files.forEach(function (filePath) {
-    var data = {
-        contents: fs.readFileSync(filePath, encoding)
-      },
-      pkg = require(path.join(cwd, 'package.json')),
-      output;
+  files.forEach((filePath) => {
+    const data = {
+      contents: fs.readFileSync(filePath, encoding)
+    };
+    const pkg = require(path.join(cwd, 'package.json'));
 
     data.name = pkg.name.replace('@gilt-tech/', '');
     data.global = pkg.global_var /* legacy */ || pkg.gilt.globalVar || data.name.split('.')[1];
 
-    log.info('', 'Rendering:' + filePath.grey);
+    log.info('', `Rendering:${filePath.grey}`);
 
-    output = mustache.render(template, data);
+    const output = mustache.render(template, data);
 
     fs.writeFileSync(filePath, output, encoding);
   });

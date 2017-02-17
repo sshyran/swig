@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,21 +13,17 @@
 */
 
 module.exports = function (swig) {
-
-  var _ = require('underscore'),
-    hooker = require('hooker'),
-    symbols = require('log-symbols'),
-    readline = require('readline'),
-    sprintf = require('sprintf-js').sprintf,
-    strip = require('strip-ansi'),
-    thunkify = require('thunkify'),
-    Table = require('cli-table'),
-
-    linePrefix = '  ',
-    lastLine = '',
-    lastLineLength = 0;
-
+  const _ = require('underscore');
+  const symbols = require('log-symbols');
+  const readline = require('readline');
+  const sprintf = require('sprintf-js').sprintf;
+  const strip = require('strip-ansi');
+  const thunkify = require('thunkify');
+  const Table = require('cli-table');
   require('colors');
+
+  const linePrefix = '  ';
+  let lastLine = '';
 
   symbols.connector = ': ';
   symbols.start = '▸';
@@ -37,47 +32,40 @@ module.exports = function (swig) {
   symbols.download = '↓'.grey;
 
   if (swig.env === 'production' || swig.argv.pretty === false) {
-    symbols.info =    '[ i ]';
+    symbols.info = '[ i ]';
     symbols.warning = '[ w ]';
-    symbols.error =   '[ x ]';
-    symbols.success = '[ o ]'
+    symbols.error = '[ x ]';
+    symbols.success = '[ o ]';
     symbols.connector = ': ';
-    symbols.start = '>'
+    symbols.start = '>';
   }
 
   if (swig.env === 'development' && !swig.argv.poolparty) {
-    var oldLog = console.log,
-      oldWrite = process.stdout.write,
-      suppress = false;
+    const oldLog = console.log;
+    const oldWrite = process.stdout.write;
+    let suppress = false;
 
     // since this commit (https://github.com/gulpjs/gulp-util/commit/6f6e7c2947ccb59d71d3a680e3a76683289a0548)
     // gulp uses stdout for the time, and console.log for the rest.
     // the reason wasn't documented on the commit and it seems silly.
-    process.stdout.write = function () {
-      var args = Array.prototype.slice.call(arguments);
-
+    process.stdout.write = function (...args) {
       suppress = false;
 
-      if (/^\[\d\d\:\d\d:\d\d\]/.test(strip(args[0]))) {
+      if (/^\[\d\d:\d\d:\d\d\]/.test(strip(args[0]))) {
         suppress = true;
-      }
-      else {
+      } else {
         oldWrite.apply(process.stdout, args);
       }
-    }
+    };
 
     // gulp-util.log always starts each log with [00:00:00]
     // we're suppressing that output if on a dev machine.
-    console.log = function () {
-      var args = Array.prototype.slice.call(arguments);
-
+    console.log = function (...args) {
       if (suppress) {
-
         // if gulp is reporting an error, let that through.
-        _.each(args, function (arg) {
-          if (arg && (!_.isString(arg) ||
-              arg.toLowerCase().indexOf('error') > -1) ||
-              /Task \'(.+)\' is not in your gulpfile/.test(arg)) {
+        _.each(args, (arg) => {
+          // eslint-disable-next-line
+          if (arg && (!_.isString(arg) || arg.toLowerCase().indexOf('error') > -1) || /Task \'(.+)\' is not in your gulpfile/.test(arg)) {
             suppress = false;
           }
         });
@@ -89,11 +77,10 @@ module.exports = function (swig) {
       }
 
       oldLog.apply(console, args);
-    }
+    };
   }
 
-  function puts (what) {
-
+  function puts(what) {
     what = what || '';
 
     if (_.isObject(what)) {
@@ -101,11 +88,11 @@ module.exports = function (swig) {
       return;
     }
 
-    var newline = '\n',
-      raw = strip(what),
-      trailing = (raw.indexOf(newline) === raw.length - 1),
-      lastIndex,
-      lines;
+    const newline = '\n';
+    const raw = strip(what);
+    let trailing = (raw.indexOf(newline) === raw.length - 1);
+    let lastIndex;
+    let lines;
 
     if (what.length === 0) {
       trailing = false;
@@ -120,7 +107,7 @@ module.exports = function (swig) {
     lines = what.split(newline);
 
     if (lines.length > 1) {
-      lines = _.each(lines, function (line, index) {
+      lines = _.each(lines, (line, index) => {
         lines[index] = (index > 0 ? linePrefix : '') + line;
       });
 
@@ -132,9 +119,8 @@ module.exports = function (swig) {
     }
 
     lastLine = linePrefix + what;
-    lastLineLength = strip(lastLine).length;
 
-    what = lastLine  + (trailing ? newline : '');
+    what = lastLine + (trailing ? newline : '');
 
     if (swig.argv.pretty === 'false') {
       what = strip(what);
@@ -143,6 +129,7 @@ module.exports = function (swig) {
     console.log(what);
   }
 
+  // eslint-disable-next-line
   puts = _.extend(puts, {
 
     symbols: symbols,
@@ -192,18 +179,28 @@ module.exports = function (swig) {
     },
 
     table: function (rows, options) {
-
-      var table = new Table(_.extend({
+      const table = new Table(_.extend({
         chars: {
-          'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
-          'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' ,
-          'bottom-right': '', 'left': '' , 'left-mid': '' , 'mid': '' ,
-          'mid-mid': '', 'right': '' , 'right-mid': '' , 'middle': ''
+          top: '',
+          'top-mid': '',
+          'top-left': '',
+          'top-right': '',
+          bottom: '',
+          'bottom-mid': '',
+          'bottom-left': '',
+          'bottom-right': '',
+          left: '',
+          'left-mid': '',
+          mid: '',
+          'mid-mid': '',
+          right: '',
+          'right-mid': '',
+          middle: ''
         },
         style: { 'padding-left': 1, 'padding-right': 1 }
       }, options));
 
-      rows.forEach(function (row) {
+      rows.forEach((row) => {
         table.push(row);
       });
 
@@ -217,36 +214,34 @@ module.exports = function (swig) {
     },
 
     task: function (name) {
-      puts(symbols.start.white + linePrefix + name.cyan + ':');
+      puts(`${symbols.start.white + linePrefix + name.cyan}:`);
     },
 
     padLeft: function (what, howMany) {
-      return sprintf('%' + (howMany * linePrefix.length) + 's%s', '', what);
+      return sprintf(`%${howMany * linePrefix.length}s%s`, '', what);
     },
 
     padRight: function (what, howMany) {
-      return sprintf('%s%' + (howMany * linePrefix.length) + 's', what, '');
+      return sprintf(`%s%${howMany * linePrefix.length}s`, what, '');
     },
 
-    prompt: thunkify(function prompt (prompt, callback) {
-      var iface = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout
-        }),
-        result;
+    prompt: thunkify((prompt, callback) => {
+      const iface = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
 
-      iface.question(prompt + ' ', function (answer) {
+      iface.question(`${prompt} `, (answer) => {
         iface.close();
         callback(null, answer);
       });
     }),
 
-    confirm: function* confirm (question) {
-      var answer = yield swig.log.prompt(question) || 'n',
-        result;
+    confirm: function* confirm(question) {
+      let answer = yield swig.log.prompt(question) || 'n';
 
       answer = answer.toLowerCase();
-      result = answer.substring(0, 1) === 'y';
+      const result = answer.substring(0, 1) === 'y';
 
       return result;
     }

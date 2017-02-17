@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
  |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -12,7 +11,7 @@
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
 
-module.exports = function(gulp, swig) {
+module.exports = function (gulp, swig) {
   const inquirer = require('inquirer');
   const _ = require('underscore');
   const argv = require('yargs').argv;
@@ -45,10 +44,10 @@ module.exports = function(gulp, swig) {
   const isNotMasterBranch = execSync('git rev-parse --abbrev-ref HEAD',
         execSyncOpts.returnOutput).trim() !== 'master';
 
-  const lastRc = execSync(`git tag -l --sort=-v:refname | egrep '(?:\-rc\\d+)$' | head -n 1`, execSyncOpts.returnOutput);
+  const lastRc = execSync('git tag -l --sort=-v:refname | egrep \'(?:-rc\\d+)$\' | head -n 1', execSyncOpts.returnOutput);
 
   let isNewBuild;
-  let novayml = YAML.load('./nova.yml');
+  const novayml = YAML.load('./nova.yml');
   let novaEnv;
   let deployVersion;
 
@@ -77,6 +76,7 @@ module.exports = function(gulp, swig) {
   }
 
   function getLatestVersionTag() {
+    // eslint-disable-next-line
     return execSync('git tag -l --sort=-v:refname | egrep \'v(?:[0-9]\.?)+[0-9]$\' | head -n 1', execSyncOpts.returnOutput);
   }
 
@@ -87,34 +87,32 @@ module.exports = function(gulp, swig) {
   function getRCSuffix(version) {
     let suffix = '-rc1';
     if (lastRc && ~lastRc.indexOf(version)) {
-      suffix = `-rc${Number(lastRc.replace(/.+?\-rc/, '')) + 1}`
+      suffix = `-rc${Number(lastRc.replace(/.+?-rc/, '')) + 1}`;
     }
     return suffix;
   }
 
-  gulp.task('nova-check-options', function(done) {
+  gulp.task('nova-check-options', (done) => {
     const checkFilesExist = [
-        './Dockerfile',
-        './nova.yml'
-      ];
+      './Dockerfile',
+      './nova.yml'
+    ];
     let fileNotFound = false;
-    let gitDiffResult;
 
 
     // First thing, let's check if we have the right tools installed
-
     try {
       execSync('which nova');
-    } catch(e) {
+    } catch (e) {
       swig.log.error('\'nova\' deploy tool does not appear to be installed. https://github.com/gilt/nova');
       process.exit(1);
     }
 
     // Then check if all the required files exist
 
-    checkFilesExist.forEach(function(file) {
+    checkFilesExist.forEach((file) => {
       if (!fs.existsSync(file)) {
-        swig.log.error('Required file ' + file + ' not found.');
+        swig.log.error(`Required file ${file} not found.`);
         fileNotFound = true;
       }
     });
@@ -125,7 +123,7 @@ module.exports = function(gulp, swig) {
 
    // Check if the git repo is not 'dirty'
 
-    gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
+    const gitDiffResult = execSync('git diff --shortstat 2> /dev/null | tail -n1', execSyncOpts.returnOutput);
     if (gitDiffResult !== '') {
       swig.log.error('Git repo is dirty, please commit all changes and try again');
       process.exit(1);
@@ -134,7 +132,7 @@ module.exports = function(gulp, swig) {
     // Check arguments validity
 
     if (argv.latestTag) {
-      swig.log.info('Latest version tag is: ' + getLatestVersionTag());
+      swig.log.info(`Latest version tag is: ${getLatestVersionTag()}`);
       process.exit(0);
     }
 
@@ -256,7 +254,7 @@ module.exports = function(gulp, swig) {
     let stack;
 
     if (argConfig.stack) {
-      let stackConf = novaEnv.stacks.find(
+      const stackConf = novaEnv.stacks.find(
           s => s.stack_name.toLowerCase() === argConfig.stack.toLowerCase());
       if (!stackConf) {
         swig.log.error(`Stack '${argConfig.stack}' for environment ${env} not found in your nova.yml.`);
@@ -265,7 +263,8 @@ module.exports = function(gulp, swig) {
           process.exit(1);
         }
       } else {
-        argConfig.stack = stack = stackConf.stack_name;
+        argConfig.stack = stackConf.stack_name;
+        stack = stackConf.stack_name;
       }
     }
 
@@ -301,14 +300,17 @@ module.exports = function(gulp, swig) {
       answer = yield prompt({
         type: 'list',
         name: 'version',
-        message: 'What version bump do you want to perform? ' + currentVersion,
+        message: `What version bump do you want to perform? ${currentVersion}`,
         choices: [
-          { name: 'major ' + `(${v[0]+1}.0.0)`.grey,
-            value: 'major', short: 'major' },
-          { name: 'minor ' + `(${v[0]}.${v[1]+1}.0)`.grey,
-            value: 'minor', short: 'minor' },
-          { name: 'patch ' + `(${v[0]}.${v[1]}.${v[2]+1})`.grey,
-            value: 'patch', short: 'patch' },
+          { name: `major ${`(${v[0] + 1}.0.0)`.grey}`,
+            value: 'major',
+            short: 'major' },
+          { name: `minor ${`(${v[0]}.${v[1] + 1}.0)`.grey}`,
+            value: 'minor',
+            short: 'minor' },
+          { name: `patch ${`(${v[0]}.${v[1]}.${v[2] + 1})`.grey}`,
+            value: 'patch',
+            short: 'patch' },
           { name: 'Manually type new version...', value: 'manual' }
         ]
       });
@@ -319,7 +321,7 @@ module.exports = function(gulp, swig) {
           name: 'version',
           message: `What will be the new version? ${currentVersion}`,
           validate: version => /^\d+\.\d+\.\d+$/.test(version)
-        })
+        });
         argConfig.version = answer.version;
         if (isNotMasterBranch) {
           const suffix = getRCSuffix(argConfig.version);
@@ -339,13 +341,13 @@ module.exports = function(gulp, swig) {
     } else {
       let newV;
       if (argConfig.newVersion === 'major') {
-        newV = `${v[0]+1}.0.0`;
+        newV = `${v[0] + 1}.0.0`;
       }
       if (argConfig.newVersion === 'minor') {
-        newV = `${v[0]}.${v[1]+1}.0`;
+        newV = `${v[0]}.${v[1] + 1}.0`;
       }
       if (argConfig.newVersion === 'patch') {
-        newV = `${v[0]}.${v[1]}.${v[2]+1}`;
+        newV = `${v[0]}.${v[1]}.${v[2] + 1}`;
       }
       const suffix = isNotMasterBranch ? getRCSuffix(newV) : '';
       swig.log.status('', ' New Version: '.cyan + `${newV}${suffix}`.green);
@@ -366,25 +368,25 @@ module.exports = function(gulp, swig) {
     }
   }));
 
-  gulp.task('pull-latest-tags', function() {
+  gulp.task('pull-latest-tags', () => {
     swig.log.info('Fetching latest tags from git');
     execSync('git fetch --tags', execSyncOpts.pipeOutput);
   });
 
-  gulp.task('nova-check-aws-auth', function(done) {
-    swig.log.info('Using AWS profile: ' + novaEnv.aws_profile);
+  gulp.task('nova-check-aws-auth', (done) => {
+    swig.log.info(`Using AWS profile: ${novaEnv.aws_profile}`);
 
     AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: novaEnv.aws_profile });
 
     const s3Client = new AWS.S3();
 
     s3Client.listObjects({
-        Bucket: novaEnv.deployment_bucket,
-        MaxKeys: 1
-    }, function(err, data) {
+      Bucket: novaEnv.deployment_bucket,
+      MaxKeys: 1
+    }, (err) => {
       if (err) {
         if (err.code === 'ExpiredToken') {
-          swig.log.error('AWS token for profile \'' + novaEnv.aws_profile + '\' is expired. Please renew your token and retry.');
+          swig.log.error(`AWS token for profile '${novaEnv.aws_profile}' is expired. Please renew your token and retry.`);
           process.exit(1);
         } else {
           // some error has occurred, but it's not an expired token, so we'll try and proceed.
@@ -397,24 +399,23 @@ module.exports = function(gulp, swig) {
     });
   });
 
-  gulp.task('nova-new-version', function() {
+  gulp.task('nova-new-version', () => {
     if (argConfig.newVersion) {
       let vMatch = getLatestVersionParsed();
 
       if (vMatch === null) {
-        swig.log.error('Something went wrong parsing the latest git version tag: "' + getLatestVersionTag() + '"');
+        swig.log.error(`Something went wrong parsing the latest git version tag: "${getLatestVersionTag()}"`);
         swig.log.info('Tip: You can specify the new version manually using --version N.N.N as a workaround');
         process.exit(1);
       }
 
       vMatch = vMatch.slice(2);
-      vMatch = vMatch.map(function(i) {
-        return parseInt(i, 10);
-      });
+      vMatch = vMatch.map(i => parseInt(i, 10));
 
       if (argConfig.newVersion === 'major') {
         vMatch[0]++;
-        vMatch[1] = vMatch[2] = 0;
+        vMatch[1] = 0;
+        vMatch[2] = 0;
       } else if (argConfig.newVersion === 'minor') {
         vMatch[1]++;
         vMatch[2] = 0;
@@ -426,9 +427,9 @@ module.exports = function(gulp, swig) {
       const suffix = isNotMasterBranch ? getRCSuffix(newV) : '';
       const newVersion = `${newV}${suffix}`;
 
-      swig.log.info('New version after [' + argConfig.newVersion + '] bump: ' + newVersion.green);
+      swig.log.info(`New version after [${argConfig.newVersion}] bump: ${newVersion.green}`);
 
-      execSync('npm --no-git-tag-version version ' + newVersion);
+      execSync(`npm --no-git-tag-version version ${newVersion}`);
 
       swig.pkg.version = newVersion;
 
@@ -437,7 +438,7 @@ module.exports = function(gulp, swig) {
     }
   });
 
-  gulp.task('nova-specified-version', function() {
+  gulp.task('nova-specified-version', () => {
     if (argConfig.version) {
       if (!isNotMasterBranch) {
         const versionMatch = argConfig.version.match(/^((\d+)\.(\d+)\.(\d+))$/);
@@ -450,7 +451,7 @@ module.exports = function(gulp, swig) {
         const latestVersion = getLatestVersionParsed();
 
         if (semverDiff(latestVersion[1], versionMatch[1]) === null) {
-          swig.log.error('New version can not be less than latest existing version: ' + latestVersion[1]);
+          swig.log.error(`New version can not be less than latest existing version: ${latestVersion[1]}`);
           process.exit(1);
         } else {
           isNewBuild = true;
@@ -458,7 +459,7 @@ module.exports = function(gulp, swig) {
       }
 
       if (isNewBuild) {
-        execSync('npm --no-git-tag-version version ' + argConfig.version);
+        execSync(`npm --no-git-tag-version version ${argConfig.version}`);
         swig.pkg.version = argConfig.version;
       }
 
@@ -466,14 +467,14 @@ module.exports = function(gulp, swig) {
     }
   });
 
-  gulp.task('nova-version-cleanup', function() {
+  gulp.task('nova-version-cleanup', () => {
     swig.log('');
     if (isNewBuild) {
       let gitCommands;
       if (isNotMasterBranch) {
         swig.log.info('Tagging RC version on git');
         gitCommands = [
-          'git tag -a -m "Release Candidate v' + deployVersion + '" v' + deployVersion,
+          `git tag -a -m "Release Candidate v${deployVersion}" v${deployVersion}`,
           'git push --tags',
           'git checkout package.json'
         ];
@@ -481,8 +482,8 @@ module.exports = function(gulp, swig) {
         swig.log.info('Tagging release version on git');
         gitCommands = [
           'git add package.json',
-          'git tag -a -m "v' + deployVersion + '" v' + deployVersion,
-          'git commit -m "autocommit: v' + deployVersion + ' set in package.json"',
+          `git tag -a -m "v${deployVersion}" v${deployVersion}`,
+          `git commit -m "autocommit: v${deployVersion} set in package.json"`,
           'git push --tags',
           'git push || true'      // If we're on a local branch and don't want to abort the script when 'git push' fails, hence the '|| true' at the end
         ];
@@ -492,20 +493,21 @@ module.exports = function(gulp, swig) {
     }
   });
 
-  gulp.task('nova-build-docker', function() {
+  gulp.task('nova-build-docker', () => {
     swig.log('');
     swig.log.info('Building Docker image');
-    const imageAlreadyExists = execSync('docker images -q ' + novayml.service_name + ':' + deployVersion, execSyncOpts.returnOutput);
+    const imageAlreadyExists = execSync(`docker images -q ${novayml.service_name}:${deployVersion}`, execSyncOpts.returnOutput);
     const homeNpmrcPath = path.join(process.env.HOME, '.npmrc');
-    const localNpmrcPath = path.join('.','.npmrc');
+    const localNpmrcPath = path.join('.', '.npmrc');
     const dockerIgnoreTemplate = path.join(__dirname, 'templates', 'dockerignore.template');
     const localDockerIgnorePath = path.join('.', '.dockerignore');
 
     if (imageAlreadyExists) {
-      swig.log.warn('Docker image with tag [' + novayml.service_name + ':' + deployVersion + '] already exists, using this.');
+      swig.log.warn(`Docker image with tag [${novayml.service_name}:${deployVersion}] already exists, using this.`);
     } else {
       try {
-        // track if .npmrc & .dockerignore exist in the project folder, so as to know whether to clean them up after the docker container is built.
+        // track if .npmrc & .dockerignore exist in the project folder, so as to know whether to
+        // clean them up after the docker container is built.
         let localNpmrc = false;
         let localDockerIgnore = false;
 
@@ -517,12 +519,12 @@ module.exports = function(gulp, swig) {
         }
 
         if (fs.existsSync(localNpmrcPath)) {
-          localNpmrc = true
+          localNpmrc = true;
         } else {
           fs.linkSync(homeNpmrcPath, localNpmrcPath);
         }
 
-        execSync('docker build -t ' + novayml.service_name + ':' + deployVersion + ' .', _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
+        execSync(`docker build -t ${novayml.service_name}:${deployVersion} .`, _.extend({ stdio: 'pipe' }, execSyncOpts.pipeOutput));
 
         // remove .npmrc if it didn't exist before the script was run.
         if (!localNpmrc) {
@@ -533,19 +535,19 @@ module.exports = function(gulp, swig) {
           fs.unlinkSync(localDockerIgnorePath);
         }
       } catch (e) {
-        swig.log.error('Docker build failed. ' + e.message);
+        swig.log.error(`Docker build failed. ${e.message}`);
         process.exit(1);
       }
     }
   });
 
-  gulp.task('nova-call-deploy', function() {
+  gulp.task('nova-call-deploy', () => {
     swig.log.info('Calling nova...');
     swig.log();
-    execSync('nova deploy ' + argConfig.env + ' '  + argConfig.stack + ' ' + deployVersion, execSyncOpts.pipeOutput);
+    execSync(`nova deploy ${argConfig.env} ${argConfig.stack} ${deployVersion}`, execSyncOpts.pipeOutput);
   });
 
-  gulp.task('nova-deploy', function(done) {
+  gulp.task('nova-deploy', (done) => {
     if (argv.h || argv.help) {    // --help
       outputHelp();
     }

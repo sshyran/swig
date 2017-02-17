@@ -1,5 +1,5 @@
 
-'use strict';
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -15,18 +15,16 @@
 */
 
 module.exports = function (gulp, swig) {
+  const maxWarnings = 10;
 
-  var maxWarnings = 10;
+  return function reporter() {
+    const through = require('through2');
+    const gutil = require('gulp-util');
+    let fileCount = 0;
+    let errorCount = 0;
+    let hasErrors = false;
 
-  return function reporter () {
-
-    var through = require('through2'),
-      gutil = require('gulp-util'),
-      fileCount = 0,
-      errorCount = 0,
-      hasErrors = false;
-
-    return through.obj(function (file, enc, cb) {
+    return through.obj((file, enc, cb) => {
       if (file.isNull()) {
         cb(null, file);
         return;
@@ -51,16 +49,16 @@ module.exports = function (gulp, swig) {
 
       cb(null, file);
     },
-    function flush (cb) {
+    (cb) => {
       if (hasErrors) {
-        swig.log.error('lint-script', 'Please correct errors in ' + 'red'.red + ' before proceeding.');
+        swig.log.error('lint-script', `Please correct errors in ${'red'.red} before proceeding.`);
         process.exit(1);
       } else if (errorCount > maxWarnings) {
-        swig.log.error('lint-script', 'You\'ve got ' + errorCount.toString().magenta + ' warnings.\nPlease do some cleanup before proceeding.');
+        swig.log.error('lint-script', `You've got ${errorCount.toString().magenta} warnings.\nPlease do some cleanup before proceeding.`);
         process.exit(2);
       } else {
-        if (fileCount){
-          swig.log.info('', fileCount + ' files lint-free.\n');
+        if (fileCount) {
+          swig.log.info('', `${fileCount} files lint-free.\n`);
         } else {
           swig.log.info('', 'No files to lint.\n');
         }

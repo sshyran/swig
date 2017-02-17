@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
    ________  ___       __   ___  ________
   |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,33 +15,31 @@
 */
 
 module.exports = function (log) {
-  var _ = require('underscore'),
-    path = require('path'),
-    fs = require('fs'),
-    fsx = require('fs-extra'),
-    os = require('os'),
-    glob = require('globby'),
-    less = require('less'),
-    cwd = process.cwd(),
-    pkg = require(cwd + '/package.json'),
-    targetPath = 'css',
-    encoding = 'utf-8',
-    packageName = pkg.name.replace('@gilt-tech/', ''),
-    publishPath = cwd,
-    cssPath = path.join(publishPath, targetPath),
+  const _ = require('underscore');
+  const path = require('path');
+  const fs = require('fs');
+  const fsx = require('fs-extra');
+  const os = require('os');
+  const glob = require('globby');
+  const less = require('less');
+  const cwd = process.cwd();
+  const pkg = require(`${cwd}/package.json`);
+  const targetPath = 'css';
+  const encoding = 'utf-8';
+  const packageName = pkg.name.replace('@gilt-tech/', '');
+  const publishPath = cwd;
+  const cssPath = path.join(publishPath, targetPath);
 
-    // (tmpdir)/swig/publish/(module.name)/../../install/(module.name)
-    installPath = path.join(os.tmpdir(), 'swig', '/install', packageName, '/public/css/', packageName),
+  // (tmpdir)/swig/publish/(module.name)/../../install/(module.name)
+  const installPath = path.join(os.tmpdir(), 'swig', '/install', packageName, '/public/css/', packageName);
 
-    _lessPath = path.join(publishPath, '_less'),
-    options = { paths: [ installPath ], relativeUrls: false },
-    imports = [],
-    cssFiles,
-    lessFiles;
+  const _lessPath = path.join(publishPath, '_less');
+  const options = { paths: [installPath], relativeUrls: false };
+  const imports = [];
 
   log();
   log.task('Rendering LESS to CSS');
-  log.info('', 'Looking for install path: ' + installPath.grey);
+  log.info('', `Looking for install path: ${installPath.grey}`);
 
   if (!fs.existsSync(installPath)) {
     log.error('', '`swig pre-publish --less` assumes that `swig install` was run as part of a `swig publish` process.');
@@ -54,10 +53,10 @@ module.exports = function (log) {
     fsx.mkdirsSync(_lessPath);
   }
 
-  cssFiles = glob.sync([path.join(cssPath, '**/*.less')]);
+  const cssFiles = glob.sync([path.join(cssPath, '**/*.less')]);
 
   if (!cssFiles.length) {
-    log.info('', 'Inspecting: ' + path.join(cssPath, '**/*.less').grey);
+    log.info('', `Inspecting: ${path.join(cssPath, '**/*.less').grey}`);
     log.info('', 'No files to render!');
     return;
   }
@@ -65,14 +64,14 @@ module.exports = function (log) {
   // we scan each file for imports, and add those imports to a array
   // we'll reference that array so we're not creating duplicate css
   // and not rendering less files which are solely dependencies of other files.
-  cssFiles.forEach(function (filePath) {
-    var contents = fs.readFileSync(filePath, encoding),
-      matches = contents.match(/@import(.+)/gm),
-      imprt;
+  cssFiles.forEach((filePath) => {
+    const contents = fs.readFileSync(filePath, encoding);
+    const matches = contents.match(/@import(.+)/gm);
+    let imprt;
 
     if (matches) {
-      matches.forEach(function (m) {
-        imprt = m.match(/@import\s(\"|\')(.+)(\"|\')/);
+      matches.forEach((m) => {
+        imprt = m.match(/@import\s("|')(.+)("|')/);
 
         // ["@import 'dialog.less'", "'", "dialog.less", "'"]
         if (imprt && imprt.length === 4) {
@@ -83,11 +82,11 @@ module.exports = function (log) {
 
     // keep the old less file around for reference, debugging
     // but move it to _less/
-    log.verbose('Moving to _less: ' + path.basename(filePath).grey);
+    log.verbose(`Moving to _less: ${path.basename(filePath).grey}`);
     fs.renameSync(filePath, path.join(_lessPath, path.basename(filePath)));
   });
 
-  lessFiles = glob.sync([path.join(_lessPath, '**/*.less')]);
+  const lessFiles = glob.sync([path.join(_lessPath, '**/*.less')]);
 
   // so we found out from ui-build that it does this to enforce that the
   // mixins in less.helpers override anything found elsewhere. as of 11/13/15
@@ -95,44 +94,45 @@ module.exports = function (log) {
   // and do less than those in less.helpers. fun stuff.
   log.info('Note', 'Each file is prepended with an @import of less.helpers.');
 
-  lessFiles.forEach(function (filePath) {
-    var contents,
-      output,
-      outputPath;
+  lessFiles.forEach((filePath) => {
+    let contents;
+    let output;
+    let outputPath;
 
-    if (_.contains(imports, filePath.replace(_lessPath + '/', ''))) {
+    if (_.contains(imports, filePath.replace(`${_lessPath}/`, ''))) {
       // this file is imported by another. we want to ignore it to avoid
       // duplicate code and other issues.
       return;
     }
 
     contents = fs.readFileSync(filePath, encoding);
-    contents = '@import \'common/helpers/helpers.less\';\n' + contents;
+    contents = `@import 'common/helpers/helpers.less';\n${contents}`;
 
-    log.info('', 'Rendering: ' + path.basename(filePath).grey);
+    log.info('', `Rendering: ${path.basename(filePath).grey}`);
 
     less.render(contents, options)
-      .then(function (res) {
+      .then((res) => {
         output = res.css;
-        outputPath = path.join(path.dirname(filePath), path.basename(filePath, '.less') + '.css');
+        outputPath = path.join(path.dirname(filePath), `${path.basename(filePath, '.less')}.css`);
         outputPath = outputPath.replace('/_less/', '/css/');
 
-        log.verbose('Writing: ' + outputPath.grey);
+        log.verbose(`Writing: ${outputPath.grey}`);
         fs.writeFileSync(outputPath, output, encoding);
       },
-      function (err) {
+      (err) => {
         // Convert the keys so PluginError can read them
-        err.lineNumber = err.line;
-        err.fileName = err.filename;
+        const error = err;
+        error.lineNumber = error.line;
+        error.fileName = error.filename;
 
         // Add a better error message
-        err.message = err.message + ' in file ' + err.fileName + ' line no. ' + err.lineNumber;
+        error.message = `${error.message} in file ${error.fileName} line no. ${error.lineNumber}`;
 
         log();
-        log(err);
+        log(error);
         log();
 
-        log.error('less.render', err);
+        log.error('less.render', error);
 
         process.exit(1);
       });

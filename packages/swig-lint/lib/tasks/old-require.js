@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -18,46 +19,45 @@
 */
 
 module.exports = function (gulp, swig) {
+  const _ = require('underscore');
+  const through = require('through2');
 
-  var _ = require('underscore'),
-    through = require('through2');
+  function plugin() {
+    const regex = {
+      createModule: /createModule/,
+      requireModules: /requireModules/,
+      requireSpecs: /requireSpecs/
+    };
+    let success = true;
+    let fileCount = 0;
+    let content;
 
-  function plugin () {
-
-    var regex = {
-        createModule: /createModule/,
-        requireModules:/requireModules/,
-        requireSpecs: /requireSpecs/
-      },
-      success = true,
-      fileCount = 0,
-      content;
-
-    return through.obj(function (file, enc, cb) {
-
-      var fileSuccess = true;
+    return through.obj((file, enc, cb) => {
+      let fileSuccess = true;
 
       if (file.isBuffer()) {
         content = file.contents.toString();
         fileCount++;
 
-        _.each(regex, function (r, name) {
+        _.each(regex, (r, name) => {
           fileSuccess = true;
 
           if (r.test(content)) {
-            success = fileSuccess = false;
-            swig.log.error(null, 'Found \'' + name + '\' in ' + file.path);
+            success = false;
+            fileSuccess = false;
+            swig.log.error(null, `Found '${name}' in ${file.path}`);
           }
         });
 
         // listing all of the files that were successful is awefully verbose
+        // eslint-disable-next-line
         if (fileSuccess && swig.argv.verbose || swig.argv.poolparty) {
           swig.log.success(null, file.path);
         }
       }
 
       cb();
-    }, function (cb) {
+    }, (cb) => {
       if (!success) {
         swig.log();
         swig.log.error('createModule, requireModules, and requireSpecs are now obsolete.');
@@ -67,26 +67,20 @@ module.exports = function (gulp, swig) {
         swig.log('requireModules → gilt.require');
         swig.log('requireSpecs   → gilt.require');
         process.exit(1);
-      }
-      else {
-        if (fileCount){
-          swig.log.info('', fileCount + ' files lint-free.\n');
-        }
-        else if (fileCount === 0) {
-          swig.log.info('', 'No files to lint.\n');
-        }
+      } else if (fileCount) {
+        swig.log.info('', `${fileCount} files lint-free.\n`);
+      } else if (fileCount === 0) {
+        swig.log.info('', 'No files to lint.\n');
       }
       cb();
     });
   }
 
-  gulp.task('lint-old-require', ['lint-setup'], function () {
-
+  gulp.task('lint-old-require', ['lint-setup'], () => {
     swig.log.task('Linting Old Require in scripts');
 
     return gulp.src([
-        swig.linter.paths.js
-      ]).pipe(plugin());
+      swig.linter.paths.js
+    ]).pipe(plugin());
   });
-
 };

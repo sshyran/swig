@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -62,17 +63,17 @@ module.exports = {
     '(?!\\s*:)', // NOT followed by a colon
   'g'),
 
-  'import': new RegExp(
+  import: new RegExp(
     '\\s*' + // optional whitespace
     '@import' + // imports start with the @import directive
     '\\s+' + // required whitespace
     '(?:url\\()?' + // optional url() form
       '([\'"]?)' + // save the opening quote (so we can match the end quote)
         '(' + // save this part:
-          '[\\w.-\/]+' + // a valid path
+          '[\\w.-/]+' + // a valid path
         ')' +
       '\\1' + // match the opening quote
     '\\)?' + // match the end of the url() form
     ';', // ends with a semicolon
   'g')
-}
+};

@@ -1,4 +1,4 @@
-'use strict';
+
 
 // modified from https://github.com/lazd/gulp-replace/blob/master/index.js
 
@@ -13,23 +13,23 @@ const Replacer = require('./regex-replacer.js');
 const applySourceMap = require('vinyl-sourcemaps-apply');
 const path = require('path');
 
-module.exports = function(searchRE, replacement, options) {
+module.exports = function (searchRE, replacement, options) {
   return new Transform({
     objectMode: true,
-    // eslint-disable-next-line
     transform(file, enc, callback) {
       if (file.isNull()) {
-        return callback(null, file);
+        callback(null, file);
+        return;
       }
 
-      // eslint-disable-next-line
       function doReplace() {
         const replacer = new Replacer(searchRE, replacement);
 
         if (file.isStream()) {
           console.warn('gulp-replace-asset-url: Stream transformation not supported, yet.');
 
-          return callback(null, file);
+          callback(null, file);
+          return;
         }
 
         if (file.isBuffer()) {
@@ -41,17 +41,18 @@ module.exports = function(searchRE, replacement, options) {
             applySourceMap(file, result.map);
           }
 
-          return callback(null, file);
+          callback(null, file);
+          return;
         }
 
         callback(null, file);
       }
 
       if (options && options.skipBinary) {
-        // eslint-disable-next-line
         istextorbinary.isText(file.path, file.contents, (err, result) => {
           if (err) {
-            return callback(err, file);
+            callback(err, file);
+            return;
           }
 
           if (!result) {
@@ -61,7 +62,6 @@ module.exports = function(searchRE, replacement, options) {
           }
         });
 
-        // eslint-disable-next-line
         return;
       }
 

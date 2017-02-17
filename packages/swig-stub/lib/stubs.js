@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -13,16 +12,13 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-module.exports = function stubsPlugin (swig, data) {
+module.exports = function stubsPlugin(swig, data) {
+  const path = require('path');
+  const through = require('through2');
+  const gutil = require('gulp-util');
+  const mustache = require('mustache');
 
-  var _ = require('underscore'),
-    path = require('path'),
-    through = require('through2'),
-    gutil = require('gulp-util'),
-    mustache = require('mustache');
-
-  return through.obj(function stubsThrough (file, enc, cb) {
-
+  return through.obj((file, enc, cb) => {
     if (file.isNull()) {
       cb(null, file);
       return;
@@ -33,8 +29,7 @@ module.exports = function stubsPlugin (swig, data) {
       return;
     }
 
-    var extension = path.extname(file.path).toLowerCase(),
-      contents;
+    const extension = path.extname(file.path).toLowerCase();
 
     if (extension === '.mustache') {
       file.contents = new Buffer(mustache.render(file.contents.toString(), data));
@@ -42,6 +37,5 @@ module.exports = function stubsPlugin (swig, data) {
     }
 
     cb(null, file);
-
   });
 };

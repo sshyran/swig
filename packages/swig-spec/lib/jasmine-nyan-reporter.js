@@ -1,3 +1,5 @@
+/* eslint-disable  */
+
 (function() {
   if (!jasmine) {
     throw new Exception("Jasmine library does not exist in global namespace!");

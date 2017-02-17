@@ -15,13 +15,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "babel-eslint": "^7.0.0",
-    "eslint": "^3.7.1",
     "eslint-codeframe-formatter": "^1.0.2",
-    "eslint-config-airbnb": "^12.0.0",
-    "eslint-plugin-import": "^2.0.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0",
     "gulp-add-src": "*",
     "gulp-buffer": "*",
     "gulp-eslint": "^3.0.1",

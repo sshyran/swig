@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,17 +13,14 @@
 */
 
 module.exports = function (swig) {
-
-  var fs = require('fs-extra'),
-    path = require('path');
+  const fs = require('fs-extra');
+  const path = require('path');
 
   swig.fs = {
-
     _fs: fs,
-
     findup: require('findup-sync'),
 
-    //https://raw.githubusercontent.com/substack/node-mkdirp/master/index.js
+    // https://raw.githubusercontent.com/substack/node-mkdirp/master/index.js
     mkdir: function (p, mode, made) {
       if (mode === undefined) {
         mode = 0o777 & (~process.umask());
@@ -37,23 +33,22 @@ module.exports = function (swig) {
       try {
         fs.mkdirSync(p, mode);
         made = made || p;
-      }
-      catch (err0) {
+      } catch (err0) {
         switch (err0.code) {
           case 'ENOENT' :
-          made = swig.fs.mkdir(path.dirname(p), mode, made);
-          swig.fs.mkdir(p, mode, made);
-          break;
-          default:
-          var stat;
-          try {
-            stat = fs.statSync(p);
+            made = swig.fs.mkdir(path.dirname(p), mode, made);
+            swig.fs.mkdir(p, mode, made);
+            break;
+          default: {
+            let stat;
+            try {
+              stat = fs.statSync(p);
+            } catch (err1) {
+              throw err0;
+            }
+            if (!stat.isDirectory()) throw err0;
+            break;
           }
-          catch (err1) {
-            throw err0;
-          }
-          if (!stat.isDirectory()) throw err0;
-          break;
         }
       }
 
@@ -61,13 +56,13 @@ module.exports = function (swig) {
     },
 
     copyAll: function (src, dest) {
-      var exists = fs.existsSync(src),
-        stats = exists && fs.statSync(src),
-        isDirectory = exists && stats.isDirectory();
+      const exists = fs.existsSync(src);
+      const stats = exists && fs.statSync(src);
+      const isDirectory = exists && stats.isDirectory();
 
       if (exists && isDirectory) {
         swig.fs.mkdir(dest);
-        fs.readdirSync(src).forEach(function (childItemName) {
+        fs.readdirSync(src).forEach((childItemName) => {
           swig.fs.copyAll(path.join(src, childItemName),
             path.join(dest, childItemName));
         });
@@ -75,7 +70,5 @@ module.exports = function (swig) {
         fs.copySync(src, dest);
       }
     }
-
   };
-
 };

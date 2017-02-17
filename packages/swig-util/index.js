@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,7 +13,6 @@
 */
 
 module.exports = function (swig, gulp) {
-
   require('./lib/email')(swig);
   require('./lib/error')(swig);
   require('./lib/exec')(swig);

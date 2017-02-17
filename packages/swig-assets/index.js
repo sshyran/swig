@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,17 +15,16 @@
 */
 
 module.exports = function (gulp, swig) {
-
-  var _ = require('underscore'),
-    co = require('co'),
-    fs = require('fs'),
-    globby = require('globby'),
-    mime = require('mime'),
-    path = require('path'),
-    s3 = require('s3'),
-    thunkify = require('thunkify'),
-    waterfall = require('async-waterfall'),
-    git;
+  const _ = require('underscore');
+  const co = require('co');
+  const fs = require('fs');
+  const globby = require('globby');
+  const mime = require('mime');
+  const path = require('path');
+  const s3 = require('s3');
+  const thunkify = require('thunkify');
+  const waterfall = require('async-waterfall');
+  let git;
 
   swig.tell('assets-deploy', {
     description: 'Deploys Gilt front-end assets.',
@@ -33,40 +33,39 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('assets-setup', function (done) {
-
+  gulp.task('assets-setup', (done) => {
     swig.log.task('Preparing to Deploy Assets');
 
     if (!swig.rc || !swig.rc.s3) {
       swig.log();
-      swig.log.error('.swigrc', '~/.swigrc is missing the s3 property. You need that value to continue.' +
-        '\n\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the value manually.'.bold);
+      swig.log.error('.swigrc', `~/.swigrc is missing the s3 property. You need that value to continue.${
+        '\n\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the value manually.'.bold}`);
       process.exit(1);
     }
 
-    var err = false,
-      errs = [];
+    const errs = [];
+    let err = false;
 
     // make sure our config has all the values we'll need
-    _.each(['bucket', 'accessKey', 'assetsDir', 'secretKey'], function (property) {
+    _.each(['bucket', 'accessKey', 'assetsDir', 'secretKey'], (property) => {
       if (!swig.rc.s3[property]) {
         err = true;
-        errs.push('~/.swigrc is missing the s3.' + property + ' property. You need that value to continue.');
+        errs.push(`~/.swigrc is missing the s3.${property} property. You need that value to continue.`);
       }
-    })
+    });
 
     if (err) {
       swig.log();
       swig.log.error('.swigrc', errs.join('\n            '));
-      swig.log('\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the missing value(s) manually.'.bold)
+      swig.log('\n            You can grab an updated .swigrc file from /web/tools/config/user/.swigrc or add the missing value(s) manually.'.bold);
       process.exit(1);
     }
 
     done();
   });
 
-  gulp.task('assets-check-version', [ 'assets-setup' ], co(function *() {
-    var tagName = swig.pkg.name + '-' + swig.pkg.version + '-assets';
+  gulp.task('assets-check-version', ['assets-setup'], co(function* () {
+    const tagName = `${swig.pkg.name}-${swig.pkg.version}-assets`;
 
     git = require('simple-git')(swig.target.path);
     git.exec = thunkify(git._run);
@@ -76,15 +75,14 @@ module.exports = function (gulp, swig) {
       swig.log.task('Skipping the Assets Version Check');
       swig.log.warn('', 'The --force is strong with this one.\n');
 
-      var question = 'Are you sure you want to force this deploy? (y/n)'.white,
-        answer = yield swig.log.prompt(swig.log.padLeft(question, 1));
+      const question = 'Are you sure you want to force this deploy? (y/n)'.white;
+      const answer = yield swig.log.prompt(swig.log.padLeft(question, 1));
 
       if (!answer || (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes')) {
         swig.log();
         swig.log('(╯°□°）╯︵ ┻━┻)  Allllrighty then.');
         process.exit(1);
-      }
-      else {
+      } else {
         swig.log();
         swig.log('BRING IT ON, CUPCAKE!  ᕦ(ò_ó*)ᕤ\n');
       }
@@ -94,9 +92,9 @@ module.exports = function (gulp, swig) {
 
     swig.log('');
     swig.log.task('Checking Assets Version');
-    swig.log.info('', 'Looking for Git tag: ' + tagName);
+    swig.log.info('', `Looking for Git tag: ${tagName}`);
 
-    var result;
+    let result;
 
     // Make sure all our tags are up to date first
     yield git.exec('fetch --tags');
@@ -107,19 +105,17 @@ module.exports = function (gulp, swig) {
     if (_.contains(result, tagName)) {
       swig.log();
       swig.log.error('swig-assets',
-        'It looks like you\'ve already deployed the assets for this version.\n   The tag: ' + tagName + ', already exists.\n' +
-        '   If you believe that was in error, you can delete the tag and try again, or use the --force flag\n' +
-        '   but tread carefully!'.bold
+        `It looks like you've already deployed the assets for this version.\n   The tag: ${tagName}, already exists.\n` +
+        `   If you believe that was in error, you can delete the tag and try again, or use the --force flag\n${
+        '   but tread carefully!'.bold}`
       );
       process.exit(1);
     }
 
     swig.log.info('', 'Tag is new. We\'re good to go.');
-
   }));
 
-  gulp.task('assets-s3', function (done) {
-
+  gulp.task('assets-s3', (done) => {
     // https://s3.amazonaws.com/gilt-assets/a/js/web-x-domain/0.0.13/main.full.min.js
     // is the same as
     // https://cdn5.giltcdn.com/a/js/web-x-domain/0.0.13/main.full.min.js
@@ -129,144 +125,138 @@ module.exports = function (gulp, swig) {
     swig.log.task('Deploying Assets to S3');
     swig.log.info('', 'Assets @ https://s3.amazonaws.com/gilt-assets/');
 
-    var s3 = require('s3'),
-      basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name),
-      directories = [ 'css', 'img', 'js', 'templates' ],
-      client = s3.createClient({
-        s3Options: {
-          accessKeyId: swig.rc.s3.accessKey,
-          secretAccessKey: swig.rc.s3.secretKey
-        }
-      }),
-      tasks = [];
+    const basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name);
+    const directories = ['css', 'img', 'js', 'templates'];
+    const client = s3.createClient({
+      s3Options: {
+        accessKeyId: swig.rc.s3.accessKey,
+        secretAccessKey: swig.rc.s3.secretKey
+      }
+    });
+    const tasks = [];
 
-    _.each(directories, function (dir) {
-      tasks.push(function (callback) {
-        var params = {
+    _.each(directories, (dir) => {
+      tasks.push((callback) => {
+        const params = {
           localDir: basePath.replace('{{dir}}', dir),
           deleteRemoved: true,
           s3Params: {
             Bucket: swig.rc.s3.bucket,
-            // eg. /a/js/web-checkout/0.1.1/
+          // eg. /a/js/web-checkout/0.1.1/
             Prefix: path.join(swig.rc.s3.assetsDir, dir, swig.target.name, swig.pkg.version)
           },
-          getS3Params: function(localFile, stat, callback) {
-            var mimeType = mime.lookup(localFile);
+          getS3Params: function (localFile, stat, cb) {
+            let mimeType = mime.lookup(localFile);
 
-            // file is .js or .css AND charset is not already present in mimeType
+          // file is .js or .css AND charset is not already present in mimeType
             if (/\.(?:css|js)$/.test(localFile) && !/charset=/.test(mimeType)) {
               mimeType += '; charset=utf-8';
             }
-            callback(null, { 'ContentType': mimeType });
+            cb(null, { ContentType: mimeType });
           }
-        },
-        uploader = client.uploadDir(params),
-        progressBegan = false,
-        lastPercent = '';
+        };
+        const uploader = client.uploadDir(params);
+        let lastPercent = '';
+        let progressBegan = false;
 
         swig.log();
-        swig.log.task('Syncing ' + params.localDir.grey);
+        swig.log.task(`Syncing ${params.localDir.grey}`);
 
-        uploader.on('error', function (err) {
+        uploader.on('error', (err) => {
           // don't worry about ugly output here.
           swig.log();
           swig.log.error('deploy-s3', err.stack);
         });
 
-        uploader.on('progress', function () {
+        uploader.on('progress', () => {
           if (uploader.progressAmount <= 0) {
             if (!progressBegan) {
               progressBegan = true;
               lastPercent = '0%';
-              var preamble = swig.log.symbols.info + '  Progress ' + swig.log.symbols.start + swig.log.symbols.start + ' ' + lastPercent.white;
+              const preamble = `${swig.log.symbols.info}  Progress ${swig.log.symbols.start}${swig.log.symbols.start} ${lastPercent.white}`;
               swig.log.write(swig.log.padLeft(preamble, 1));
             }
             return;
           }
 
-          var percent = parseInt((uploader.progressAmount / uploader.progressTotal) * 100, 10),
-            backspace = (new Array(lastPercent.length + 1)).join('\b');
+          const percent = parseInt((uploader.progressAmount / uploader.progressTotal) * 100, 10);
+          const backspace = (new Array(lastPercent.length + 1)).join('\b');
 
-          lastPercent = percent + '%';
+          lastPercent = `${percent}%`;
 
           swig.log.write(backspace + lastPercent.white);
         });
 
-        uploader.on('end', function () {
-          var backspace = (new Array(lastPercent.length + 1)).join('\b');
+        uploader.on('end', () => {
+          const backspace = (new Array(lastPercent.length + 1)).join('\b');
 
           swig.log.write(backspace + '100%\n'.green);
-          swig.log.info('', 'Directory Synced to: ' + params.s3Params.Prefix.grey);
+          swig.log.info('', `Directory Synced to: ${params.s3Params.Prefix.grey}`);
 
           callback(null);
         });
-
       });
     });
 
-    waterfall(tasks, function (callback) {
+    waterfall(tasks, () => {
       done();
     });
-
   });
 
   /*
    * @note: We only create the git tag if we made it this far.
   */
-  gulp.task('assets-tag-version', [ 'assets-s3' ], co(function *() {
-
+  gulp.task('assets-tag-version', ['assets-s3'], co(function* () {
     swig.log('');
     swig.log.task('Tagging Assets Version');
 
     swig.log.info('', 'Fetching Tags');
-    var result = yield git.exec('fetch --tags'),
-      skipPush = false,
-      tagName = swig.pkg.name + '-' + swig.pkg.version + '-assets';
 
-    swig.log.info('', 'Tagging: ' + tagName);
+    yield git.exec('fetch --tags');
+
+    const tagName = `${swig.pkg.name}-${swig.pkg.version}-assets`;
+    let skipPush = false;
+
+    swig.log.info('', `Tagging: ${tagName}`);
 
     try {
-      result = yield git.exec('tag ' + tagName);
-    }
-    catch (e) {
+      yield git.exec(`tag ${tagName}`);
+    } catch (e) {
       skipPush = true;
       swig.log.error('', e);
     }
 
     if (!skipPush) {
       swig.log.info('', 'Pushing Tags');
-      result = yield git.exec('push --tags');
-    }
-    else {
+      yield git.exec('push --tags');
+    } else {
       swig.log.warn('', 'Skipping Pushing Tags. Disregard this warning if you used --force, and didn\'nt delete the tag prior.');
     }
-
   }));
 
 
-  gulp.task('assets-deploy-cleanup', function(done) {
-
+  gulp.task('assets-deploy-cleanup', (done) => {
     swig.log.task('Cleaning up generated files');
 
-    var cleanUpDirs = ['js', 'css'],
-      basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name),
-      globPatterns = [];
+    const cleanUpDirs = ['js', 'css'];
+    const basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name);
+    const globPatterns = [];
 
-    _.each(cleanUpDirs, function(dir) {
-      var workDir = basePath.replace('{{dir}}', dir);
+    _.each(cleanUpDirs, (dir) => {
+      const workDir = basePath.replace('{{dir}}', dir);
 
-      globPatterns.push(workDir + '/*.min.' + dir);
-      globPatterns.push(workDir + '/*.src.' + dir);
+      globPatterns.push(`${workDir}/*.min.${dir}`);
+      globPatterns.push(`${workDir}/*.src.${dir}`);
 
       if (dir === 'js') {
-        globPatterns.push(workDir + '/manifest.json');
-        globPatterns.push(workDir + '/bundles.js');
+        globPatterns.push(`${workDir}/manifest.json`);
+        globPatterns.push(`${workDir}/bundles.js`);
       } else if (dir === 'css') {
-        globPatterns.push(workDir + '/*blessed*.css');
+        globPatterns.push(`${workDir}/*blessed*.css`);
       }
     });
 
-    _.each(globby.sync(globPatterns), function(file) {
+    _.each(globby.sync(globPatterns), (file) => {
       fs.unlinkSync(file);
       swig.log.info('Deleted: '.red + file.grey);
     });
@@ -288,8 +278,7 @@ module.exports = function (gulp, swig) {
    *    - assets-tag-version
    */
   gulp.task('assets-deploy', function (done) {
-
-    var taskSequence = [
+    const taskSequence = [
       'assets-check-version',
       'install',
       'spec', // spec lints before running specs
@@ -301,10 +290,9 @@ module.exports = function (gulp, swig) {
     ];
 
     if (swig.rc.cleanUpAfterAssetsDeploy) {
-      taskSequence.push('assets-deploy-cleanup')
+      taskSequence.push('assets-deploy-cleanup');
     }
 
-    swig.seq.apply(this, taskSequence.concat([ done ]));
+    swig.seq.apply(this, taskSequence.concat([done]));
   });
-
 };

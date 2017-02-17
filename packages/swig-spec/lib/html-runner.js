@@ -1,3 +1,5 @@
+/* eslint-disable  */
+
 // this file is included within each <framework>-runner.html file
 (function (window) {
 

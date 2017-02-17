@@ -1,4 +1,5 @@
-'use strict';
+
+
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,23 +15,21 @@
 */
 
 module.exports = function (gulp, swig) {
+  const david = require('david');
+  const thunkify = require('thunkify');
+  const co = require('co');
 
-  var _ = require('underscore'),
-    david = require('david'),
-    thunkify = require('thunkify'),
-    co = require('co'),
-
-    warned = false;
+  let warned = false;
 
   swig.tell('deps', { description: 'Checks for the latest version of npm dependencies.' });
 
-  function report (type, results) {
-    var rows = [
+  function report(type, results) {
+    const rows = [
       [swig.log.padLeft(type.cyan, 2), 'package.json'.cyan, 'latest'.cyan.bold]
     ];
 
-    Object.keys(results).forEach(function (depName) {
-      var dep = results[depName];
+    Object.keys(results).forEach((depName) => {
+      const dep = results[depName];
 
       // we don't care about * values, they'll always be latest
       if (dep.required === '*') {
@@ -48,7 +47,7 @@ module.exports = function (gulp, swig) {
     }
   }
 
-  gulp.task('deps', ['dependencies'], function (done) {
+  gulp.task('deps', ['dependencies'], (done) => {
     done();
   });
 
@@ -56,38 +55,36 @@ module.exports = function (gulp, swig) {
   // for a bit. that means someone is making a concious choice not to update
   // using a separate task is hackey but effective, since yielding a thunk on setTimeout
   // seems to be killing the execution of subsequent gulp tasks.
-  gulp.task('dependencies', ['check-dependencies'], function (done) {
+  gulp.task('dependencies', ['check-dependencies'], (done) => {
     if (warned) {
       setTimeout(done, 3000);
-    }
-    else {
+    } else {
       swig.log.info('', 'Dependencies up to date.\n');
       done();
     }
   });
 
-  gulp.task('check-dependencies', co(function * () {
-
+  gulp.task('check-dependencies', co(function* () {
     swig.log.task('Checking status of project Dependencies');
 
-    var depTypes = {
-        dependencies: swig.pkg.dependencies,
-        devDependencies: swig.pkg.devDependencies,
-        lazyDependencies: swig.pkg.lazyDependencies,
-        specDependencies: swig.pkg.specDependencies,
-        uiDependencies: swig.pkg.uiDependencies
-      },
-      // this follows the same options that david's cli uses by default
-      davidOptions = {
-        stable: true,
-        loose: true,
-      },
-      results = {},
-      manifest,
-      getUpdatedDependencies = thunkify(david.getUpdatedDependencies);
+    const depTypes = {
+      dependencies: swig.pkg.dependencies,
+      devDependencies: swig.pkg.devDependencies,
+      lazyDependencies: swig.pkg.lazyDependencies,
+      specDependencies: swig.pkg.specDependencies,
+      uiDependencies: swig.pkg.uiDependencies
+    };
+    // this follows the same options that david's cli uses by default
+    const davidOptions = {
+      stable: true,
+      loose: true,
+    };
+    const results = {};
+    const getUpdatedDependencies = thunkify(david.getUpdatedDependencies);
+    let manifest;
 
-    for (var type in depTypes) {
-
+    for (const type in depTypes) {
+      if (!{}.hasOwnProperty.call(depTypes, type)) continue;
       // all new apps should be setup this way, but older stuff
       // is accounted for in `depTypes`s declaration.
       if (swig.pkg.gilt) {
@@ -100,22 +97,18 @@ module.exports = function (gulp, swig) {
 
       try {
         results[type] = yield getUpdatedDependencies(manifest, davidOptions) || [];
-      }
-      catch (e) {
+      } catch (e) {
         swig.log.error('swig-deps', e.toString());
         results[type] = {};
       }
 
       if (!Object.keys(results[type]).length) {
         continue;
-      }
-      else {
-        if (!warned) {
-          warned = true;
-          swig.log();
-          swig.log.warn('Dependency Warning', 'One or more dependencies are out of date! Please update them!');
-          swig.log();
-        }
+      } else if (!warned) {
+        warned = true;
+        swig.log();
+        swig.log.warn('Dependency Warning', 'One or more dependencies are out of date! Please update them!');
+        swig.log();
       }
 
       report(type, results[type]);
@@ -125,6 +118,5 @@ module.exports = function (gulp, swig) {
       swig.log.warn('Pondering on that for a moment', ' [hit CTL+C to stop and update]');
       swig.log();
     }
-
   }));
 };

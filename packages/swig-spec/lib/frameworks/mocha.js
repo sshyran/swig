@@ -1,4 +1,3 @@
-'use strict';
 /*
  ________  ___       __   ___  ________
 |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -14,44 +13,40 @@
 */
 
 module.exports = function (gulp, swig, options) {
+  const _ = require('underscore');
+  const file = require('gulp-file');
+  const fs = require('fs');
+  const path = require('path');
+  const mocha = require('gulp-mocha-phantomjs');
+  const mustache = require('mustache');
 
-  var _ = require('underscore'),
-    file = require('gulp-file'),
-    fs = require('fs'),
-    path = require('path'),
-    mocha = require('gulp-mocha-phantomjs'),
-    mustache = require('mustache'),
-    gutil = require('gulp-util'),
+  const mochaPath = path.dirname(require.resolve('mocha'));
 
-    mochaPath = path.dirname(require.resolve('mocha')),
+  // we have to reference this reporter by file path rather than name
+  // due to a compliation problem with the Prototype
+  const nyanPath = path.join(mochaPath, '/lib/reporters/nyan.js');
 
-    // we have to reference this reporter by file path rather than name
-    // due to a compliation problem with the Prototype
-    nyanPath = path.join(mochaPath, '/lib/reporters/nyan.js'),
+  const chaiPath = path.dirname(require.resolve('chai'));
+  const runnerTemplatePath = path.join(__dirname, '../../templates/mocha-runner.mustache');
+  let runner = fs.readFileSync(runnerTemplatePath, 'utf-8');
 
-    chaiPath = path.dirname(require.resolve('chai')),
-    runnerTemplatePath = path.join(__dirname, '../../templates/mocha-runner.mustache'),
-    runner = fs.readFileSync(runnerTemplatePath, 'utf-8'),
+  swig.log.info('', 'Rendering Runner...\n');
 
-    stream;
+  options = _.extend(options, {
+    mochaPath: mochaPath,
+    chaiPath: chaiPath,
+    libPath: __dirname
+  });
 
-    swig.log.info('', 'Rendering Runner...\n');
+  runner = mustache.render(runner, options);
 
-    options = _.extend(options, {
-      mochaPath: mochaPath,
-      chaiPath: chaiPath,
-      libPath: __dirname
-    });
+  swig.log.task('Running Specs with PhantomJS+Mocha');
+  swig.log('');
 
-    runner = mustache.render(runner, options);
+  const stream = file('runner.html', runner, { src: true });
 
-    swig.log.task('Running Specs with PhantomJS+Mocha');
-    swig.log('');
-
-    stream = file('runner.html', runner, { src: true });
-
-    if (!swig.argv.browser) {
-      return stream
+  if (!swig.argv.browser) {
+    return stream
         .pipe(gulp.dest(options.runnerPath))
         .pipe(mocha({
           reporter: nyanPath,
@@ -61,7 +56,7 @@ module.exports = function (gulp, swig, options) {
             ignoreSslErrors: true
           }
         }));
-    }
+  }
 
-    return stream;
+  return stream;
 };
