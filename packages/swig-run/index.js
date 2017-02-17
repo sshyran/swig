@@ -103,7 +103,7 @@ module.exports = function (gulp, swig) {
   }
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['transpile-scripts', 'zk', 'watch-scripts'], function (cb) {
+  gulp.task('run', ['transpile-scripts', 'watch-scripts'], function (cb) {
 
     var errors;
 

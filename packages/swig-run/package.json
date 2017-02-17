@@ -17,7 +17,6 @@
   "dependencies": {
     "forever": "^0.15.1",
     "underscore": "*",
-    "@gilt-tech/swig-zk": "^1.9.9",
     "@gilt-tech/swig-transpile-scripts": "^1.9.9"
   },
   "devDependencies": {}
