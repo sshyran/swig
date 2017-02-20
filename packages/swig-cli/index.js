@@ -43,9 +43,7 @@ function load(moduleName) {
   // Avoiding loading the same plugin more than once
   if (loadedPlugins.find(m => m === path.basename(moduleName))) return;
 
-  if (argv.verbose) {
-    console.log(`Loading: ${path.basename(moduleName)}`);
-  }
+  swig.log.verbose(`Loading: ${path.basename(moduleName)}`);
 
   try {
     require(moduleName)(gulp, swig);
@@ -119,7 +117,7 @@ function findTarget() {
     if (!fs.existsSync(target)) {
       swig.log();
       swig.log.error('The module specified doesn\'t exist in this repository.');
-      console.log(target);
+      swig.log.verbose(target);
       process.exit(1);
     }
 
@@ -137,7 +135,7 @@ function findTarget() {
   }
 
   if (_.isEmpty(swig.pkg)) {
-    console.log(`.  ${'warning!    '.yellow} package.json not found at: ${packagePath.grey}`);
+    swig.log(`.  ${'warning!    '.yellow} package.json not found at: ${packagePath.grey}`);
   }
 
   swig.target = {
@@ -177,16 +175,17 @@ function checkLocalVersion() {
     line2 += repeating(' ', maxLen - line2Len);
   }
 
-  console.log(`┌${top}┐`);
-  console.log('│  '.yellow + line1 + '  │'.yellow);
-  console.log('│  '.yellow + line2 + '  │'.yellow);
-  console.log(`└${top}┘`);
+  swig.log(`┌${top}┐`);
+  swig.log('│  '.yellow + line1 + '  │'.yellow);
+  swig.log('│  '.yellow + line2 + '  │'.yellow);
+  swig.log(`└${top}┘`);
 
-  console.log('·');
+  swig.log('·');
 }
 
 console.log(`·  ${'swig (local)'.red} v${thisPkg.version}\n·`);
 
+// NOTE: This loads and installs the swig.log
 swig.util = require('@gilt-tech/swig-util')(swig, gulp);
 
 swig.tell = tell;
@@ -199,8 +198,8 @@ findTarget();
 
 const targetName = swig.target.name;
 
-console.log(`·  ${'target:      '.blue}${targetName ? targetName.grey : 'NO TARGET'.yellow}`);
-console.log(`·  ${'target-path: '.blue}${swig.target.path.grey}\n`);
+swig.log(`·  ${'target:      '.blue}${targetName ? targetName.grey : 'NO TARGET'.yellow}`);
+swig.log(`·  ${'target-path: '.blue}${swig.target.path.grey}\n`);
 
 // create swigs's temporary directory;
 if (!fs.existsSync(swig.temp)) {
