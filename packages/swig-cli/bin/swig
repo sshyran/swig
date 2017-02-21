@@ -42,8 +42,8 @@ function version {
 export SWIG_VERSION=`version`
 
 #echo "·\n· ${bold}${white}hey guys! oh big gulps eh? - ${underline}${grey}http://youtu.be/praFGD51ih8${reset}\n·"
-echo "·"
-echo "·  ${red}swig${reset}         v$SWIG_VERSION"
+echo "  ·"
+echo "  ·  ${red}swig${reset}         v$SWIG_VERSION"
 
 # NVM is used here as a convenience and an assertion that we're using the right
 # version of node. It's not required in production, as production should be using

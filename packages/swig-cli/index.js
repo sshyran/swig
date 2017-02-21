@@ -90,7 +90,7 @@ function findSwigRc() {
 
   if (!fs.existsSync(rcPath)) {
     swig.log.error('swig', `.swigrc not found at: ${'~/.swigrc'.grey}. Please grab a copy from ${'/web/tools/config/user.\n'.grey}`);
-    swig.log('   .swigrc is required because it contains internal information that swig needs.');
+    swig.log('.swigrc is required because it contains internal information that swig needs.');
     process.exit(1);
   } else {
     swig.rc = JSON.parse(fs.readFileSync(rcPath));
@@ -170,9 +170,9 @@ function checkLocalVersion() {
   }
 
   if (maxLen > line1Len) {
-    line1 += repeating(' ', maxLen - line1Len);
+    line1 += repeating(maxLen - line1Len, ' ');
   } else if (maxLen > line2Len) {
-    line2 += repeating(' ', maxLen - line2Len);
+    line2 += repeating(maxLen - line2Len, ' ');
   }
 
   swig.log(`┌${top}┐`);
@@ -183,7 +183,7 @@ function checkLocalVersion() {
   swig.log('·');
 }
 
-console.log(`·  ${'swig (local)'.red} v${thisPkg.version}\n·`);
+console.log(`  ·  ${'swig (local)'.red} v${thisPkg.version}\n  ·`);
 
 // NOTE: This loads and installs the swig.log
 swig.util = require('@gilt-tech/swig-util')(swig, gulp);

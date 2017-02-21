@@ -53,12 +53,12 @@ if (fs.existsSync(configPath)) {
     line1Len = strip(line1).length;
 
     maxLen = Math.max(line1Len, line2Len);
-    border = repeating('─', maxLen + 4);
+    border = repeating(maxLen + 4, '─');
 
     if (maxLen > line1Len) {
-      line1 += repeating(' ', maxLen - line1Len);
+      line1 += repeating(maxLen - line1Len, ' ');
     } else if (maxLen > line2Len) {
-      line2 += repeating(' ', maxLen - line2Len);
+      line2 += repeating(maxLen - line2Len, ' ');
     }
 
     console.log(`┌${border}┐`);
