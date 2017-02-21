@@ -49,6 +49,7 @@
     "lerna": "2.0.0-beta.36"
   },
   "scripts": {
+    "fix": "eslint packages/ --format=codeframe --fix",
     "lint": "eslint packages/ --format=codeframe"
   }
 }

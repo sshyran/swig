@@ -16,16 +16,16 @@
   "license": "MIT",
   "dependencies": {
     "eslint-codeframe-formatter": "^1.0.2",
-    "gulp-add-src": "*",
-    "gulp-buffer": "*",
+    "gulp-add-src": "^0.2.0",
+    "gulp-buffer": "0.0.2",
     "gulp-eslint": "^3.0.1",
-    "gulp-handlebars": "*",
-    "gulp-insert": "*",
+    "gulp-handlebars": "^4.0.0",
+    "gulp-insert": "^0.5.0",
     "gulp-lesshint": "git://github.com/gilt/gulp-lesshint.git",
-    "gulp-util": "*",
-    "jshint-stylish": "*",
-    "through2": "*",
-    "underscore": "*"
+    "gulp-util": "^3.0.8",
+    "jshint-stylish": "^2.2.1",
+    "through2": "^2.0.3",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {}
 }

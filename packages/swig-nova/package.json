@@ -17,12 +17,12 @@
   "dependencies": {
     "@gilt-tech/swig-assets": "^1.9.9",
     "aws-sdk": "^2.5.3",
-    "co": "^3.1.0",
-    "inquirer": "^2.0.0",
+    "co": "^4.0.0",
+    "inquirer": "^3.0.0",
     "semver-diff": "^2.1.0",
-    "underscore": "*",
+    "underscore": "^1.8.3",
     "yamljs": "^0.2.8",
-    "yargs": "^5.0.0"
+    "yargs": "^6.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

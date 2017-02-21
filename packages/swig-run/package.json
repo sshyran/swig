@@ -15,9 +15,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@gilt-tech/swig-transpile-scripts": "^1.9.9",
     "forever": "^0.15.1",
-    "underscore": "*",
-    "@gilt-tech/swig-transpile-scripts": "^1.9.9"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {}
 }

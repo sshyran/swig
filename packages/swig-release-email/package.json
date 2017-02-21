@@ -15,10 +15,10 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "co": "3.x",
+    "co": "^4.0.0",
     "co-exec": "^1.1.0",
     "inline-css": "^2.0.0",
-    "minimize": "^1.2.0",
+    "minimize": "^2.0.0",
     "mustache": "^2.2.0",
     "thunkify": "^2.1.2",
     "underscore": "^1.7.0"

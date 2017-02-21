@@ -15,13 +15,13 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "co": "3.x.x",
-    "gulp-util": "*",
-    "inquirer": "*",
-    "mustache": "*",
-    "prettyjson": "*",
-    "through2": "*",
-    "underscore": "*"
+    "co": "^4.0.0",
+    "gulp-util": "^3.0.8",
+    "inquirer": "^3.0.1",
+    "mustache": "^2.3.0",
+    "prettyjson": "^1.2.1",
+    "through2": "^2.0.3",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {}
 }
