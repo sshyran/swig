@@ -151,7 +151,7 @@ function tell(name, taskInfo) {
     console.log(`Task '${name}' has been overridden by a local installation`.yellow);
   }
 
-  swig.tasks[taskName] = _.extend({
+  swig.tasks[name] = _.extend({
     description: '<unknown>',
     flags: {},
   }, taskInfo);
