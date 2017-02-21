@@ -8,6 +8,7 @@ before_install:
 
 install:
   - yarn
+  - ./node_modules/.bin/lerna bootstrap
 
 script:
   - npm run lint
