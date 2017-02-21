@@ -187,7 +187,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('nova-inquisitor', co(function* () {
+  gulp.task('nova-inquisitor', co.wrap(function* () {
     swig.log('');
     const prompt = inquirer.createPromptModule();
     const environments = novayml.environments.map(e => e.name);

@@ -64,7 +64,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('assets-check-version', ['assets-setup'], co(function* () {
+  gulp.task('assets-check-version', ['assets-setup'], co.wrap(function* () {
     const tagName = `${swig.pkg.name}-${swig.pkg.version}-assets`;
 
     git = require('simple-git')(swig.target.path);
@@ -206,7 +206,7 @@ module.exports = function (gulp, swig) {
   /*
    * @note: We only create the git tag if we made it this far.
   */
-  gulp.task('assets-tag-version', ['assets-s3'], co(function* () {
+  gulp.task('assets-tag-version', ['assets-s3'], co.wrap(function* () {
     swig.log('');
     swig.log.task('Tagging Assets Version');
 

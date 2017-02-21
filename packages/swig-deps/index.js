@@ -64,7 +64,7 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('check-dependencies', co(function* () {
+  gulp.task('check-dependencies', co.wrap(function* () {
     swig.log.task('Checking status of project Dependencies');
 
     const depTypes = {

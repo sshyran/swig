@@ -127,9 +127,9 @@ module.exports = function (gulp, swig) {
 
       // if a task is requesting install and needs devDependencies to be available
       // it can use the --devDependencies flag or set it manually on swig.argv.
-      let deps;
+      let deps = dependencies;
       if (swig.argv.devDependencies) {
-        deps = _.extend(dependencies, swig.pkg.devDependencies || {});
+        deps = _.extend(deps, swig.pkg.devDependencies || {});
       }
 
       const packageTempPath = path.join(swig.temp, `${key ? `${key}-` : ''}package.json`);

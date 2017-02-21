@@ -163,7 +163,7 @@ function checkLocalVersion() {
   const line1Len = strip(line1).length;
   const line2Len = strip(line2).length;
   const maxLen = Math.max(line1Len, line2Len);
-  const top = repeating('─', maxLen + 4);
+  const top = repeating(maxLen + 4, '─');
 
   if (!semverDiff(thisPkg.version, process.env.SWIG_VERSION)) {
     return;

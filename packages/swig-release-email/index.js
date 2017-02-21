@@ -124,7 +124,7 @@ module.exports = function (gulp, swig) {
     return result;
   }
 
-  gulp.task('release-email', co(function* () {
+  gulp.task('release-email', co.wrap(function* () {
     if (!swig.argv.module) {
       swig.log.error('', 'release-email is only for use with modules. please specify the --module argument.');
       return;

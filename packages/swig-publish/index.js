@@ -114,7 +114,7 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('publish-verify-clean', co(function* () {
+  gulp.task('publish-verify-clean', co.wrap(function* () {
     swig.log('');
     swig.log.task('Checking Repo State');
 
@@ -174,7 +174,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('publish-check-version', ['publish-verify'], co(function* () {
+  gulp.task('publish-check-version', ['publish-verify'], co.wrap(function* () {
     swig.log('');
     swig.log.task('Checking Module Version');
     swig.log.info('', `Looking for Git tag: ${tagName}`);
@@ -200,7 +200,7 @@ module.exports = function (gulp, swig) {
     swig.log.success('', 'Tag is new. We\'re good to go.');
   }));
 
-  gulp.task('publish-npm', ['publish-check-version'], co(function* () {
+  gulp.task('publish-npm', ['publish-check-version'], co.wrap(function* () {
     const tempPath = path.join(swig.temp, '/publish/', swig.target.name);
     let tagFlag = '';
     let result;
@@ -237,7 +237,7 @@ module.exports = function (gulp, swig) {
     swig.log();
     swig.log.task('Removing extended attributes');
 
-    _.each(files, co(function* (file) {
+    _.each(files, co.wrap(function* (file) {
       swig.log.info('', file.replace(tempPath, '').grey);
       result = yield swig.exec(`xattr -c ${file}`);
     }));
@@ -343,7 +343,7 @@ module.exports = function (gulp, swig) {
     }
   }));
 
-  gulp.task('publish-tag-version', co(function* () {
+  gulp.task('publish-tag-version', co.wrap(function* () {
     swig.log('');
     swig.log.task('Tagging Module Version');
 

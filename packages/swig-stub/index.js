@@ -55,7 +55,7 @@ module.exports = function (gulp, swig) {
         .src(path.join(__dirname, 'templates', data.type, '/**/*'))
         .pipe(stubs(swig, data))
         .pipe(gulp.dest(destPath))
-        .on('end', co(function* exit() {
+        .on('end', co.wrap(function* exit() {
           // ask about installing swig, npm
           swig.log();
           let result = yield swig.log.prompt('We\'re ready to install your NPM modules. Press return to begin...');

@@ -167,7 +167,7 @@ module.exports = function (gulp, swig) {
     done();
   });
 
-  gulp.task('install', co(function* () {
+  gulp.task('install', co.wrap(function* () {
     if (!swig.pkg) {
       swig.log.error('install', 'Couldn\'t find package.json, not installing anything.');
       return;

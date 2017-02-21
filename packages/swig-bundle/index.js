@@ -334,7 +334,7 @@ module.exports = function (gulp, swig) {
     return merge.apply(this, streams);
   }
 
-  gulp.task('bundle-setup', co(function* () {
+  gulp.task('bundle-setup', co.wrap(function* () {
     swig.log.task('Building Dependency Graph');
 
     modules.dependencies = yield getDependencyGraph();
