@@ -1,0 +1,26 @@
+{
+  "name": "@gilt-tech/swig-release-email",
+  "description": "Sends an email to the organization, informing of a new module version.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-release-email",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "management"
+  ],
+  "bugs": {
+    "url": "https://github.com/gilt/swig/issues"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "co": "^4.0.0",
+    "co-exec": "^1.1.0",
+    "inline-css": "^2.0.0",
+    "minimize": "^2.0.0",
+    "mustache": "^2.2.0",
+    "thunkify": "^2.1.2",
+    "underscore": "^1.7.0"
+  }
+}

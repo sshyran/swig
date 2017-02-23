@@ -1,5 +1,55 @@
 {
+  "author": {
+    "name": "Gilt Groupe",
+    "email": "info@gilt.com",
+    "url": "http://gilt.com/"
+  },
+  "contributors": [
+    {
+      "name": "Front End Community Krewe",
+      "email": "feck@gilt.com"
+    },
+    {
+      "name": "Andrew Powell",
+      "email": "powella@gilt.com",
+      "url": "https://github.com/shellscape/"
+    },
+    {
+      "name": "Rory Haddon",
+      "email": "rhaddon@gilt.com",
+      "url": "https://github.com/roryh/"
+    },
+    {
+      "name": "Federico Giovagnoli",
+      "email": "fgiovagnoli@gilt.com",
+      "url": "https://github.com/Meesayen/"
+    },
+    {
+      "name": "Nick Rogers",
+      "email": "nrogers@gilt.com",
+      "url": "https://github.com/njprrogers/"
+    },
+    {
+      "name": "Aidan Hollinshead",
+      "email": "ahollinshead@gilt.com",
+      "url": "https://github.com/ahollinshead/"
+    },
+    {
+      "name": "Riccardo Bellingeri",
+      "email": "rbellingeri@gilt.com",
+      "url": "https://github.com/rbelling/"
+    }
+  ],
+  "license": "MIT",
   "devDependencies": {
+    "@gilt-tech/eslint-config-gilt-base": "^1.0.4",
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.15.0",
+    "eslint-plugin-import": "^2.2.0",
     "lerna": "2.0.0-beta.36"
+  },
+  "scripts": {
+    "fix": "eslint packages/ --format=codeframe --fix",
+    "lint": "eslint packages/ --format=codeframe"
   }
 }

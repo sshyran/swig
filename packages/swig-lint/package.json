@@ -1,0 +1,31 @@
+{
+  "name": "@gilt-tech/swig-lint",
+  "description": "Lints front-end assets.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-lint",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "management"
+  ],
+  "bugs": {
+    "url": "https://github.com/gilt/swig/issues"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "eslint-codeframe-formatter": "^1.0.2",
+    "gulp-add-src": "^0.2.0",
+    "gulp-buffer": "0.0.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-handlebars": "^4.0.0",
+    "gulp-insert": "^0.5.0",
+    "gulp-lesshint": "git://github.com/gilt/gulp-lesshint.git",
+    "gulp-util": "^3.0.8",
+    "jshint-stylish": "^2.2.1",
+    "through2": "^2.0.3",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {}
+}

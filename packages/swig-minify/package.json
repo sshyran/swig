@@ -1,0 +1,36 @@
+{
+  "name": "@gilt-tech/swig-minify",
+  "description": "Minifies front-end assets.",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-minify",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "management"
+  ],
+  "bugs": {
+    "url": "https://github.com/gilt/swig/issues"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.1.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-clean-css": "^3.0.0",
+    "gulp-handlebars": "^4.0.0",
+    "gulp-postcss": "^6.3.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^2.0.0",
+    "gulp-tap": "^0.1.3",
+    "gulp-uglify": "^2.0.0",
+    "handlebars": "^1.0.12",
+    "istextorbinary": "^2.1.0",
+    "merge-stream": "^1.0.0",
+    "postcss-import": "^9.1.0",
+    "readable-stream": "^2.1.5",
+    "source-map": "^0.5.6",
+    "through2": "^2.0.0",
+    "vinyl-sourcemaps-apply": "^0.2.1"
+  }
+}

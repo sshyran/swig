@@ -1,0 +1,23 @@
+{
+  "name": "@gilt-tech/swig-run",
+  "description": "",
+  "version": "1.9.9",
+  "repository": "https://github.com/gilt/swig/tree/master/packages/swig-run",
+  "keywords": [
+    "gulp",
+    "swig",
+    "package",
+    "management"
+  ],
+  "bugs": {
+    "url": "https://github.com/gilt/swig/issues"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@gilt-tech/swig-transpile-scripts": "^1.9.9",
+    "forever": "^0.15.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {}
+}

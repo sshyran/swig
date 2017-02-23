@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+*.log
+*.cache
+/coverage
+dist
+/.package.json
+packages/swig-cli/.update
