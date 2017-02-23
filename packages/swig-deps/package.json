@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-deps",
   "description": "A swig task to check for the latest version of npm dependencies.",
-  "version": "1.9.9",
+  "version": "2.0.0",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-deps",
   "keywords": [
     "gulp",

@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig",
   "description": "Launching point for the Swig framework.",
-  "version": "1.9.9",
+  "version": "2.0.0",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-cli",
   "keywords": [
     "gulp",
@@ -15,9 +15,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-default": "^1.9.9",
-    "@gilt-tech/swig-deps": "^1.9.9",
-    "@gilt-tech/swig-util": "^1.9.9",
+    "@gilt-tech/swig-default": "^2.0.0",
+    "@gilt-tech/swig-deps": "^2.0.0",
+    "@gilt-tech/swig-util": "^2.0.0",
     "co": "^4.6.0",
     "colors": "^1.1.2",
     "fs-extra": "^2.0.0",
