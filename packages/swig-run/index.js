@@ -1,18 +1,20 @@
 /*
  ________  ___       __   ___  ________
-|\   ____\|\  \     |\  \|\  \|\   ____\
-\ \  \___|\ \  \    \ \  \ \  \ \  \___|
+ |\   ____\|\  \     |\  \|\  \|\   ____\
+ \ \  \___|\ \  \    \ \  \ \  \ \  \___|
  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
-  \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
-    ____\_\  \ \____________\ \__\ \_______\
-   |\_________\|____________|\|__|\|_______|
-   \|_________|
+ \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+ ____\_\  \ \____________\ \__\ \_______\
+ |\_________\|____________|\|__|\|_______|
+ \|_________|
 
-   It's delicious.
-   Brought to you by the fine folks at Gilt (http://github.com/gilt)
-*/
+ It's delicious.
+ Brought to you by the fine folks at Gilt (http://github.com/gilt)
+ */
 
 module.exports = function (gulp, swig) {
+  const basePath = require('path').join(swig.target.path, '/public/');
+
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
     flags: {
@@ -99,7 +101,7 @@ module.exports = function (gulp, swig) {
   }
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['transpile-scripts', 'watch-scripts'], (cb) => {
+  gulp.task('run', ['transpile-scripts', 'merge-css', 'watch'], (cb) => {
     let errors;
 
     swig.log();
@@ -123,5 +125,12 @@ module.exports = function (gulp, swig) {
     } else {
       swig.log.error('swig-app', 'No node.js apps found in this directory.');
     }
+  });
+
+  gulp.task('watch', () => {
+    const jsPath = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
+    const cssPath = path.join(basePath, '/css/', swig.target.name, '/src/**/*.{css,less}');
+    gulp.watch(cssPath, ['merge-css']);
+    gulp.watch(jsPath, ['watch-scripts']);
   });
 };
