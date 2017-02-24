@@ -17,27 +17,27 @@ module.exports = function (gulp, swig) {
   const less = require('gulp-less');
   const rename = require('gulp-rename');
   const sourcemaps = require('gulp-sourcemaps');
-  // const postcss = require('gulp-postcss');
-  // const inlineImports = require('postcss-import');
-  // const autoprefixer = require('gulp-autoprefixer');
-  // const autoprefixerCfg = {
-  //   // https://github.com/postcss/autoprefixer#options
-  //   browsers: [
-  //     'last 2 versions',
-  //     'ie >= 10',
-  //     'iOS >= 8'
-  //   ],
-  //   // should Autoprefixer [remove outdated] prefixes. Default is true.
-  //   remove: true
-  // };
-  // const autoprefixerPlugins = [
-  //   autoprefixer(autoprefixerCfg),
-  //   inlineImports
-  // ];
+  const postcss = require('gulp-postcss');
+  const inlineImports = require('postcss-import');
+  const autoprefixer = require('autoprefixer');
+  const autoprefixerCfg = {
+    // https://github.com/postcss/autoprefixer#options
+    browsers: [
+      'last 2 versions',
+      'ie >= 10',
+      'iOS >= 8'
+    ],
+    // should Autoprefixer [remove outdated] prefixes. Default is true.
+    remove: true
+  };
+  const autoprefixerPlugins = [
+    inlineImports,
+    autoprefixer(autoprefixerCfg),
+  ];
 
   gulp.task('merge-css', () => {
     swig.log('');
-    swig.log.task('Merging LESS and CSS aaFiles');
+    swig.log.task('Merging LESS and CSS Files');
 
     const basePublicPath = path.join(swig.target.path, '/public');
     const basePath = path.join(basePublicPath, '/css', swig.target.name);
@@ -54,10 +54,9 @@ module.exports = function (gulp, swig) {
       }))
       .pipe(less({
         paths: [basePublicPath],
-        relativeUrls: false,
-        compressed: true
+        relativeUrls: false
       }))
-      // .pipe(autoprefixer(autoprefixerPlugins))
+      .pipe(postcss(autoprefixerPlugins))
       .pipe(rename({ suffix: '.bundle' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(dest));
