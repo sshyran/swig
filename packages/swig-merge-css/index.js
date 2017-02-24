@@ -43,9 +43,7 @@ module.exports = function (gulp, swig) {
     const basePath = path.join(basePublicPath, '/css', swig.target.name);
     const dest = path.join(basePath, 'bundle');
     const glob = [
-      path.join(basePath, '/*.{less,css}'),
-      // exclude src or min files that have already been merged
-      `!${path.join(basePath, '/*.{min,src}.{less,css}')}`
+      path.join(basePath, '/**/main.less')
     ];
 
     return gulp.src(glob)
