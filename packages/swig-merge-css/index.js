@@ -52,7 +52,11 @@ module.exports = function (gulp, swig) {
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
-      .pipe(less({ paths: [basePublicPath], relativeUrls: false }))
+      .pipe(less({
+        paths: [basePublicPath],
+        relativeUrls: false,
+        compressed: true
+      }))
       // .pipe(autoprefixer(autoprefixerPlugins))
       .pipe(rename({ suffix: '.bundle' }))
       .pipe(sourcemaps.write('.'))
