@@ -11,6 +11,7 @@
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
+const bs = require('browser-sync');
 
 module.exports = function (gulp, swig) {
   const path = require('path');
@@ -30,12 +31,13 @@ module.exports = function (gulp, swig) {
     // should Autoprefixer [remove outdated] prefixes. Default is true.
     remove: true
   };
-  const autoprefixerPlugins = [
+  const postcssPlugins = [
     inlineImports,
     autoprefixer(autoprefixerCfg),
   ];
 
   gulp.task('merge-css', () => {
+    const bsInstance = bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name);
     swig.log('');
     swig.log.task('Merging LESS and CSS Files');
 
@@ -46,6 +48,7 @@ module.exports = function (gulp, swig) {
       path.join(basePath, '/**/main.less')
     ];
 
+    bsInstance.reload();
     return gulp.src(glob)
       .pipe(sourcemaps.init({
         loadMaps: true
@@ -54,9 +57,10 @@ module.exports = function (gulp, swig) {
         paths: [basePublicPath],
         relativeUrls: false
       }))
-      .pipe(postcss(autoprefixerPlugins))
+      .pipe(postcss(postcssPlugins))
       .pipe(rename({ suffix: '.bundle' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(dest));
+
   });
 };

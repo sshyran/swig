@@ -11,7 +11,7 @@
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
-const bsInstance = require('browser-sync').create('localhost.com');
+const bs = require('browser-sync');
 const bsFullscreenMessage = require('bs-fullscreen-message');
 
 module.exports = function (gulp, swig) {
@@ -130,6 +130,7 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('watch', () => {
+    const bsInstance = bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name);
     const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
     const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
     const templatesPath = path.join(basePath, '/templates/', swig.target.name, '**/*.{handlebars,hbs,html}');
@@ -149,7 +150,7 @@ module.exports = function (gulp, swig) {
     });
 
     gulp.watch(templatesPath).on('change', bsInstance.reload);
-    gulp.watch(cssPath, ['merge-css']);
+    gulp.watch(cssPath, ['merge-css']).on('change', bsInstance.reload);
     gulp.watch(jsPath, ['watch-scripts']);
   });
 };

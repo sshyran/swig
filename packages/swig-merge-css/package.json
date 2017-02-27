@@ -16,6 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "autoprefixer": "^6.0.0",
+    "browser-sync": "^2.18.8",
+    "bs-fullscreen-message": "^1.1.0",
     "gulp-less": "^3.0.2",
     "gulp-postcss": "^6.3.0",
     "gulp-rename": "^1.2.0",
