@@ -11,33 +11,32 @@
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
-const bs = require('browser-sync');
+
+const path = require('path');
+const less = require('gulp-less');
+const rename = require('gulp-rename');
+const sourcemaps = require('gulp-sourcemaps');
+const postcss = require('gulp-postcss');
+const inlineImports = require('postcss-import');
+const autoprefixer = require('autoprefixer');
+const through2 = require('through2');
+const autoprefixerCfg = {
+  // https://github.com/postcss/autoprefixer#options
+  browsers: [
+    'last 2 versions',
+    'ie >= 10',
+    'iOS >= 8'
+  ],
+  // should Autoprefixer [remove outdated] prefixes. Default is true.
+  remove: true
+};
+const postcssPlugins = [
+  inlineImports,
+  autoprefixer(autoprefixerCfg),
+];
 
 module.exports = function (gulp, swig) {
-  const path = require('path');
-  const less = require('gulp-less');
-  const rename = require('gulp-rename');
-  const sourcemaps = require('gulp-sourcemaps');
-  const postcss = require('gulp-postcss');
-  const inlineImports = require('postcss-import');
-  const autoprefixer = require('autoprefixer');
-  const autoprefixerCfg = {
-    // https://github.com/postcss/autoprefixer#options
-    browsers: [
-      'last 2 versions',
-      'ie >= 10',
-      'iOS >= 8'
-    ],
-    // should Autoprefixer [remove outdated] prefixes. Default is true.
-    remove: true
-  };
-  const postcssPlugins = [
-    inlineImports,
-    autoprefixer(autoprefixerCfg),
-  ];
-
   gulp.task('merge-css', () => {
-    const bsInstance = bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name);
     swig.log('');
     swig.log.task('Merging LESS and CSS Files');
 
@@ -47,8 +46,6 @@ module.exports = function (gulp, swig) {
     const glob = [
       path.join(basePath, '/**/main.less')
     ];
-
-    bsInstance.reload();
     return gulp.src(glob)
       .pipe(sourcemaps.init({
         loadMaps: true
@@ -60,7 +57,7 @@ module.exports = function (gulp, swig) {
       .pipe(postcss(postcssPlugins))
       .pipe(rename({ suffix: '.bundle' }))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(dest));
-
+      .pipe(gulp.dest(dest))
+      .pipe(swig.browserSync ? swig.browserSync.stream() : through2.obj());
   });
 };

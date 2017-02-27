@@ -11,12 +11,16 @@
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
+const path = require('path');
+const spawn = require('child_process').spawn;
+const fs = require('fs');
+const _ = require('underscore');
+const forever = require('forever');
 const bs = require('browser-sync');
-const bsFullscreenMessage = require('bs-fullscreen-message');
-
+const through2 = require('through2');
+// const bsFullscreenMessage = require('bs-fullscreen-message');
 module.exports = function (gulp, swig) {
   const basePath = require('path').join(swig.target.path, '/public/');
-
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
     flags: {
@@ -26,12 +30,6 @@ module.exports = function (gulp, swig) {
 
   // Loading swig dependencies
   swig.loadPlugins(require('./package.json').dependencies);
-
-  const path = require('path');
-  const spawn = require('child_process').spawn;
-  const fs = require('fs');
-  const _ = require('underscore');
-  const forever = require('forever');
 
   const node = {
     command: path.join(__dirname, '/lib/command-node'),
@@ -103,11 +101,10 @@ module.exports = function (gulp, swig) {
   }
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['transpile-scripts', 'merge-css', 'watch'], (cb) => {
+  gulp.task('run', ['browsersync', 'transpile-scripts', 'merge-css', 'watch'], (cb) => {
     let errors;
 
     swig.log();
-    swig.log(`${'NOTE:'.yellow} Currently this tool is limited to node.js apps.\n`);
 
     if (node.exists()) {
       swig.log.task('Checking validity of the app');
@@ -129,12 +126,9 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('watch', () => {
-    const bsInstance = bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name);
-    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
-    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
-    const templatesPath = path.join(basePath, '/templates/', swig.target.name, '**/*.{handlebars,hbs,html}');
-    bsInstance.init({
+  gulp.task('browsersync', () => {
+    swig.browserSync = (swig.browserSync || bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name));
+    swig.browserSync.init({
       proxy: 'localhost.com', //browser sync will act as a proxy, forwarding every request towards localhost.com
       online: false,
       notify: false,
@@ -146,11 +140,21 @@ module.exports = function (gulp, swig) {
         clicks: false,
         forms: false,
         scroll: false
-      }
+      },
+      files: false
     });
 
-    gulp.watch(templatesPath).on('change', bsInstance.reload);
-    gulp.watch(cssPath, ['merge-css']).on('change', bsInstance.reload);
+    return through2.obj();
+  });
+
+  gulp.task('watch', () => {
+
+    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
+    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
+    const templatesPath = path.join(basePath, '/templates/', swig.target.name, '**/*.{handlebars,hbs,html}');
+
+    if (swig.browserSync) gulp.watch(templatesPath).on('change', swig.browserSync.reload);
+    gulp.watch(cssPath, ['merge-css']);
     gulp.watch(jsPath, ['watch-scripts']);
   });
 };
