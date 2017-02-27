@@ -11,6 +11,8 @@
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
  */
+const bsInstance = require('browser-sync').create('localhost.com');
+const bsFullscreenMessage = require('bs-fullscreen-message');
 
 module.exports = function (gulp, swig) {
   const basePath = require('path').join(swig.target.path, '/public/');
@@ -128,8 +130,25 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('watch', () => {
-    const jsPath = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
-    const cssPath = path.join(basePath, '/css/', swig.target.name, '/src/**/*.{css,less}');
+    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
+    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
+    const templatesPath = path.join(basePath, '/templates/', swig.target.name, '**/*.{handlebars,hbs,html}');
+    bsInstance.init({
+      proxy: 'localhost.com', //browser sync will act as a proxy, forwarding every request towards localhost.com
+      online: false,
+      notify: false,
+      open: false,
+      logFileChanges: true,
+      // plugins: [bsFullscreenMessage],
+      logLevel: 'info',
+      ghostMode: {
+        clicks: false,
+        forms: false,
+        scroll: false
+      }
+    });
+
+    gulp.watch(templatesPath).on('change', bsInstance.reload);
     gulp.watch(cssPath, ['merge-css']);
     gulp.watch(jsPath, ['watch-scripts']);
   });
