@@ -56,7 +56,7 @@ module.exports = function (gulp, swig) {
       }))
       .pipe(postcss(postcssPlugins))
       .pipe(rename({ suffix: '.bundle' }))
-      .pipe(sourcemaps.write('.'))
+      // .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(dest))
       .pipe(swig.browserSync ? swig.browserSync.stream() : through2.obj());
   });
