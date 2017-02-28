@@ -20,6 +20,7 @@ const bs = require('browser-sync');
 const through2 = require('through2');
 // const bsFullscreenMessage = require('bs-fullscreen-message');
 module.exports = function (gulp, swig) {
+  const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
@@ -100,8 +101,9 @@ module.exports = function (gulp, swig) {
     });
   }
 
+
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['browsersync', 'transpile-scripts', 'merge-css', 'watch'], (cb) => {
+  gulp.task('run', gulpsync.sync(['transpile-scripts', 'merge-css', ['browserSync', 'watch']]), (cb) => {
     let errors;
 
     swig.log();
@@ -126,25 +128,22 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('browsersync', () => {
-    swig.browserSync = (swig.browserSync || bs[bs.has(swig.target.name) ? 'get' : 'create'](swig.target.name));
-    swig.browserSync.init({
+  gulp.task('browserSync', () => {
+    swig.browserSync = bs.create(swig.target.name);
+    return swig.browserSync.init({
       proxy: 'localhost.com', //browser sync will act as a proxy, forwarding every request towards localhost.com
+      port: 8080,
       online: false,
       notify: false,
       open: false,
-      logFileChanges: true,
       // plugins: [bsFullscreenMessage],
       logLevel: 'info',
       ghostMode: {
         clicks: false,
         forms: false,
         scroll: false
-      },
-      files: false
+      }
     });
-
-    return through2.obj();
   });
 
   gulp.task('watch', () => {
