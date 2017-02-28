@@ -138,19 +138,4 @@ module.exports = function (gulp, swig) {
     });
     return stream;
   });
-
-
-  gulp.task('watch-scripts', () => {
-    // Watch JS/JSX and files
-    const watchFolder = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
-    // if we are being invoked by swig run, only watch the folders if we have a
-    // watch-scripts parameter
-    if (Object.keys(swig.argv._).find(el => el === 'run')) {
-      if (!swig.argv['watch-scripts']) {
-        return;
-      }
-    }
-    swig.log.task(`Watching scripts Folder ${watchFolder}`);
-    gulp.watch(watchFolder, ['transpile-scripts']);
-  });
 };
