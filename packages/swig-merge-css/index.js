@@ -55,9 +55,9 @@ module.exports = function (gulp, swig) {
         relativeUrls: false
       }))
       .pipe(postcss(postcssPlugins))
-      .pipe(rename({ suffix: '.bundle' }))
-      // .pipe(sourcemaps.write('.'))
+      .pipe(rename({suffix: '.bundle'}))
+      .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(dest))
-      .pipe(swig.browserSync ? swig.browserSync.stream() : through2.obj());
+      .pipe(swig.browserSync ? swig.browserSync.stream({match: '**/*.css'}) : through2.obj());
   });
 };
