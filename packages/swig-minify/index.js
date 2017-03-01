@@ -13,18 +13,18 @@
    It's delicious.
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
+const path = require('path');
+const uglify = require('gulp-uglify');
+const rename = require('gulp-rename');
+const replace = require('./lib/gulp-replace-with-sourcemaps');
+const cleancss = require('gulp-clean-css');
+const sourcemaps = require('gulp-sourcemaps');
+const tap = require('gulp-tap');
+const handlebars = require('gulp-handlebars');
 
 module.exports = function (gulp, swig) {
-  const path = require('path');
-  const uglify = require('gulp-uglify');
-  const rename = require('gulp-rename');
-  const replace = require('./lib/gulp-replace-with-sourcemaps');
-  const cleancss = require('gulp-clean-css');
-  const sourcemaps = require('gulp-sourcemaps');
-  const tap = require('gulp-tap');
-  const handlebars = require('gulp-handlebars');
   const basePath = path.join(swig.target.path, '/public/');
-
+  const gulpsync = require('gulp-sync')(gulp);
   function renameFile(file) {
     file.basename = `${file.basename.replace('.src', '')}.min`;
     return file;
@@ -52,9 +52,9 @@ module.exports = function (gulp, swig) {
   /**
    * Minifies CSS and adds vendor prefixes for the supported browsers.
    */
-  gulp.task('minify-css', ['minify-js', 'merge-css'], () => {
+  gulp.task('minify-css', ['merge-css'], () => {
     const targetName = swig.target.name;
-    const glob = path.join(basePath, '/css/', targetName, '/*.src.css');
+    const src = path.join(basePath, '/css', swig.target.name, 'bundle');
     const searchRE = new RegExp(`url\\('?"?(\\/a)?(\\/img\\/)(${
         targetName})(\\/[^\\)'"]+)'?"?\\)`, 'ig');
     const replaceFn = () => {
@@ -70,7 +70,7 @@ module.exports = function (gulp, swig) {
     swig.log('');
     swig.log.task('Minifying CSS using CleanCSS');
 
-    return gulp.src(glob)
+    return gulp.src(path.join(src, 'main.bundle.css'))
       .pipe(tap((file) => {
         swig.log.info('', `Minifying: ${path.basename(file.path).grey}`);
       }))
@@ -79,13 +79,12 @@ module.exports = function (gulp, swig) {
       }))
       .pipe(replace(searchRE, replaceFn))
       .pipe(cleancss())
-
-      .pipe(rename(renameFile))
+      .pipe(rename({suffix: '.min'}))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(path.dirname(glob)));
+      .pipe(gulp.dest(src));
   });
 
-  gulp.task('minify-templates', ['minify-css'], () => {
+  gulp.task('minify-templates', () => {
   /*
     NOTE: ui-build used handlebars@1.0.12
           The precompile output from 1.0.0 to 2.0.0 changed significantly
@@ -100,7 +99,7 @@ module.exports = function (gulp, swig) {
     const glob = path.join(templatesPath, '/**/*.handlebars');
 
     swig.log('');
-    swig.log.task('Precompiling Handlebars Templates');
+    swig.log.task(`Starting 'minify-templates'`);
 
     return gulp.src(glob)
       .pipe(tap((file) => {
@@ -120,7 +119,7 @@ module.exports = function (gulp, swig) {
       .pipe(gulp.dest(path.join(basePath, '/js/', swig.target.name, '/templates')));
   });
 
-  gulp.task('minify', ['minify-templates'], (done) => {
+  gulp.task('minify', gulpsync.sync(['minify-js', 'minify-css', 'minify-templates']), (done) => {
     done();
 
     // minify-js
