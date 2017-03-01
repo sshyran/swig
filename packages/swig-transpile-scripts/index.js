@@ -26,6 +26,8 @@ module.exports = function (gulp, swig) {
   const srcDir = `${swig.target.name}/src/`;
   const dest = 'app/';
   const depsRE = /(gilt\.define|gilt\.require|createModule|requireModule)\(([\w\W]*?)\[([\w\W]*?)\]/;
+  const through2 = require('through2');
+  const cache = require('gulp-cached');
 
   function normalizeModuleName(filename) {
     return filename.replace(/\.\.\//g, '')
@@ -55,6 +57,7 @@ module.exports = function (gulp, swig) {
     swig.log.task('Transpiling client scripts');
 
     let stream = gulp.src(from)
+      .pipe(cache('scripts'))
       .pipe(plumber())
       .pipe(map.init({
         loadMaps: true
@@ -122,6 +125,7 @@ module.exports = function (gulp, swig) {
     swig.log.info(to);
 
     let stream = gulp.src(from)
+      .pipe(cache('scripts'))
       .pipe(plumber());
 
     if (swig.argv.verbose) {
