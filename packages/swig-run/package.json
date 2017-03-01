@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@gilt-tech/swig-transpile-scripts": "^2.0.0",
+    "@gilt-tech/swig-merge-css": "^2.0.0",
     "browser-sync": "^2.18.8",
     "bs-fullscreen-message": "^1.1.0",
     "forever": "^0.15.1",

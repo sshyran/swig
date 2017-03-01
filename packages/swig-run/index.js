@@ -145,13 +145,17 @@ module.exports = function (gulp, swig) {
         }
       });
     }
+    else return null;
   });
 
   gulp.task('watch', () => {
+    //@todo move this to a new swig-watch task
     const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
+    const libPath = path.join(swig.target.path, '/lib/**/*.js');
     const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
 
     gulp.watch(cssPath, ['merge-css']);
-    gulp.watch(jsPath, ['watch-scripts']);
+    gulp.watch(jsPath, ['transpile-scripts']);
+    gulp.watch(libPath, ['transpile-node']);
   });
 };
