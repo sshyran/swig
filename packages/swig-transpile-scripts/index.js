@@ -54,7 +54,7 @@ module.exports = function (gulp, swig) {
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
 
     swig.log('');
-    swig.log.task('Transpiling client scripts');
+    swig.log.task(`Starting 'transpile-scripts'`);
 
     let stream = gulp.src(from)
       .pipe(cache('scripts'))
@@ -105,7 +105,7 @@ module.exports = function (gulp, swig) {
       .pipe(gulp.dest(to))
       .pipe(swig.browserSync ? swig.browserSync.stream({match: '/**/*.js'}) : through2.obj())
       .on('finish', () => {
-        swig.log(`${swig.log.padding} Transpilation complete.`.grey);
+        swig.log(`${swig.log.padding} 'transpile-scripts' complete.`.grey);
       });
     return stream;
   });
@@ -120,7 +120,7 @@ module.exports = function (gulp, swig) {
     const from = path.join(swig.target.path, '/lib/**/*.js');
     const to = path.join(swig.target.path, '/lib_dist');
 
-    swig.log.task('Transpiling node scripts');
+    swig.log.task(`Starting 'transpile-node'`);
 
     let stream = gulp.src(from)
       .pipe(cache('scripts'))
@@ -137,7 +137,7 @@ module.exports = function (gulp, swig) {
       .pipe(gulp.dest(to))
       .pipe(swig.browserSync ? swig.browserSync.stream({match: '**/*.js', once: true}) : through2.obj())
       .on('finish', () => {
-        swig.log(`${swig.log.padding} Transpilation complete.`.grey);
+        swig.log(`${swig.log.padding} 'transpile-node' complete.`.grey);
       });
     return stream;
   });

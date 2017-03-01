@@ -20,8 +20,6 @@ module.exports = function (gulp, swig) {
   const rename = require('gulp-rename');
   const replace = require('./lib/gulp-replace-with-sourcemaps');
   const cleancss = require('gulp-clean-css');
-  const postcss = require('gulp-postcss');
-  const inlineImports = require('postcss-import');
   const sourcemaps = require('gulp-sourcemaps');
   const tap = require('gulp-tap');
   const handlebars = require('gulp-handlebars');
@@ -54,20 +52,9 @@ module.exports = function (gulp, swig) {
   /**
    * Minifies CSS and adds vendor prefixes for the supported browsers.
    */
-  gulp.task('minify-css', ['minify-js'], () => {
+  gulp.task('minify-css', ['minify-js', 'merge-css'], () => {
     const targetName = swig.target.name;
     const glob = path.join(basePath, '/css/', targetName, '/*.src.css');
-    const autoprefixer = require('gulp-autoprefixer');
-    const autoprefixerCfg = {
-      // https://github.com/postcss/autoprefixer#options
-      browsers: [
-        'last 2 versions',
-        'ie >= 10',
-        'iOS >= 8'
-      ],
-      // should Autoprefixer [remove outdated] prefixes. Default is true.
-      remove: true
-    };
     const searchRE = new RegExp(`url\\('?"?(\\/a)?(\\/img\\/)(${
         targetName})(\\/[^\\)'"]+)'?"?\\)`, 'ig');
     const replaceFn = () => {
@@ -90,13 +77,7 @@ module.exports = function (gulp, swig) {
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
-
-      .pipe(postcss([inlineImports]))
-
-      .pipe(autoprefixer(autoprefixerCfg))
-
       .pipe(replace(searchRE, replaceFn))
-
       .pipe(cleancss())
 
       .pipe(rename(renameFile))
