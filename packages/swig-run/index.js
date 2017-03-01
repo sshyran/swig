@@ -17,7 +17,6 @@ const fs = require('fs');
 const _ = require('underscore');
 const forever = require('forever');
 const bs = require('browser-sync');
-const through2 = require('through2');
 module.exports = function (gulp, swig) {
   const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
@@ -147,7 +146,6 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('watch', () => {
-    //@todo move this to a new swig-watch task
     const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
     const libPath = path.join(swig.target.path, '/lib/**/*.js');
     const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
