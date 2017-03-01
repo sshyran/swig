@@ -49,7 +49,7 @@ module.exports = function (gulp, swig) {
   // TODO: Implement incremental build (i.e. while watching files, only
   // apply transformation on changed files)
 
-  gulp.task('transpile-scripts', ['transpile-node'], () => {
+  gulp.task('transpile-scripts', () => {
     const from = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
 
@@ -99,13 +99,14 @@ module.exports = function (gulp, swig) {
 
     // NOTE: Needed for retrocompatibility
     // Changing every "src.*" module id and dependencies to be "app.*"
-    .pipe(replace(depsRE, (str, $1, $2, $3) => `${$1}(${replaceSrc($2)}[${replaceSrc($3)}]`))
+      .pipe(replace(depsRE, (str, $1, $2, $3) => `${$1}(${replaceSrc($2)}[${replaceSrc($3)}]`))
 
-    .pipe(map.write('.'))
-    .pipe(gulp.dest(to))
-    .on('finish', () => {
-      swig.log(`${swig.log.padding} Transpilation complete.`.grey);
-    });
+      .pipe(map.write('.'))
+      .pipe(gulp.dest(to))
+      .pipe(swig.browserSync ? swig.browserSync.stream({match: '/**/*.js'}) : through2.obj())
+      .on('finish', () => {
+        swig.log(`${swig.log.padding} Transpilation complete.`.grey);
+      });
     return stream;
   });
 
@@ -119,10 +120,7 @@ module.exports = function (gulp, swig) {
     const from = path.join(swig.target.path, '/lib/**/*.js');
     const to = path.join(swig.target.path, '/lib_dist');
 
-    swig.log('');
     swig.log.task('Transpiling node scripts');
-    swig.log.info(from);
-    swig.log.info(to);
 
     let stream = gulp.src(from)
       .pipe(cache('scripts'))
@@ -130,16 +128,17 @@ module.exports = function (gulp, swig) {
 
     if (swig.argv.verbose) {
       stream = stream.pipe(tap((file) => {
-        swig.log.info('', `Transpiling: ${path.basename(file.path)}`);
+        swig.log.info('', `Transpiling: ${path.basename(file.path)} into ${to}`);
       }));
     }
     stream = stream.pipe(babel({
       plugins: ['transform-flow-strip-types']
     }))
-    .pipe(gulp.dest(to))
-    .on('finish', () => {
-      swig.log(`${swig.log.padding} Transpilation complete.`.grey);
-    });
+      .pipe(gulp.dest(to))
+      .pipe(swig.browserSync ? swig.browserSync.stream({match: '**/*.js', once: true}) : through2.obj())
+      .on('finish', () => {
+        swig.log(`${swig.log.padding} Transpilation complete.`.grey);
+      });
     return stream;
   });
 };
