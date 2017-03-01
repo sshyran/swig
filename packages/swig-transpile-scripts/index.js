@@ -45,10 +45,6 @@ module.exports = function (gulp, swig) {
     description: 'Transpile ES* scripts into ES5 scripts.'
   });
 
-
-  // TODO: Implement incremental build (i.e. while watching files, only
-  // apply transformation on changed files)
-
   gulp.task('transpile-scripts', ['transpile-node'], () => {
     const from = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
