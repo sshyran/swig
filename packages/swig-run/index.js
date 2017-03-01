@@ -18,7 +18,6 @@ const _ = require('underscore');
 const forever = require('forever');
 const bs = require('browser-sync');
 const through2 = require('through2');
-// const bsFullscreenMessage = require('bs-fullscreen-message');
 module.exports = function (gulp, swig) {
   const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
@@ -136,7 +135,6 @@ module.exports = function (gulp, swig) {
         port: 8080,
         online: false,
         open: false,
-        // plugins: [bsFullscreenMessage],
         logLevel: 'info',
         ghostMode: {
           clicks: false,
