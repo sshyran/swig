@@ -284,7 +284,6 @@ module.exports = function (gulp, swig) {
       'spec', // spec lints before running specs
       'transpile-scripts',
       'bundle',
-      'merge-css',
       'minify',
       'assets-tag-version'
     ];
