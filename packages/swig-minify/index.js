@@ -54,7 +54,7 @@ module.exports = function (gulp, swig) {
    */
   gulp.task('minify-css', ['merge-css'], () => {
     const targetName = swig.target.name;
-    const src = path.join(basePath, '/css', swig.target.name, 'bundle');
+    const src = path.join(basePath, '/css', swig.target.name, 'app');
     const searchRE = new RegExp(`url\\('?"?(\\/a)?(\\/img\\/)(${
         targetName})(\\/[^\\)'"]+)'?"?\\)`, 'ig');
     const replaceFn = () => {

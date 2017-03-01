@@ -42,10 +42,9 @@ module.exports = function (gulp, swig) {
 
     const basePublicPath = path.join(swig.target.path, '/public');
     const basePath = path.join(basePublicPath, '/css', swig.target.name);
-    const dest = path.join(basePath, 'bundle');
-    const glob = [
-      path.join(basePath, '/**/main.less')
-    ];
+    const dest = path.join(basePath, 'app');
+    const glob = path.join(basePath, '/**/main.less');
+
     return gulp.src(glob)
       .pipe(sourcemaps.init({
         loadMaps: true
