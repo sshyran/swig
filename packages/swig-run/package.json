@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "3.0.0",
+  "version": "2.0.0",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-run",
   "keywords": [
     "gulp",
