@@ -79,7 +79,7 @@ module.exports = function (gulp, swig) {
       }))
       .pipe(replace(searchRE, replaceFn))
       .pipe(cleancss())
-      .pipe(rename({suffix: '.min'}))
+      .pipe(rename({ suffix: '.min' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(src));
   });
@@ -99,7 +99,7 @@ module.exports = function (gulp, swig) {
     const glob = path.join(templatesPath, '/**/*.handlebars');
 
     swig.log('');
-    swig.log.task(`Starting 'minify-templates'`);
+    swig.log.task('Starting \'minify-templates\'');
 
     return gulp.src(glob)
       .pipe(tap((file) => {

@@ -130,7 +130,7 @@ module.exports = function (gulp, swig) {
     if (swig.argv.USE_BROWSERSYNC) {
       swig.browserSync = bs.create(swig.target.name);
       return swig.browserSync.init({
-        proxy: 'localhost.com', //browser sync will act as a proxy, forwarding every request towards localhost.com
+        proxy: 'localhost.com', // browser sync will act as a proxy, forwarding every request towards localhost.com
         port: 8080,
         online: false,
         open: false,
@@ -142,7 +142,7 @@ module.exports = function (gulp, swig) {
         }
       });
     }
-    else return null;
+    return null;
   });
 
   gulp.task('watch', () => {
