@@ -46,10 +46,11 @@
     "babel-eslint": "^7.1.1",
     "eslint": "^3.15.0",
     "eslint-plugin-import": "^2.2.0",
-    "lerna": "2.0.0-beta.36"
+    "lerna": "2.0.0-beta.38"
   },
   "scripts": {
     "fix": "eslint packages/ --format=codeframe --fix",
-    "lint": "eslint packages/ --format=codeframe"
+    "lint": "eslint packages/ --format=codeframe",
+    "bootstrap": "lerna bootstrap --npm-client=yarn"
   }
 }

@@ -127,7 +127,7 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('browser-sync', () => {
-    if (swig.argv.USE_BROWSERSYNC) return null;
+    if (!swig.argv.refresh) return null;
     swig.browserSync = bs.create(swig.target.name);
     return swig.browserSync.init({
       // browser sync will act as a proxy, forwarding every request towards localhost.com
