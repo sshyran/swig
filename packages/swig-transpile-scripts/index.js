@@ -130,10 +130,8 @@ module.exports = function (gulp, swig) {
       plugins: ['transform-flow-strip-types']
     }))
       .pipe(gulp.dest(to))
-      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj())
-      .on('finish', () => {
-        swig.log(`${swig.log.padding} 'transpile-node' complete.`.grey);
-      });
+      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj());
+
     return stream;
   });
 };

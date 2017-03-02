@@ -21,6 +21,7 @@ const bs = require('browser-sync');
 module.exports = function (gulp, swig) {
   const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
+
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
     flags: {
@@ -127,7 +128,12 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('watch', () => {
-    if (!swig.argv.watch) return null;
+    const watch = swig.argv.watch;
+    if (!watch) return null;
+    const port = (isNaN(parseInt(watch))) ?  8080 : watch;
+
+    process.env.WATCH = true;
+    process.env.GILT_LOG_LEVEL = 'WARN';
 
     const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
     const libPath = path.join(swig.target.path, '/lib/**/*.js');
@@ -138,7 +144,7 @@ module.exports = function (gulp, swig) {
     swig.browserSync.init({
       // browser sync will act as a proxy, forwarding every request towards localhost.com
       proxy: 'localhost.com',
-      port: 8080,
+      port,
       online: false,
       open: false,
       logLevel: 'info',
