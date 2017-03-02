@@ -250,7 +250,6 @@ module.exports = function (gulp, swig) {
       const workDir = basePath.replace('{{dir}}', dir);
       globPatterns.push(`${workDir}/*.min.*`);
       globPatterns.push(`${workDir}/*.src.*`);
-      globPatterns.push(`${workDir}/*.bundle.*`);
       globPatterns.push(`${workDir}/*.map.*`);
 
       if (dir === 'js') {

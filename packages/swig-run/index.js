@@ -102,11 +102,10 @@ module.exports = function (gulp, swig) {
 
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', gulpsync.sync([['transpile-scripts', 'merge-css'], ['browser-sync', 'watch']]), (cb) => {
+  gulp.task('run', gulpsync.sync([['transpile-scripts', 'merge-css'], ['watch']]), (cb) => {
     let errors;
 
     swig.log();
-
     if (node.exists()) {
       swig.log.task('Checking validity of the app');
       errors = node.valid();
@@ -127,10 +126,16 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('browser-sync', () => {
-    if (!swig.argv.refresh) return null;
+  gulp.task('watch', () => {
+    if (!swig.argv.watch) return null;
+
+    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
+    const libPath = path.join(swig.target.path, '/lib/**/*.js');
+    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
+
+    // Init BrowserSync
     swig.browserSync = bs.create(swig.target.name);
-    return swig.browserSync.init({
+    swig.browserSync.init({
       // browser sync will act as a proxy, forwarding every request towards localhost.com
       proxy: 'localhost.com',
       port: 8080,
@@ -143,12 +148,6 @@ module.exports = function (gulp, swig) {
         scroll: false
       }
     });
-  });
-
-  gulp.task('watch', () => {
-    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
-    const libPath = path.join(swig.target.path, '/lib/**/*.js');
-    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
 
     gulp.watch(cssPath, ['merge-css']);
     gulp.watch(jsPath, ['transpile-scripts']);

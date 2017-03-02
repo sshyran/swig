@@ -99,10 +99,8 @@ module.exports = function (gulp, swig) {
 
       .pipe(map.write('.'))
       .pipe(gulp.dest(to))
-      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '/**/*.js' }) : through2.obj())
-      .on('finish', () => {
-        swig.log(`${swig.log.padding} 'transpile-scripts' complete.`.grey);
-      });
+      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '/**/*.js' }) : through2.obj());
+
     return stream;
   });
 

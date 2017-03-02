@@ -49,7 +49,7 @@ module.exports = function (gulp, swig) {
   });
 
   /**
-   * Minifies CSS and adds vendor prefixes for the supported browsers.
+   * Minifies CSS.
    */
   gulp.task('minify-css', ['merge-css'], () => {
     const targetName = swig.target.name;
@@ -78,7 +78,7 @@ module.exports = function (gulp, swig) {
       }))
       .pipe(replace(searchRE, replaceFn))
       .pipe(cleancss())
-      .pipe(rename({ suffix: '.min' }))
+      .pipe(rename(renameFile))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(path.dirname(glob)));
   });

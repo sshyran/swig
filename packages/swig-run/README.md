@@ -1,5 +1,8 @@
 # gilt-swig-run
 Swig tasks for running Gilt Node Framework apps.
 
-TODO
-Add more info on how this task works
+Launch with `swig run` in the target node app.
+
+## File watchers
+
+`swig run --watch` will automatically watch scripts and stylesheets. 
