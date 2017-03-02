@@ -39,7 +39,7 @@ const postcssPlugins = [
 module.exports = function (gulp, swig) {
   gulp.task('merge-css', () => {
     swig.log('');
-    swig.log.task('Starting \'merge-css\'');
+    swig.log.task('Merging LESS and CSS Files');
 
     const basePublicPath = path.join(swig.target.path, '/public');
     const basePath = path.join(basePublicPath, '/css', swig.target.name);
@@ -58,9 +58,6 @@ module.exports = function (gulp, swig) {
       .pipe(rename({ suffix: '.bundle' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(dest))
-      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.css' }) : through2.obj())
-      .on('finish', () => {
-        swig.log(`${swig.log.padding} 'merge-css' complete.`.grey);
-      });
+      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.css' }) : through2.obj());
   });
 };

@@ -99,7 +99,7 @@ module.exports = function (gulp, swig) {
     const glob = path.join(templatesPath, '/**/*.handlebars');
 
     swig.log('');
-    swig.log.task('Starting \'minify-templates\'');
+    swig.log.task('Precompiling Handlebars Templates');
 
     return gulp.src(glob)
       .pipe(tap((file) => {
