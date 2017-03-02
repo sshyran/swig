@@ -101,7 +101,7 @@ module.exports = function (gulp, swig) {
 
 
   // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', gulpsync.sync([['transpile-scripts', 'merge-css'], ['browserSync', 'watch']]), (cb) => {
+  gulp.task('run', gulpsync.sync([['transpile-scripts', 'merge-css'], ['browser-sync', 'watch']]), (cb) => {
     let errors;
 
     swig.log();
@@ -126,23 +126,22 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('browserSync', () => {
-    if (swig.argv.USE_BROWSERSYNC) {
-      swig.browserSync = bs.create(swig.target.name);
-      return swig.browserSync.init({
-        proxy: 'localhost.com', // browser sync will act as a proxy, forwarding every request towards localhost.com
-        port: 8080,
-        online: false,
-        open: false,
-        logLevel: 'info',
-        ghostMode: {
-          clicks: false,
-          forms: false,
-          scroll: false
-        }
-      });
-    }
-    return null;
+  gulp.task('browser-sync', () => {
+    if (swig.argv.USE_BROWSERSYNC) return null;
+    swig.browserSync = bs.create(swig.target.name);
+    return swig.browserSync.init({
+      // browser sync will act as a proxy, forwarding every request towards localhost.com
+      proxy: 'localhost.com',
+      port: 8080,
+      online: false,
+      open: false,
+      logLevel: 'info',
+      ghostMode: {
+        clicks: false,
+        forms: false,
+        scroll: false
+      }
+    });
   });
 
   gulp.task('watch', () => {
