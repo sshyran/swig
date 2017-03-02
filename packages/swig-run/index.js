@@ -17,6 +17,7 @@ const fs = require('fs');
 const _ = require('underscore');
 const forever = require('forever');
 const bs = require('browser-sync');
+
 module.exports = function (gulp, swig) {
   const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
