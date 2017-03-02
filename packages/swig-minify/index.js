@@ -24,7 +24,6 @@ const handlebars = require('gulp-handlebars');
 
 module.exports = function (gulp, swig) {
   const basePath = path.join(swig.target.path, '/public/');
-  const gulpsync = require('gulp-sync')(gulp);
   function renameFile(file) {
     file.basename = `${file.basename.replace('.src', '')}.min`;
     return file;
@@ -119,7 +118,7 @@ module.exports = function (gulp, swig) {
       .pipe(gulp.dest(path.join(basePath, '/js/', swig.target.name, '/templates')));
   });
 
-  gulp.task('minify', gulpsync.sync(['minify-js', 'minify-css', 'minify-templates']), (done) => {
+  gulp.task('minify', ['minify-js', 'minify-css', 'minify-templates'], (done) => {
     done();
 
     // minify-js

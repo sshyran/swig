@@ -50,7 +50,7 @@ module.exports = function (gulp, swig) {
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
 
     swig.log('');
-    swig.log.task('Starting \'transpile-scripts\'');
+    swig.log.task('Transpiling client-side scripts');
 
     let stream = gulp.src(from)
       .pipe(cache('scripts'))
@@ -116,7 +116,8 @@ module.exports = function (gulp, swig) {
     const from = path.join(swig.target.path, '/lib/**/*.js');
     const to = path.join(swig.target.path, '/lib_dist');
 
-    swig.log.task('Starting \'transpile-node\'');
+    swig.log('');
+    swig.log.task('Transpiling server-side scripts');
 
     let stream = gulp.src(from)
       .pipe(cache('scripts'))
