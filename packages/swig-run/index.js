@@ -132,7 +132,7 @@ module.exports = function (gulp, swig) {
     if (!watch) return null;
     const port = (isNaN(parseInt(watch))) ?  8080 : watch;
 
-    process.env.WATCH = true;
+    process.env.GILT_WATCH = true;
     process.env.GILT_LOG_LEVEL = 'WARN';
 
     const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
