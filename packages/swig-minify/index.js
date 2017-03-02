@@ -53,7 +53,7 @@ module.exports = function (gulp, swig) {
    */
   gulp.task('minify-css', ['merge-css'], () => {
     const targetName = swig.target.name;
-    const src = path.join(basePath, '/css', swig.target.name, 'app');
+    const glob = path.join(basePath, '/css/', targetName, '/*.src.css');
     const searchRE = new RegExp(`url\\('?"?(\\/a)?(\\/img\\/)(${
         targetName})(\\/[^\\)'"]+)'?"?\\)`, 'ig');
     const replaceFn = () => {
@@ -69,7 +69,7 @@ module.exports = function (gulp, swig) {
     swig.log('');
     swig.log.task('Minifying CSS using CleanCSS');
 
-    return gulp.src(path.join(src, 'main.bundle.css'))
+    return gulp.src(glob)
       .pipe(tap((file) => {
         swig.log.info('', `Minifying: ${path.basename(file.path).grey}`);
       }))
@@ -80,7 +80,7 @@ module.exports = function (gulp, swig) {
       .pipe(cleancss())
       .pipe(rename({ suffix: '.min' }))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(src));
+      .pipe(gulp.dest(path.dirname(glob)));
   });
 
   gulp.task('minify-templates', () => {

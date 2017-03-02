@@ -43,10 +43,14 @@ module.exports = function (gulp, swig) {
 
     const basePublicPath = path.join(swig.target.path, '/public');
     const basePath = path.join(basePublicPath, '/css', swig.target.name);
-    const dest = path.join(basePath, 'app');
-    const glob = path.join(basePath, '/**/main.less');
+    const glob = [
+      path.join(basePath, '/*.{less,css}'),
+// exclude src or min files that have already been merged
+      `!${path.join(basePath, '/*.{min,src}.{less,css}')}`
+    ];
 
-    return gulp.src(glob)
+
+    return gulp.src(glob, { base: basePublicPath })
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
@@ -55,9 +59,9 @@ module.exports = function (gulp, swig) {
         relativeUrls: false
       }))
       .pipe(postcss(postcssPlugins))
-      .pipe(rename({ suffix: '.bundle' }))
+      .pipe(rename({ suffix: '.src' }))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(dest))
+      .pipe(gulp.dest(basePublicPath))
       .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.css' }) : through2.obj());
   });
 };
