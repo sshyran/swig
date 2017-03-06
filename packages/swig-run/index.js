@@ -19,7 +19,6 @@ const forever = require('forever');
 const bs = require('browser-sync');
 
 module.exports = function (gulp, swig) {
-  const gulpsync = require('gulp-sync')(gulp);
   const basePath = require('path').join(swig.target.path, '/public/');
 
   swig.tell('run', {
@@ -101,32 +100,6 @@ module.exports = function (gulp, swig) {
     });
   }
 
-
-  // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', gulpsync.sync([['transpile-scripts', 'merge-css'], ['watch']]), (cb) => {
-    let errors;
-
-    swig.log();
-    if (node.exists()) {
-      swig.log.task('Checking validity of the app');
-      errors = node.valid();
-
-      if (!errors.length) {
-        if (swig.argv.debug) {
-          node.args.push('--debug');
-        }
-
-        swig.log.task('Running app');
-        swig.log();
-        run(cb);
-      } else {
-        swig.log.error('swig-app', `Couldn't start your app due to the following:\n${errors.join('\n')}`);
-      }
-    } else {
-      swig.log.error('swig-app', 'No node.js apps found in this directory.');
-    }
-  });
-
   gulp.task('watch', () => {
     const watch = swig.argv.watch;
     if (!watch) return null;
@@ -158,5 +131,30 @@ module.exports = function (gulp, swig) {
     gulp.watch(cssPath, ['merge-css']);
     gulp.watch(jsPath, ['transpile-scripts']);
     gulp.watch(libPath, ['transpile-node']);
+  });
+
+  // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
+  gulp.task('run', swig.seq(['transpile-scripts', 'merge-css'], 'watch'), (cb) => {
+    let errors;
+
+    swig.log();
+    if (node.exists()) {
+      swig.log.task('Checking validity of the app');
+      errors = node.valid();
+
+      if (!errors.length) {
+        if (swig.argv.debug) {
+          node.args.push('--debug');
+        }
+
+        swig.log.task('Running app');
+        swig.log();
+        run(cb);
+      } else {
+        swig.log.error('swig-app', `Couldn't start your app due to the following:\n${errors.join('\n')}`);
+      }
+    } else {
+      swig.log.error('swig-app', 'No node.js apps found in this directory.');
+    }
   });
 };
