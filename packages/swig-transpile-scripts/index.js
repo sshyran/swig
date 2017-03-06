@@ -65,8 +65,6 @@ module.exports = function (gulp, swig) {
     description: 'Transpile server-side ES* scripts into ES5 scripts.'
   });
 
-  gulp.task('init-scripts', swig.seq(['transpile-scripts', 'transpile-node']), setupWatcher);
-
   gulp.task('transpile-scripts', () => {
     const from = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
@@ -163,4 +161,6 @@ module.exports = function (gulp, swig) {
     gulp.watch(clientJsPath, ['transpile-scripts']);
     gulp.watch(serverJsPath, ['transpile-node']);
   });
+
+  gulp.task('init-scripts', swig.seq(['transpile-scripts', 'transpile-node']), setupWatcher);
 };
