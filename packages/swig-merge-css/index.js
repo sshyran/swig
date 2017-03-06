@@ -36,7 +36,21 @@ const postcssPlugins = [
   autoprefixer(autoprefixerCfg),
 ];
 
+
 module.exports = function (gulp, swig) {
+  const basePath = require('path').join(swig.target.path, '/public/');
+  const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
+  const setupWatcher = () => {
+    if (!swig.watch.enabled) return null;
+
+    return swig.watch.watchers = [...swig.watch.watchers, {
+      path: cssPath,
+      task: 'merge-css'
+    }];
+  };
+
+  gulp.task('init-styles', ['merge-css'], setupWatcher);
+
   gulp.task('merge-css', () => {
     swig.log('');
     swig.log.task('Merging LESS and CSS Files');
@@ -62,6 +76,6 @@ module.exports = function (gulp, swig) {
       .pipe(rename({ suffix: '.src' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(basePublicPath))
-      .pipe(swig.browserSync ? swig.browserSync.stream({ match: '**/*.css' }) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.css' }) : through2.obj());
   });
 };

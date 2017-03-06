@@ -101,20 +101,14 @@ module.exports = function (gulp, swig) {
   }
 
   gulp.task('watch', () => {
-    const watch = swig.argv.watch;
-    if (!watch) return null;
-    const port = (isNaN(parseInt(watch, 10))) ?  8080 : watch;
+    if (!swig.watch.enabled) return null;
 
-    process.env.GILT_WATCH = true;
+    const port = (isNaN(parseInt(swig.argv.watch, 10))) ?  8080 : swig.argv.watch;
     process.env.GILT_LOG_LEVEL = 'WARN';
 
-    const jsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
-    const libPath = path.join(swig.target.path, '/lib/**/*.js');
-    const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
-
     // Init BrowserSync
-    swig.browserSync = bs.create(swig.target.name);
-    swig.browserSync.init({
+    swig.watch.browserSync = bs.create(swig.target.name);
+    swig.watch.browserSync.init({
       // browser sync will act as a proxy, forwarding every request towards localhost.com
       proxy: 'localhost.com',
       port,
@@ -128,13 +122,10 @@ module.exports = function (gulp, swig) {
       }
     });
 
-    gulp.watch(cssPath, ['merge-css']);
-    gulp.watch(jsPath, ['transpile-scripts']);
-    gulp.watch(libPath, ['transpile-node']);
+    swig.watch.watchers.forEach(watcher => gulp.watch(watcher.path, [watcher.task]));
   });
 
-  // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', swig.seq(['transpile-scripts', 'merge-css'], 'watch'), (cb) => {
+  gulp.task('run', swig.seq(['init-scripts', 'init-styles'], 'watch'), (cb) => {
     let errors;
 
     swig.log();

@@ -1,16 +1,16 @@
 /*
-________  ___       __   ___  ________
-|\   ____\|\  \     |\  \|\  \|\   ____\
-\ \  \___|\ \  \    \ \  \ \  \ \  \___|
-\ \_____  \ \  \  __\ \  \ \  \ \  \  ___
-\|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
-  ____\_\  \ \____________\ \__\ \_______\
+ ________  ___       __   ___  ________
+ |\   ____\|\  \     |\  \|\  \|\   ____\
+ \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+ \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+ \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+ ____\_\  \ \____________\ \__\ \_______\
  |\_________\|____________|\|__|\|_______|
  \|_________|
 
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
-*/
+ */
 
 require('colors');
 
@@ -36,7 +36,12 @@ const swig = {
   project: {},
   env: process.env.GILT_ENV || 'development',
   target: {},
-  tasks: {}
+  tasks: {},
+  watch: {
+    //File watchers are disabled unless swig is called with a `--watch` option
+    enabled: !!argv.watch,
+    watchers: []
+  },
 };
 
 function load(moduleName) {
@@ -70,7 +75,7 @@ function loadPlugins(deps) {
     pluginsList = Object.keys(pluginsList);
   }
   pluginsList.filter(moduleName => /@gilt-tech\/swig-(?!util)/.test(moduleName))
-      .forEach(load);
+    .forEach(load);
 }
 
 function setupPaths() {
@@ -212,8 +217,8 @@ loadPlugins(thisPkg.dependencies);
 // Loading target app specified plugins
 const targetAppCwd = process.cwd();
 const targetAppDeps = Object.keys(swig.pkg.devDependencies)
-    .concat(Object.keys(swig.pkg.dependencies))
-    .map(m => `${targetAppCwd}/node_modules/${m}`);
+  .concat(Object.keys(swig.pkg.dependencies))
+  .map(m => `${targetAppCwd}/node_modules/${m}`);
 loadPlugins(targetAppDeps);
 
 // Run the required task
