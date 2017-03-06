@@ -130,7 +130,7 @@ module.exports = function (gulp, swig) {
   gulp.task('watch', () => {
     const watch = swig.argv.watch;
     if (!watch) return null;
-    const port = (isNaN(parseInt(watch))) ?  8080 : watch;
+    const port = (isNaN(parseInt(watch, 10))) ?  8080 : watch;
 
     process.env.GILT_WATCH = true;
     process.env.GILT_LOG_LEVEL = 'WARN';
