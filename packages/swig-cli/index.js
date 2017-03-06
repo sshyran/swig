@@ -38,7 +38,7 @@ const swig = {
   target: {},
   tasks: {},
   watch: {
-    //File watchers are disabled unless swig is called with a `--watch` option
+    // File watchers are disabled unless swig is called with a `--watch` option
     enabled: !!argv.watch,
     watchers: []
   },

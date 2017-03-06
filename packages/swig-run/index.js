@@ -103,7 +103,7 @@ module.exports = function (gulp, swig) {
   gulp.task('watch', () => {
     if (!swig.watch.enabled) return null;
 
-    const port = (isNaN(parseInt(swig.argv.watch, 10))) ?  8080 : swig.argv.watch;
+    const port = (isNaN(parseInt(swig.argv.watch, 10))) ? 8080 : swig.argv.watch;
     process.env.GILT_LOG_LEVEL = 'WARN';
 
     // Init BrowserSync

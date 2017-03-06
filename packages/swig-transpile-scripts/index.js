@@ -104,10 +104,10 @@ module.exports = function (gulp, swig) {
         return normalizeModuleName(src);
       },
       plugins: [
-        [transformModules, {noMangle: true}]
+        [transformModules, { noMangle: true }]
       ],
       presets: [
-        ['latest', {modules: false}], // runs last
+        ['latest', { modules: false }], // runs last
         'react', // runs second
         'stage-3', // runs first
       ]
@@ -119,7 +119,7 @@ module.exports = function (gulp, swig) {
 
       .pipe(map.write('.'))
       .pipe(gulp.dest(to))
-      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({match: '/**/*.js'}) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '/**/*.js' }) : through2.obj());
 
     return stream;
   });
@@ -147,10 +147,10 @@ module.exports = function (gulp, swig) {
       }));
     }
     stream = stream.pipe(babel({
-        plugins: ['transform-flow-strip-types']
-      }))
+      plugins: ['transform-flow-strip-types']
+    }))
       .pipe(gulp.dest(to))
-      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({match: '**/*.js', once: true}) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj());
 
     return stream;
   });

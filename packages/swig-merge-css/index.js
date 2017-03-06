@@ -39,12 +39,12 @@ const postcssPlugins = [
 
 module.exports = function (gulp, swig) {
   const basePath = require('path').join(swig.target.path, '/public/');
-  const cssPath = path.join(basePath, '/css/', swig.target.name, 'src', '/**/*.{css,less}');
+  const cssPath = path.join(basePath, '/css/', swig.target.name);
   const setupWatcher = () => {
     if (!swig.watch.enabled) return null;
 
-    return swig.watch.watchers = [...swig.watch.watchers, {
-      path: cssPath,
+    swig.watch.watchers = [...swig.watch.watchers, {
+      path: path.join(cssPath, 'src', '/**/*.{css,less}'),
       task: 'merge-css'
     }];
   };
@@ -55,27 +55,24 @@ module.exports = function (gulp, swig) {
     swig.log('');
     swig.log.task('Merging LESS and CSS Files');
 
-    const basePublicPath = path.join(swig.target.path, '/public');
-    const basePath = path.join(basePublicPath, '/css', swig.target.name);
     const glob = [
-      path.join(basePath, '/*.{less,css}'),
+      path.join(cssPath, '/*.{less,css}'),
       // exclude src or min files that have already been merged
-      `!${path.join(basePath, '/*.{min,src}.{less,css}')}`
+      `!${path.join(cssPath, '/*.{min,src}.{less,css}')}`
     ];
 
-
-    return gulp.src(glob, { base: basePublicPath })
+    return gulp.src(glob)
       .pipe(sourcemaps.init({
         loadMaps: true
       }))
       .pipe(less({
-        paths: [basePublicPath],
+        paths: [cssPath],
         relativeUrls: false
       }))
       .pipe(postcss(postcssPlugins))
       .pipe(rename({ suffix: '.src' }))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(basePublicPath))
+      .pipe(gulp.dest(cssPath))
       .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.css' }) : through2.obj());
   });
 };
