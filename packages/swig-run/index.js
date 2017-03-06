@@ -19,8 +19,6 @@ const forever = require('forever');
 const bs = require('browser-sync');
 
 module.exports = function (gulp, swig) {
-  const basePath = require('path').join(swig.target.path, '/public/');
-
   swig.tell('run', {
     description: 'Swig tasks for running Gilt Node Framework apps.',
     flags: {

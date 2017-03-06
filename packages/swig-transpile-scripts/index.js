@@ -32,7 +32,7 @@ module.exports = function (gulp, swig) {
   const setupWatcher = () => {
     if (!swig.watch.enabled) return null;
 
-    return swig.watch.watchers = [...swig.watch.watchers, {
+    swig.watch.watchers = [...swig.watch.watchers, {
       path: clientJsPath,
       task: 'transpile-scripts'
     }, {
