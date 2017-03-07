@@ -1,5 +1,6 @@
 # gilt-swig-run
 Swig tasks for running Gilt Node Framework apps.
+Currently this tool is limited to node.js apps.
 
 Launch with `swig run` in the target node app.
 

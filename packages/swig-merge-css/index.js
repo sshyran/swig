@@ -38,7 +38,7 @@ const postcssPlugins = [
 
 
 module.exports = function (gulp, swig) {
-  const basePath = require('path').join(swig.target.path, '/public/');
+  const basePath = path.join(swig.target.path, '/public/');
   const cssPath = path.join(basePath, '/css/', swig.target.name);
   const setupWatcher = () => {
     if (!swig.watch.enabled) return null;
