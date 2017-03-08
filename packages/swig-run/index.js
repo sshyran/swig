@@ -99,6 +99,12 @@ module.exports = function (gulp, swig) {
   }
 
   gulp.task('watch', () => {
+    if (swig.argv.watchScripts) {
+      const watchScriptsDeprecation = new Error('The option --watch-scripts is deprecated. It will be removed in the next major release.');
+      watchScriptsDeprecation.name = 'DeprecationWarning';
+
+      process.emitWarning(watchScriptsDeprecation);
+    }
     if (!swig.watch.enabled) return null;
 
     const port = (isNaN(parseInt(swig.argv.watch, 10))) ? 8080 : swig.argv.watch;

@@ -53,10 +53,6 @@ module.exports = function (gulp, swig) {
     return str.replace(/src\./g, 'app.');
   }
 
-  swig.tell('init-scripts', {
-    description: 'Transpiles client and serverside scripts once, then pushes a script watcher callback in the swig.watch.watchers object.'
-  });
-
   swig.tell('transpile-scripts', {
     description: 'Transpile ES* scripts into ES5 scripts.'
   });

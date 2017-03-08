@@ -38,8 +38,7 @@ const swig = {
   target: {},
   tasks: {},
   watch: {
-    // File watchers are disabled unless swig is called with a `--watch` option
-    enabled: !!argv.watch,
+    enabled: (!!argv.watch || !!argv.watchScripts),
     watchers: []
   },
 };
@@ -58,6 +57,7 @@ function load(moduleName) {
     // instead of the target app.
     // Let's attempt to require the module via the module.parent.require function and see what
     // happens.
+    swig.log.error('swig-cli', `Error requiring ${moduleName}: ${e}`);
     module.parent.require(moduleName)(gulp, swig);
   }
 
