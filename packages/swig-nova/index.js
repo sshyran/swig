@@ -302,15 +302,15 @@ module.exports = function (gulp, swig) {
         name: 'version',
         message: `What version bump do you want to perform? ${currentVersion}`,
         choices: [
-          { name: `patch ${`(${v[0]}.${v[1]}.${v[2] + 1})`.grey}`,
-            value: 'patch',
-            short: 'patch' },
-          { name: `minor ${`(${v[0]}.${v[1] + 1}.0)`.grey}`,
-            value: 'minor',
-            short: 'minor' },
           { name: `major ${`(${v[0] + 1}.0.0)`.grey}`,
             value: 'major',
             short: 'major' },
+          { name: `minor ${`(${v[0]}.${v[1] + 1}.0)`.grey}`,
+            value: 'minor',
+            short: 'minor' },
+          { name: `patch ${`(${v[0]}.${v[1]}.${v[2] + 1})`.grey}`,
+            value: 'patch',
+            short: 'patch' },
           { name: 'Manually type new version...', value: 'manual' }
         ]
       });
