@@ -57,8 +57,12 @@ function load(moduleName) {
     // instead of the target app.
     // Let's attempt to require the module via the module.parent.require function and see what
     // happens.
-    swig.log.error('swig-cli', `Error requiring ${moduleName}: ${e}`);
-    module.parent.require(moduleName)(gulp, swig);
+    if (module.parent) {
+      module.parent.require(moduleName)(gulp, swig);
+    }
+    else {
+      swig.log.error('swig-cli', `Error requiring ${moduleName}: ${e}`);
+    }
   }
 
   loadedPlugins.push(path.basename(moduleName));
