@@ -100,7 +100,7 @@ module.exports = function (gulp, swig) {
 
   gulp.task('watch', () => {
     if (swig.argv.watchScripts) {
-      //todo: remove the --watch-scripts support
+      // todo: remove the --watch-scripts support
       const watchScriptsDeprecation = new Error('The option --watch-scripts is deprecated. It will be removed in the next major release.');
       watchScriptsDeprecation.name = 'DeprecationWarning';
 
@@ -109,7 +109,7 @@ module.exports = function (gulp, swig) {
     if (!swig.watch.enabled) return null;
     process.env.GILT_LOG_LEVEL = 'WARN';
 
-    let cfg = {
+    const cfg = {
       online: false,
       open: false,
       logLevel: 'info',
@@ -119,13 +119,11 @@ module.exports = function (gulp, swig) {
         scroll: false
       }
     };
-    let hotReload = swig.pkg['hot-reload'] || {};
-    if (hotReload.proxy) cfg.proxy = hotReload.proxy;
-    if (hotReload.port) cfg.port = hotReload.port;
+    const [proxy, port] = [swig.pkg['hot-reload']];
 
     // Init BrowserSync
     swig.watch.browserSync = bs.create(swig.target.name);
-    swig.watch.browserSync.init(cfg);
+    swig.watch.browserSync.init(Object.assign({}, cfg, proxy, port));
 
     swig.watch.watchers.forEach(watcher => gulp.watch(watcher.path, [watcher.task]));
   });

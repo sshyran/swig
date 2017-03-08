@@ -59,8 +59,7 @@ function load(moduleName) {
     // happens.
     if (module.parent) {
       module.parent.require(moduleName)(gulp, swig);
-    }
-    else {
+    } else {
       swig.log.error('swig-cli', `Error requiring ${moduleName}: ${e}`);
     }
   }
