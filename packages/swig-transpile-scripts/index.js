@@ -115,7 +115,10 @@ module.exports = function (gulp, swig) {
 
       .pipe(map.write('.'))
       .pipe(gulp.dest(to))
-      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '/**/*.js' }) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({match: '/**/*.js'}) : through2.obj())
+      .on('finish', () => {
+        swig.log.info('', 'Client-side scripts transpilation completed.'.grey);
+      });
 
     return stream;
   });
@@ -146,13 +149,19 @@ module.exports = function (gulp, swig) {
       plugins: ['transform-flow-strip-types']
     }))
       .pipe(gulp.dest(to))
-      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj())
+      .on('finish', () => {
+        swig.log.info('', 'Server-side scripts transpilation completed.'.grey);
+      });
 
     return stream;
   });
 
   gulp.task('watch-scripts', () => {
-    if (!swig.watch.enabled) return null;
+    //todo: remove the watch-scripts task in the next major release
+    const watchScriptsDeprecation = new Error('Task \'watch-scripts\' is deprecated, and will be removed in the next major release. Please use \'swig init-scripts --watch\' instead');
+    watchScriptsDeprecation.name = 'DeprecationWarning';
+    process.emitWarning(watchScriptsDeprecation);
 
     gulp.watch(clientJsPath, ['transpile-scripts']);
     gulp.watch(serverJsPath, ['transpile-node']);

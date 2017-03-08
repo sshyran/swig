@@ -41,8 +41,6 @@ module.exports = function (gulp, swig) {
   const basePath = path.join(swig.target.path, '/public/');
   const cssPath = path.join(basePath, '/css/', swig.target.name);
   const setupWatcher = () => {
-    if (!swig.watch.enabled) return null;
-
     swig.watch.watchers = [...swig.watch.watchers, {
       path: path.join(cssPath, 'src', '/**/*.{css,less}'),
       task: 'merge-css'
