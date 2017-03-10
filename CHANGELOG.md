@@ -1,3 +1,11 @@
+### 2.1.0
+**Improvements**
+  - `swig-lint`
+
+    It is now possible to opt-in for a Stylelint based linting of CSS/LESS files, via the new
+    `--use-stylelint` flag.
+
+
 ### 2.0.0
 **General Notes**
  - Aggregated all Swig related packages under one repository.

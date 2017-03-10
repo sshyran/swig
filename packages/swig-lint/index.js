@@ -132,6 +132,56 @@ module.exports = function lintersSetup(gulp, swig) {
   gulp.task('lint-css', ['lint-setup'], () => {
     swig.log.task('Linting CSS and LESS');
 
+    if (swig.argv.useStylelint) {
+      const stylelintrc = path.join(process.cwd(), '.stylelintrc.yml');
+      if (!fs.existsSync(stylelintrc)) {
+        swig.log('You do not seem to have a .stylelintrc.yml configuration in your app folder.');
+        swig.log('Please create such file and add the following to it:');
+        swig.log('');
+        swig.log('extends: "stylelint-config-standard"');
+        swig.log('');
+        swig.log('Also run the following command:');
+        swig.log('');
+        swig.log('npm i -D stylelint stylelint-config-standard');
+
+        process.exit(1);
+      }
+
+      const stylelint = require('gulp-stylelint');
+      return gulp.src(paths.css)
+        .pipe(stylelint({
+          syntax: 'less',
+          failAfterError: false,
+          configFile: stylelintrc,
+          reporters: [{
+            // TODO: The Stylelint "verbose" reporter is very comprehensive but maybe not enough
+            // swiggy, so we probably should create our own, loosely based on the lesshint one
+            formatter: 'verbose', console: true
+          }, {
+            formatter: (results) => {
+              const errors = results.filter(res => res.errored && !res.ignored);
+              if (errors.length) {
+                const output = `You've got ${errors.length.toString().magenta}${errors.length > 1 ? ' errors' : ' error'}`;
+                swig.log.error('lint-css', `${output}. Please do some cleanup before proceeding.`);
+                process.exit(1);
+              } else {
+                swig.log.info('', `${results.length} files lint-free.\n`);
+              }
+              return '';
+            },
+            console: true
+          }]
+        }));
+    }
+
+    // Let's inform the user that the preferable way of linting CSS is by using the Stylelint
+    // engine, with a nice deprecation alert.
+    ['   --- WARNING ---',
+      '   You are using the less than optimal Lesshint engine to lint your stylesheets.',
+      '   Consider using Stylelint instead, adding the flag `--use-stylelint` to the command.',
+      '   Lesshint is to be considered deprecated and will be removed in the next major release of Swig (3.0.0)'
+    ].forEach(str => swig.log(str.yellow));
+
     const buffer = require('gulp-buffer');
     const lesshint = require('gulp-lesshint');
     const reporter = require('./lib/reporters/lesshint-reporter')(swig);
