@@ -167,5 +167,5 @@ module.exports = function (gulp, swig) {
     gulp.watch(serverJsPath, ['transpile-node']);
   });
 
-  gulp.task('init-scripts', swig.seq(['transpile-scripts', 'transpile-node']), setupWatcher);
+  gulp.task('init-scripts', ['transpile-scripts', 'transpile-node'], setupWatcher);
 };

@@ -71,6 +71,9 @@ module.exports = function (gulp, swig) {
       .pipe(rename({ suffix: '.src' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(cssPath))
-      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.css' }) : through2.obj());
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.css' }) : through2.obj())
+      .on('finish', () => {
+        swig.log.info('', 'Stylesheets have been merged.'.grey);
+      });
   });
 };

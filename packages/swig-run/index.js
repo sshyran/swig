@@ -100,7 +100,7 @@ module.exports = function (gulp, swig) {
 
   gulp.task('watch', () => {
     if (swig.argv.watchScripts) {
-      // todo: remove the --watch-scripts support
+      // todo in 3.0: remove the --watch-scripts support
       const watchScriptsDeprecation = new Error('The option --watch-scripts is deprecated. It will be removed in the next major release.');
       watchScriptsDeprecation.name = 'DeprecationWarning';
 
@@ -126,9 +126,10 @@ module.exports = function (gulp, swig) {
     swig.watch.browserSync.init(Object.assign({}, cfg, proxy, port));
 
     swig.watch.watchers.forEach(watcher => gulp.watch(watcher.path, [watcher.task]));
+    if (swig.watch.watchers.length > 0) swig.log.success(null, 'File watching enabled.');
   });
 
-  gulp.task('run', swig.seq(['init-scripts', 'init-styles'], 'watch'), (cb) => {
+  gulp.task('run', ['init'], (cb) => {
     let errors;
 
     swig.log();
@@ -150,5 +151,10 @@ module.exports = function (gulp, swig) {
     } else {
       swig.log.error('swig-app', 'No node.js apps found in this directory.');
     }
+  });
+
+  gulp.task('init', () => {
+    // Initialise scripts and stylesheets, setup watchers when done.
+    swig.seq(['init-scripts', 'init-styles'], 'watch');
   });
 };
