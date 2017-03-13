@@ -20,23 +20,6 @@ Improves file watchers to allow for a better Front End development experience.
      }
      ```
    - For details on `"proxy"` please refer to the [BrowserSync options](https://www.browsersync.io/docs/options#option-proxy) 
- 
-
-####
---watch-scripts deprecated, task watch-scripts deprecated
-
-minify-css now always calls merge, 
-
-`package.json` of the context: it should contain 
-
- 
-## How to watch stylesheets
-
-## How to watch scripts
-
-
-
-Browsersync 
 
 ### 2.1.0
 **Improvements**
