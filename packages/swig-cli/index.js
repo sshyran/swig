@@ -210,9 +210,17 @@ if (!fs.existsSync(swig.temp)) {
 loadPlugins(thisPkg.dependencies);
 
 // Loading target app specified plugins
+let devDeps = Object.assign({}, swig.pkg.devDependencies || {});
+let deps = Object.assign({}, swig.pkg.dependencies || {});
+if (swig.argv.module) {
+  const parentPkg = require(`${process.cwd()}/package.json`);
+  devDeps = Object.assing({}, devDeps, parentPkg.devDependencies);
+  deps = Object.assing({}, deps, parentPkg.dependencies);
+}
+
 const targetAppCwd = process.cwd();
-const targetAppDeps = Object.keys(swig.pkg.devDependencies)
-    .concat(Object.keys(swig.pkg.dependencies))
+const targetAppDeps = Object.keys(devDeps)
+    .concat(Object.keys(deps))
     .map(m => `${targetAppCwd}/node_modules/${m}`);
 loadPlugins(targetAppDeps);
 
