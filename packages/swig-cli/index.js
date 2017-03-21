@@ -214,8 +214,8 @@ let devDeps = Object.assign({}, swig.pkg.devDependencies || {});
 let deps = Object.assign({}, swig.pkg.dependencies || {});
 if (swig.argv.module) {
   const parentPkg = require(`${process.cwd()}/package.json`);
-  devDeps = Object.assing({}, devDeps, parentPkg.devDependencies);
-  deps = Object.assing({}, deps, parentPkg.dependencies);
+  devDeps = Object.assign({}, devDeps, parentPkg.devDependencies);
+  deps = Object.assign({}, deps, parentPkg.dependencies);
 }
 
 const targetAppCwd = process.cwd();
