@@ -29,9 +29,15 @@ white=$(tput setaf 7)
 
 dir=`dirname $command`
 bin=`perl -e "print readlink '$command'"`
-dir=`dirname $dir/$bin`
-swigCliDir="./node_modules/@gilt-tech/swig"
-pkg=$(cat $swigCliDir/package.json)
+binDir=`dirname $dir/$bin`
+localSwigCliDir="./node_modules/@gilt-tech/swig"
+
+swigDir=$binDir/..
+if [ -f $localSwigCliDir/package.json ]; then
+  swigDir=$localSwigCliDir
+fi
+
+pkg=$(cat $swigDir/package.json)
 
 function version {
   prop='version'
@@ -49,33 +55,32 @@ echo "  ·  ${red}swig${reset}         v$SWIG_VERSION"
 # version of node. It's not required in production, as production should be using
 # the right version of node natively.
 if [ "$NODE_ENV" != "production" ]; then
-  source $dir/check_node_version
+  source $binDir/check_node_version
 fi
 
 if [ "$firstParam" == "init" ]; then
-  node "$swigCliDir/lib/init.js" $secondParam
+  node "$swigDir/lib/init.js" $secondParam
   # --use-yarn
   exit
 fi
 
 if [ "$firstParam" == "update" ]; then
-  node "$swigCliDir/lib/update.js"
+  node "$swigDir/lib/update.js"
   exit
 fi
 
 if [ "$firstParam" == "pre-publish" ]; then
-  node "$swigCliDir/lib/pre-publish" $args
+  node "$swigDir/lib/pre-publish" $args
   # --vendor
   # --less
   exit
 fi
 
 if [ "$firstParam" == "help" ]; then
-  # reset the args passed to wrap the task name we want help with
-  # prevents gulp from trying to run two tasks
-  set -- "$firstParam" "--task=$secondParam"
+  node "$swigDir/index.js" $firstParam "--task=$secondParam"
+  exit
 fi
 
 # pass control to gulp
-node "$swigCliDir/lib/update.js"
-node "$swigCliDir/index.js" $args
+node "$swigDir/lib/update.js"
+node "$swigDir/index.js" $args
