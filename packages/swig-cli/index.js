@@ -53,7 +53,12 @@ function load(moduleName) {
     // instead of the target app.
     // Let's attempt to require the module via the module.parent.require function and see what
     // happens.
-    module.parent.require(moduleName)(gulp, swig);
+    if (module.parent) {
+      module.parent.require(moduleName)(gulp, swig);
+    } else {
+      swig.log.error(
+        `Error occurred while trying to load module ${moduleName}. \n   ${e}`);
+    }
   }
 
   loadedPlugins.push(path.basename(moduleName));
@@ -225,4 +230,18 @@ const targetAppDeps = Object.keys(devDeps)
 loadPlugins(targetAppDeps);
 
 // Run the required task
-gulp.start(taskName);
+try {
+  gulp.start(taskName);
+} catch (e) {
+  if (e.missingTask) {
+    // most likely the user tried to run an non existent plugin, let's tell him
+    swig.log.error(`The task you tried to run does not exist or is not installed: ${e.missingTask.magenta}`);
+    swig.log.error(`Try to run: ${`npm install --save @gilt-tech/swig-${e.missingTask}`.yellow}\n`);
+    // let's show the user the available tasks
+    gulp.start('default');
+  } else {
+    // well sounds like a real trouble, let's just show the error and run...
+    swig.log.error(`An error occurred: ${e}`);
+    process.exit(1);
+  }
+}
