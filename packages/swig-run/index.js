@@ -119,11 +119,11 @@ module.exports = function (gulp, swig) {
         scroll: false
       }
     };
-    const [proxy, port] = [swig.pkg['hot-reload']];
 
+    const {proxy = null, port = null} = ((swig.pkg.swig || {})['hot-reload'] || {});
     // Init BrowserSync
     swig.watch.browserSync = bs.create(swig.target.name);
-    swig.watch.browserSync.init(Object.assign({}, cfg, proxy, port));
+    swig.watch.browserSync.init(Object.assign({}, cfg, {proxy}, {port}));
 
     swig.watch.watchers.forEach(watcher => gulp.watch(watcher.path, [watcher.task]));
     if (swig.watch.watchers.length > 0) swig.log.success(null, 'File watching enabled.');
