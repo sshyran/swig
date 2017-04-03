@@ -36,7 +36,7 @@ function bail() {
 if (!argv.force) {
   let npmConfigArgv;
   try {
-    npmConfigArgv = JSON.parse(process.env.npmConfigArgv);
+    npmConfigArgv = JSON.parse(process.env.npm_config_argv);
   } catch (e) {
     bail();
   }

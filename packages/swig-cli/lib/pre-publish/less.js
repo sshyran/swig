@@ -22,13 +22,25 @@ module.exports = function (log) {
   const os = require('os');
   const glob = require('globby');
   const less = require('less');
+  const postcss = require('postcss');
+  const autoprefixer = require('autoprefixer');
+
   const cwd = process.cwd();
   const pkg = require(`${cwd}/package.json`);
+
   const targetPath = 'css';
   const encoding = 'utf-8';
   const packageName = pkg.name.replace('@gilt-tech/', '');
   const publishPath = cwd;
   const cssPath = path.join(publishPath, targetPath);
+  // TODO: we should centralize this. it is being used in different places already
+  const autoprefixerConfig = {
+    browsers: [
+      'last 2 versions',
+      'ie >= 10',
+      'iOS >= 8'
+    ]
+  };
 
   // (tmpdir)/swig/publish/(module.name)/../../install/(module.name)
   const installPath = path.join(os.tmpdir(), 'swig', '/install', packageName, '/public/css/', packageName);
@@ -94,6 +106,8 @@ module.exports = function (log) {
   // and do less than those in less.helpers. fun stuff.
   log.info('Note', 'Each file is prepended with an @import of less.helpers.');
 
+  const prefixer = postcss(autoprefixer(autoprefixerConfig));
+
   lessFiles.forEach((filePath) => {
     let contents;
     let output;
@@ -111,6 +125,7 @@ module.exports = function (log) {
     log.info('', `Rendering: ${path.basename(filePath).grey}`);
 
     less.render(contents, options)
+      .then(res => prefixer.process(res.css))
       .then((res) => {
         output = res.css;
         outputPath = path.join(path.dirname(filePath), `${path.basename(filePath, '.less')}.css`);

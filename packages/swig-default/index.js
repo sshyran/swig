@@ -64,11 +64,16 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('help', () => {
+    if (!swig.argv.task) {
+      swig.seq('default');
+      return;
+    }
+
     const task = swig.tasks[swig.argv.task];
     const taskFlags = [];
 
     if (!task) {
-      swig.log.error('help', `The task: ${task.magenta} has no associated help information.`);
+      swig.log.error('help', `The task: ${swig.argv.task.magenta} has no associated help information.`);
       process.exit(1);
     }
 

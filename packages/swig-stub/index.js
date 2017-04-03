@@ -100,7 +100,7 @@ module.exports = function (gulp, swig) {
           message: prompts.continue,
           filter: filter
         }
-      ], (answer) => {
+      ]).then((answer) => {
         if (answer.continue) {
           if (swig.rc.newrelic) {
             data.newRelicKey = swig.rc.newrelic.licenseKey;
@@ -174,6 +174,6 @@ module.exports = function (gulp, swig) {
         message: prompts.footer,
         filter: filter
       }
-    ], processAnswers);
+    ]).then(processAnswers);
   });
 };
