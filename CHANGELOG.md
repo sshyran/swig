@@ -14,9 +14,11 @@ Improves file watchers to allow for a better Front End development experience.
    - This change allows us to move Autoprefixer to `merge-css` in order for it to kick in when devleoping locally.
  - The BrowserSync instance can be configured by adding an extra field in the `package.json` of the target app:
    - ```
-     "hot-reload": {
+     "swig": {
+        "hot-reload": {
          "proxy": "localhost.com",
          "port": PREFERRED_PORT
+        }
      }
      ```
    - For details on `"proxy"` please refer to the [BrowserSync options](https://www.browsersync.io/docs/options#option-proxy) 
