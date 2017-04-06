@@ -15,7 +15,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@gilt-tech/swig-merge-css": "^2.0.0",
     "@gilt-tech/swig-transpile-scripts": "^2.0.0",
+    "browser-sync": "^2.18.8",
     "forever": "^0.15.1",
     "underscore": "^1.8.3"
   },

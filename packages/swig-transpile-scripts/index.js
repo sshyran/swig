@@ -1,5 +1,3 @@
-
-
 /*
  ________  ___       __   ___  ________
  |\   ____\|\  \     |\  \|\  \|\   ____\
@@ -26,13 +24,29 @@ module.exports = function (gulp, swig) {
   const srcDir = `${swig.target.name}/src/`;
   const dest = 'app/';
   const depsRE = /(gilt\.define|gilt\.require|createModule|requireModule)\(([\w\W]*?)\[([\w\W]*?)\]/;
+  const through2 = require('through2');
+  const cache = require('gulp-cached');
+  const clientJsPath = path.join(basePath, '/js/', swig.target.name, 'src', '/**/*.{js,jsx}');
+  const serverJsPath = path.join(swig.target.path, '/lib/**/*.js');
+
+  const setupWatcher = () => {
+    if (!swig.watch.enabled) return null;
+
+    swig.watch.watchers = [...swig.watch.watchers, {
+      path: clientJsPath,
+      task: 'transpile-scripts'
+    }, {
+      path: serverJsPath,
+      task: 'transpile-node'
+    }];
+  };
 
   function normalizeModuleName(filename) {
     return filename.replace(/\.\.\//g, '')
-        .replace(/\.\//, '')
-        .replace(/\.jsx$|\.js$/, '')
-        .replace(/\//g, '.')
-        .replace(/(\.[\w\-_]+)\1$/, '$1');
+      .replace(/\.\//, '')
+      .replace(/\.jsx$|\.js$/, '')
+      .replace(/\//g, '.')
+      .replace(/(\.[\w\-_]+)\1$/, '$1');
   }
 
   function replaceSrc(str) {
@@ -43,18 +57,19 @@ module.exports = function (gulp, swig) {
     description: 'Transpile ES* scripts into ES5 scripts.'
   });
 
+  swig.tell('transpile-node', {
+    description: 'Transpile server-side ES* scripts into ES5 scripts.'
+  });
 
-  // TODO: Implement incremental build (i.e. while watching files, only
-  // apply transformation on changed files)
-
-  gulp.task('transpile-scripts', ['transpile-node'], () => {
+  gulp.task('transpile-scripts', () => {
     const from = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
     const to = path.join(basePath, '/js/', swig.target.name, `/${dest}`);
 
     swig.log('');
-    swig.log.task('Transpiling client scripts');
+    swig.log.task('Transpiling client-side scripts');
 
     let stream = gulp.src(from)
+      .pipe(cache('scripts'))
       .pipe(plumber())
       .pipe(map.init({
         loadMaps: true
@@ -73,7 +88,7 @@ module.exports = function (gulp, swig) {
         if (fullPath.includes(srcDir)) {
           // NOTE: We can comfortably assume that we are in our src/ folder
           const cleanSrc =
-              normalizeModuleName(fullPath.slice(fullPath.indexOf(srcDir) +
+            normalizeModuleName(fullPath.slice(fullPath.indexOf(srcDir) +
               srcDir.length));
           return `${dest}${cleanSrc}`.replace(/\//g, '.');
         }
@@ -96,13 +111,15 @@ module.exports = function (gulp, swig) {
 
     // NOTE: Needed for retrocompatibility
     // Changing every "src.*" module id and dependencies to be "app.*"
-    .pipe(replace(depsRE, (str, $1, $2, $3) => `${$1}(${replaceSrc($2)}[${replaceSrc($3)}]`))
+      .pipe(replace(depsRE, (str, $1, $2, $3) => `${$1}(${replaceSrc($2)}[${replaceSrc($3)}]`))
 
-    .pipe(map.write('.'))
-    .pipe(gulp.dest(to))
-    .on('finish', () => {
-      swig.log(`${swig.log.padding} Transpilation complete.`.grey);
-    });
+      .pipe(map.write('.'))
+      .pipe(gulp.dest(to))
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '/**/*.js' }) : through2.obj())
+      .on('finish', () => {
+        swig.log.info('', 'Client-side scripts transpilation completed.'.grey);
+      });
+
     return stream;
   });
 
@@ -117,40 +134,38 @@ module.exports = function (gulp, swig) {
     const to = path.join(swig.target.path, '/lib_dist');
 
     swig.log('');
-    swig.log.task('Transpiling node scripts');
-    swig.log.info(from);
-    swig.log.info(to);
+    swig.log.task('Transpiling server-side scripts');
 
     let stream = gulp.src(from)
+      .pipe(cache('scripts'))
       .pipe(plumber());
 
     if (swig.argv.verbose) {
       stream = stream.pipe(tap((file) => {
-        swig.log.info('', `Transpiling: ${path.basename(file.path)}`);
+        swig.log.info('', `Transpiling: ${path.basename(file.path)} into ${to}`);
       }));
     }
     stream = stream.pipe(babel({
       plugins: ['transform-flow-strip-types']
     }))
-    .pipe(gulp.dest(to))
-    .on('finish', () => {
-      swig.log(`${swig.log.padding} Transpilation complete.`.grey);
-    });
+      .pipe(gulp.dest(to))
+      .pipe(swig.watch.browserSync ? swig.watch.browserSync.stream({ match: '**/*.js', once: true }) : through2.obj())
+      .on('finish', () => {
+        swig.log.info('', 'Server-side scripts transpilation completed.'.grey);
+      });
+
     return stream;
   });
 
-
   gulp.task('watch-scripts', () => {
-    // Watch JS/JSX and files
-    const watchFolder = path.join(basePath, '/js/', swig.target.name, '/src/**/*.{js,jsx}');
-    // if we are being invoked by swig run, only watch the folders if we have a
-    // watch-scripts parameter
-    if (Object.keys(swig.argv._).find(el => el === 'run')) {
-      if (!swig.argv['watch-scripts']) {
-        return;
-      }
-    }
-    swig.log.task(`Watching scripts Folder ${watchFolder}`);
-    gulp.watch(watchFolder, ['transpile-scripts']);
+    // todo: remove the watch-scripts task in the next major release
+    const watchScriptsDeprecation = new Error('Task \'watch-scripts\' is deprecated, and will be removed in the next major release. Please use \'swig init-scripts --watch\' instead');
+    watchScriptsDeprecation.name = 'DeprecationWarning';
+    process.emitWarning(watchScriptsDeprecation);
+
+    gulp.watch(clientJsPath, ['transpile-scripts']);
+    gulp.watch(serverJsPath, ['transpile-node']);
   });
+
+  gulp.task('init-scripts', ['transpile-scripts', 'transpile-node'], setupWatcher);
 };

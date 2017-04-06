@@ -238,15 +238,19 @@ module.exports = function (gulp, swig) {
   gulp.task('assets-deploy-cleanup', (done) => {
     swig.log.task('Cleaning up generated files');
 
-    const cleanUpDirs = ['js', 'css'];
-    const basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name);
+    const cleanUpDirs = [
+      path.join('js', swig.target.name),
+      path.join('css', swig.target.name),
+      path.join('css', swig.target.name, 'app')
+    ];
+    const basePath = path.join(swig.target.path, '/public/{{dir}}');
     const globPatterns = [];
 
     _.each(cleanUpDirs, (dir) => {
       const workDir = basePath.replace('{{dir}}', dir);
-
-      globPatterns.push(`${workDir}/*.min.${dir}`);
-      globPatterns.push(`${workDir}/*.src.${dir}`);
+      globPatterns.push(`${workDir}/*.min.*`);
+      globPatterns.push(`${workDir}/*.src.*`);
+      globPatterns.push(`${workDir}/*.map.*`);
 
       if (dir === 'js') {
         globPatterns.push(`${workDir}/manifest.json`);
@@ -284,7 +288,6 @@ module.exports = function (gulp, swig) {
       'spec', // spec lints before running specs
       'transpile-scripts',
       'bundle',
-      'merge-css',
       'minify',
       'assets-tag-version'
     ];

@@ -1,3 +1,28 @@
+### 2.2.0 
+####Improvements
+Improves file watchers to allow for a better Front End development experience.
+
+**General Notes**
+ - Adds stylesheet file watcher.
+ - `swig run --watch` now starts file watchers and launches a BrowserSync instance, that hot-reloads the page whenever a stylesheet or script is modified.
+
+####Minor changes
+ - CSS and Javascript file watchers are started when `swig run` is executed with the `--watch` flag. 
+    - The previously used flag, `--watch-scripts`, still works as an alias for `--watch` but will be deprecated in the next major release.
+ - Task `swig run` now launches `merge-css` in addition to `transpile-scripts` 
+ - Task `minify-css` now depends on `merge-css`.
+   - This change allows us to move Autoprefixer to `merge-css` in order for it to kick in when devleoping locally.
+ - The BrowserSync instance can be configured by adding an extra field in the `package.json` of the target app:
+   - ```
+     "swig": {
+        "hot-reload": {
+         "proxy": "localhost.com",
+         "port": PREFERRED_PORT
+        }
+     }
+     ```
+   - For details on `"proxy"` please refer to the [BrowserSync options](https://www.browsersync.io/docs/options#option-proxy) 
+
 ### 2.1.0
 **Improvements**
   - `swig-lint`

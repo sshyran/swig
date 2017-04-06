@@ -50,6 +50,7 @@
   },
   "scripts": {
     "fix": "eslint packages/ --format=codeframe --fix",
-    "lint": "eslint packages/ --format=codeframe"
+    "lint": "eslint packages/ --format=codeframe",
+    "bootstrap": "lerna bootstrap --npm-client=yarn"
   }
 }

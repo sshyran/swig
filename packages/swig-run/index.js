@@ -1,16 +1,22 @@
 /*
  ________  ___       __   ___  ________
-|\   ____\|\  \     |\  \|\  \|\   ____\
-\ \  \___|\ \  \    \ \  \ \  \ \  \___|
+ |\   ____\|\  \     |\  \|\  \|\   ____\
+ \ \  \___|\ \  \    \ \  \ \  \ \  \___|
  \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
-  \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
-    ____\_\  \ \____________\ \__\ \_______\
-   |\_________\|____________|\|__|\|_______|
-   \|_________|
+ \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+ ____\_\  \ \____________\ \__\ \_______\
+ |\_________\|____________|\|__|\|_______|
+ \|_________|
 
-   It's delicious.
-   Brought to you by the fine folks at Gilt (http://github.com/gilt)
-*/
+ It's delicious.
+ Brought to you by the fine folks at Gilt (http://github.com/gilt)
+ */
+const path = require('path');
+const spawn = require('child_process').spawn;
+const fs = require('fs');
+const _ = require('underscore');
+const forever = require('forever');
+const bs = require('browser-sync');
 
 module.exports = function (gulp, swig) {
   swig.tell('run', {
@@ -22,12 +28,6 @@ module.exports = function (gulp, swig) {
 
   // Loading swig dependencies
   swig.loadPlugins(require('./package.json').dependencies);
-
-  const path = require('path');
-  const spawn = require('child_process').spawn;
-  const fs = require('fs');
-  const _ = require('underscore');
-  const forever = require('forever');
 
   const node = {
     command: path.join(__dirname, '/lib/command-node'),
@@ -98,13 +98,41 @@ module.exports = function (gulp, swig) {
     });
   }
 
-  // NOTE: Running transpile-scripts once, to produce artifacts in app/ folder
-  gulp.task('run', ['transpile-scripts', 'watch-scripts'], (cb) => {
+  gulp.task('watch', () => {
+    if (swig.argv.watchScripts) {
+      // todo in 3.0: remove the --watch-scripts support
+      const watchScriptsDeprecation = new Error('The option --watch-scripts is deprecated. It will be removed in the next major release.');
+      watchScriptsDeprecation.name = 'DeprecationWarning';
+
+      process.emitWarning(watchScriptsDeprecation);
+    }
+    if (!swig.watch.enabled) return null;
+    process.env.GILT_LOG_LEVEL = 'WARN';
+
+    const cfg = {
+      online: false,
+      open: false,
+      logLevel: 'info',
+      ghostMode: {
+        clicks: false,
+        forms: false,
+        scroll: false
+      }
+    };
+
+    const { proxy = null, port = null } = ((swig.pkg.swig || {})['hot-reload'] || {});
+    // Init BrowserSync
+    swig.watch.browserSync = bs.create(swig.target.name);
+    swig.watch.browserSync.init(Object.assign({}, cfg, { proxy }, { port }));
+
+    swig.watch.watchers.forEach(watcher => gulp.watch(watcher.path, [watcher.task]));
+    if (swig.watch.watchers.length > 0) swig.log.success(null, 'File watching enabled.');
+  });
+
+  gulp.task('run', ['init'], (cb) => {
     let errors;
 
     swig.log();
-    swig.log(`${'NOTE:'.yellow} Currently this tool is limited to node.js apps.\n`);
-
     if (node.exists()) {
       swig.log.task('Checking validity of the app');
       errors = node.valid();
@@ -123,5 +151,10 @@ module.exports = function (gulp, swig) {
     } else {
       swig.log.error('swig-app', 'No node.js apps found in this directory.');
     }
+  });
+
+  gulp.task('init', () => {
+    // Initialise scripts and stylesheets, setup watchers when done.
+    swig.seq(['init-scripts', 'init-styles'], 'watch');
   });
 };

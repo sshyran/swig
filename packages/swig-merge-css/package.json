@@ -15,8 +15,11 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "autoprefixer": "^6.0.0",
     "gulp-less": "^3.0.2",
+    "gulp-postcss": "^6.3.0",
     "gulp-rename": "^1.2.0",
-    "gulp-sourcemaps": "^2.0.0"
+    "gulp-sourcemaps": "^2.0.0",
+    "postcss-import": "^9.1.0"
   }
 }

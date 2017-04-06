@@ -1,16 +1,16 @@
 /*
-________  ___       __   ___  ________
-|\   ____\|\  \     |\  \|\  \|\   ____\
-\ \  \___|\ \  \    \ \  \ \  \ \  \___|
-\ \_____  \ \  \  __\ \  \ \  \ \  \  ___
-\|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
-  ____\_\  \ \____________\ \__\ \_______\
+ ________  ___       __   ___  ________
+ |\   ____\|\  \     |\  \|\  \|\   ____\
+ \ \  \___|\ \  \    \ \  \ \  \ \  \___|
+ \ \_____  \ \  \  __\ \  \ \  \ \  \  ___
+ \|____|\  \ \  \|\__\_\  \ \  \ \  \|\  \
+ ____\_\  \ \____________\ \__\ \_______\
  |\_________\|____________|\|__|\|_______|
  \|_________|
 
  It's delicious.
  Brought to you by the fine folks at Gilt (http://github.com/gilt)
-*/
+ */
 
 require('colors');
 
@@ -36,7 +36,11 @@ const swig = {
   project: {},
   env: process.env.GILT_ENV || 'development',
   target: {},
-  tasks: {}
+  tasks: {},
+  watch: {
+    enabled: (!!argv.watch || !!argv.watchScripts),
+    watchers: []
+  },
 };
 
 function load(moduleName) {
@@ -75,7 +79,7 @@ function loadPlugins(deps) {
     pluginsList = Object.keys(pluginsList);
   }
   pluginsList.filter(moduleName => /@gilt-tech\/swig-(?!util)/.test(moduleName))
-      .forEach(load);
+    .forEach(load);
 }
 
 function setupPaths() {
