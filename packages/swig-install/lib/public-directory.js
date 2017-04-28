@@ -222,9 +222,8 @@ module.exports = function (gulp, swig) {
         // Gonna error on a directory that does not exist
         swig.log.error('install:public-directory', `Passed target folder ${swig.argv.public} does not exist.`);
         return;
-      } else {
-        paths = { pub: swig.argv.public };
       }
+      paths = { pub: swig.argv.public };
     } else {
       paths = { pub: path.join(swig.target.path, '/public') };
     }

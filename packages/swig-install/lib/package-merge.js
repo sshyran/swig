@@ -28,7 +28,6 @@ module.exports = function (gulp, swig) {
     const _ = require('underscore');
     const fs = require('fs');
     const path = require('path');
-    const glob = require('glob');
     const gutil = require('gulp-util');
     const util = require('./merge-util')(gulp, swig);
     const merge = require('./merge')(gulp, swig, util);
