@@ -28,17 +28,13 @@ module.exports = function (gulp, swig) {
     const _ = require('underscore');
     const fs = require('fs');
     const path = require('path');
-    const glob = require('glob');
     const gutil = require('gulp-util');
     const util = require('./merge-util')(gulp, swig);
-    const node = require('./merge-node')(gulp, swig, util);
-    const jvm = require('./merge-jvm')(gulp, swig, util);
+    const merge = require('./merge')(gulp, swig, util);
 
     // figure out which type we're dealing with
-    if (fs.existsSync(path.join(swig.cwd, 'app.js'))) { // node
-      node();
-    } else if (glob.sync(path.join(swig.cwd, '/lib/**/*.jar')).length) {
-      jvm();
+    if (fs.existsSync(path.join(swig.cwd, 'app.js')) || fs.existsSync(path.join(swig.cwd, 'build.sbt'))) { // node or scala apps
+      merge();
     } else if (swig.argv.module) {
       swig.log.task('Merging UI-* Module Package Dependencies');
 

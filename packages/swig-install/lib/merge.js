@@ -14,7 +14,7 @@
    Brought to you by the fine folks at Gilt (http://github.com/gilt)
 */
 
-// handles merging module packages for node apps
+// handles merging module packages for apps
 module.exports = function (gulp, swig, util) {
   return function node() {
     const _ = require('underscore');
@@ -22,7 +22,7 @@ module.exports = function (gulp, swig, util) {
     let uiDeps;
 
     swig.log();
-    swig.log.task('Merging Node App Package(s)');
+    swig.log.task('Merging App Package(s)');
     swig.log.info(null, 'Extracting dependencies');
 
     const pkg = _.extend({}, swig.pkg);
@@ -38,7 +38,7 @@ module.exports = function (gulp, swig, util) {
     if (uiDeps) {
       util.generate(uiDeps);
     } else {
-      swig.log.error('merge-node', 'Node validation of dependencies failed.');
+      swig.log.error('merge-node', 'Validation of dependencies failed.');
       process.exit(0);
     }
   };
