@@ -216,7 +216,18 @@ module.exports = function (gulp, swig) {
     const pkg = swig.pkg;
     const less = require('./less');
     const mainJs = require('./main-js');
-    let paths = { pub: path.join(swig.target.path, '/public') };
+    let paths;
+    if (swig.argv.public) {
+      if (!fs.existsSync(swig.argv.public)) {
+        // Gonna error on a directory that does not exist
+        swig.log.error('install:public-directory', `Passed target folder ${swig.argv.public} does not exist.`);
+        return;
+      } else {
+        paths = { pub: swig.argv.public };
+      }
+    } else {
+      paths = { pub: path.join(swig.target.path, '/public') };
+    }
     let packageName;
 
     // we may have tasks for ui-* repos which need an install.
