@@ -224,8 +224,8 @@ module.exports = function (gulp, swig) {
         return;
       }
       paths = { pub: swig.argv.public };
-    } else if ( pkg.gilt && pkg.gilt.publicPath ) {
-      paths = { pub: pkg.gilt.publicPath }
+    } else if (pkg.gilt && pkg.gilt.publicPath) {
+      paths = { pub: pkg.gilt.publicPath };
     } else {
       paths = { pub: path.join(swig.target.path, '/public') };
     }
