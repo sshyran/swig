@@ -56,16 +56,24 @@ module.exports = function lintersSetup(gulp, swig) {
   gulp.task('lint-setup', (done) => {
     let baseName;
     let baseSource;
+    let srcPath;
 
     function source(type, extension) {
       return baseSource
-              .replace(/\{type\}/g, type)
-              .replace(/\{extension\}/g, extension);
+        .replace(/\{type\}/g, type)
+        .replace(/\{extension\}/g, extension);
     }
 
     if (swig.project.type === 'webapp') {
       baseName = path.basename(swig.target.path);
-      baseSource = path.join(swig.target.path, 'public/{type}/', baseName, '/src/**/*.{extension}');
+      if (swig.argv.src) {
+        srcPath = swig.argv.src;
+      } else if (swig.pkg.gilt && (swig.pkg.gilt.srcPath || swig.pkg.gilt.publicPath)) {
+        srcPath = swig.pkg.gilt.srcPath || swig.pkg.gilt.publicPath;
+      } else {
+        srcPath = `${swig.target.path}/public`;
+      }
+      baseSource = path.join(srcPath, '/{type}/', baseName, '/src/**/*.{extension}');
     } else {
       baseSource = path.join(swig.target.path, '/**/*.{extension}');
     }
@@ -80,8 +88,8 @@ module.exports = function lintersSetup(gulp, swig) {
     if (swig.project.type === 'webapp') {
       paths.css = [
         paths.css,
-        `!${path.join(swig.target.path,
-          'public/css/',
+        `!${path.join(srcPath,
+          'css/',
           baseName,
           '/src/**/reset.{css,less}'
         )}`
