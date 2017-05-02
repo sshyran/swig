@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-spec",
   "description": "Runs specs (tests, expectations) for UI Modules and web apps.",
-  "version": "2.1.1",
+  "version": "2.5.0",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-spec",
   "keywords": [
     "gulp",
@@ -15,8 +15,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-install": "^2.0.0",
-    "@gilt-tech/swig-lint": "^2.0.0",
+    "@gilt-tech/swig-install": "^2.5.0",
+    "@gilt-tech/swig-lint": "^2.5.0",
     "chai": "1.x",
     "glob": "^7.1.1",
     "globby": "^6.0.0",
