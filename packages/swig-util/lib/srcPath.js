@@ -16,22 +16,21 @@ module.exports = function (swig) {
 
   /**
    * @name srcPath
-   * @desc Get the srcPath of the application
+   * @desc Get the srcPath of the application, in order terminal params, package object, defaults
    * @params {object} opts This is the Swig object
    * @returns {String}
    */
   swig.srcPath = function (opts) {
     let
       srcPath;
-
-    if (opts.argv.src) {                                                                // Checking for passed terminal arguments, originates from Yargs
+    
+    if (opts.argv.src) {                                                                
       srcPath = opts.argv.src;
-    } else if (opts.pkg.gilt && (opts.pkg.gilt.srcPath || opts.pkg.gilt.publicPath)) {  // Checking for values passed in the node package.json
+    } else if (opts.pkg.gilt && (opts.pkg.gilt.srcPath || opts.pkg.gilt.publicPath)) { 
       srcPath = opts.pkg.gilt.srcPath || opts.pkg.gilt.publicPath;
-    } else {                                                                            // Default path of the public folder for legacy apps
+    } else {                                                                            
       srcPath = `${opts.target.path}/public`;
     }
-    console.log('Working');
     return srcPath;
   }
 }; 
