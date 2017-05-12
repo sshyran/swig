@@ -18,6 +18,7 @@ module.exports = function (swig, gulp) {
   require('./lib/exec')(swig);
   require('./lib/fs')(swig);
   require('./lib/diff')(swig);
+  require('./lib/srcPath')(swig);
 
   swig.log = require('./lib/log')(swig);
 

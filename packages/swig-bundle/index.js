@@ -67,28 +67,8 @@ module.exports = function (gulp, swig) {
   const concat = require('./lib/concat-experience');
   const sourcemaps = require('gulp-sourcemaps');
 
-  /**
-   * @name getSrcPath
-   * @desc Allows us the ability to pass a defined src path
-   * @param opts {object} Passed swig options
-   * @return {String} Returns the true path 
-   */
-  function getSrcPath (opts) {
-    let
-      srcPath;
-
-    if (opts.argv && opts.argv.src) {
-      srcPath = opts.argv.src;
-    } else if (opts.pkg && opts.pkg.gilt && (opts.pkg.gilt.srcPath || opts.pkg.gilt.publicPath)) {
-      srcPath = opts.pkg.gilt.srcPath || opts.pkg.gilt.publicPath;
-    } else {
-      srcPath = `${opts.target.path}/public`;
-    }
-    return srcPath;
-  };
-
   // Leaving path.join to protect from delimeters
-  const basePublicPath = path.join(getSrcPath(swig));
+  const basePublicPath = path.join(swig.srcPath(swig));
   const basePath = path.join(basePublicPath, '/js', swig.target.name);
 
   const modules = {
