@@ -7,3 +7,4 @@ dist
 /.package.json
 packages/swig-cli/.update
 packages/*/yarn.lock
+/.eslintcache
