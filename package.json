@@ -52,6 +52,7 @@
   "scripts": {
     "fix": "eslint packages/ --format=codeframe --fix",
     "lint": "eslint packages/ --format=codeframe",
-    "bootstrap": "lerna bootstrap --npm-client=yarn"
+    "bootstrap": "lerna bootstrap --npm-client=yarn",
+    "precommit": "eslint ./ --color --cache --ignore-pattern .eslintignore --rule 'import/no-unresolved: 0' --rule 'no-continue: 0' --rule 'consistent-return: 0'; exit 0"
   }
 }
