@@ -162,14 +162,24 @@ module.exports = function (gulp, swig) {
     const glob = [
       path.join(basePublicPath, '/js/**/*.js'),
 
-      // NOTE: exlcuding src/ as we want to fetch from the new app/ folder
-      `!${path.join(basePublicPath, '/js/**/src/**/*.js')}`,
+      // NOTE: For current node apps, `src/` folder contains untranspiled sources, which will be
+      // transpiled and put into `app/`. Therefore ignoring the `src/` altogether, as we don't want
+      // to send incompatible code to old browsers
+      `!${path.join(basePublicPath, '/public/js/**/src/**/*.js')}`,
 
-      `!${path.join(basePublicPath, '/js/**/internal/**/*.js')}`,
-      `!${path.join(basePublicPath, '/js/**/vendor/**/*.js')}`,
-      `!${path.join(basePublicPath, '/js/**/{main,bundles}*.js')}`,
-      `!${path.join(basePublicPath, '/js/**/*{src,min}.js')}`,
-      `!${path.join(basePublicPath, '/js/**/templates/**/*.js')}`,
+      // NOTE: Modern apps which want to leverage on smarter bundling mechanics, i.e. webpack based
+      // Can and should produce their artifacts in folder ignored by the swig bundling system,
+      // which could inadvertently nullify any possible dynamic loading strategy or similar.
+      // Choose one of the following: vue-app/ | artifacts/ | build/
+      `!${path.join(basePublicPath, '/public/js/**/vue-app/**/*.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/artifacts/**/*.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/build/**/*.js')}`,
+
+      `!${path.join(basePublicPath, '/public/js/**/internal/**/*.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/vendor/**/*.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/{main,bundles}*.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/*{src,min}.js')}`,
+      `!${path.join(basePublicPath, '/public/js/**/templates/**/*.js')}`,
     ];
 
     _.each(globby.sync(glob), (file) => {
