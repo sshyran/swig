@@ -158,8 +158,18 @@ module.exports = function (gulp, swig) {
     const glob = [
       path.join(swig.target.path, '/public/js/**/*.js'),
 
-      // NOTE: exlcuding src/ as we want to fetch from the new app/ folder
+      // NOTE: For current node apps, `src/` folder contains untranspiled sources, which will be
+      // transpiled and put into `app/`. Therefore ignoring the `src/` altogether, as we don't want
+      // to send incompatible code to old browsers
       `!${path.join(swig.target.path, '/public/js/**/src/**/*.js')}`,
+
+      // NOTE: Modern apps which want to leverage on smarter bundling mechanics, i.e. webpack based
+      // Can and should produce their artifacts in folder ignored by the swig bundling system,
+      // which could inadvertently nullify any possible dynamic loading strategy or similar.
+      // Choose one of the following: vue-app/ | artifacts/ | build/
+      `!${path.join(swig.target.path, '/public/js/**/vue-app/**/*.js')}`,
+      `!${path.join(swig.target.path, '/public/js/**/artifacts/**/*.js')}`,
+      `!${path.join(swig.target.path, '/public/js/**/build/**/*.js')}`,
 
       `!${path.join(swig.target.path, '/public/js/**/internal/**/*.js')}`,
       `!${path.join(swig.target.path, '/public/js/**/vendor/**/*.js')}`,

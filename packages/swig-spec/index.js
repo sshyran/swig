@@ -266,6 +266,11 @@ module.exports = function (gulp, swig) {
   });
 
   gulp.task('spec', function (done) {
+    // TODO: Refactor swig-spec to be more flexible
+    // NOTE: Meanwhile, giving the user the possibility to switch off the spec with a CLI flag
+    // Use Case: An app uses a different test framework/mechanics and npm scripts set for the task
+    if (swig.argv.noSpec) return;
+
     let _specsPath = path.join(swig.target.path, 'public/spec/', packageName);
     let installTask = 'install-noop';
 
