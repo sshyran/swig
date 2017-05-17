@@ -23,6 +23,9 @@ const tap = require('gulp-tap');
 const handlebars = require('gulp-handlebars');
 
 module.exports = function (gulp, swig) {
+  // Loading swig dependencies
+  swig.loadPlugins(require('./package.json').dependencies);
+
   const basePath = path.join(swig.target.path, '/public/');
   function renameFile(file) {
     file.basename = `${file.basename.replace('.src', '')}.min`;

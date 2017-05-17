@@ -33,6 +33,9 @@ module.exports = function (gulp, swig) {
     }
   });
 
+  // Loading swig dependencies
+  swig.loadPlugins(require('./package.json').dependencies);
+
   gulp.task('assets-setup', (done) => {
     swig.log.task('Preparing to Deploy Assets');
 
