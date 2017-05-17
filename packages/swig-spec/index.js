@@ -309,7 +309,7 @@ module.exports = function (gulp, swig) {
     // TODO: Refactor swig-spec to be more flexible
     // NOTE: Meanwhile, giving the user the possibility to switch off the spec with a CLI flag
     // Use Case: An app uses a different test framework/mechanics and npm scripts set for the task
-    if (swig.argv.noSpec) return;
+    if (swig.argv.spec === false) return done();
 
     const specPath = getSpecDirectory();
     let _specsPath = path.join(specPath, '/', packageName);
@@ -342,7 +342,7 @@ module.exports = function (gulp, swig) {
       );
       swig.seq.apply(this, specTasks);
 
-      return;
+      return done();
     }
     specTasks.push('spec-run');
     specTasks.push(done);

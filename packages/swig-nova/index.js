@@ -193,6 +193,12 @@ module.exports = function (gulp, swig) {
     const environments = novayml.environments.map(e => e.name);
     const v = getLatestVersionTag().replace('v', '').split('.').map(n => +n);
 
+    if (v.length < 3) {
+      v[0] = 0;
+      v[1] = 0;
+      v[2] = 0;
+    }
+
     let answer;
     let env;
 
@@ -450,7 +456,7 @@ module.exports = function (gulp, swig) {
 
         const latestVersion = getLatestVersionParsed();
 
-        if (semverDiff(latestVersion[1], versionMatch[1]) === null) {
+        if (latestVersion && semverDiff(latestVersion[1], versionMatch[1]) === null) {
           swig.log.error(`New version can not be less than latest existing version: ${latestVersion[1]}`);
           process.exit(1);
         } else {
