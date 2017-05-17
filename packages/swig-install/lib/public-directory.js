@@ -34,6 +34,18 @@ module.exports = function (gulp, swig) {
       '!./public/**/{target}/**/config/**/*',
       '!./public/**/{target}/**/src',
       '!./public/**/{target}/**/src/**/*',
+
+      // NOTE: Modern apps which want to leverage on smarter bundling mechanics, i.e. webpack based,
+      // can and should produce their artifacts in folders ignored by the swig install system,
+      // which would otherwise wipe all other folders before installing uiDependencies.
+      // Choose one of the following: vue-app/ | artifacts/ | build/
+      '!./public/**/{target}/**/vue-app',
+      '!./public/**/{target}/**/vue-app/**/*',
+      '!./public/**/{target}/**/artifacts',
+      '!./public/**/{target}/**/artifacts/**/*',
+      '!./public/**/{target}/**/build',
+      '!./public/**/{target}/**/build/**/*',
+
       '!./public/css/{target}/main.less',
       '!./public/spec/{target}/**/*'
     ];
