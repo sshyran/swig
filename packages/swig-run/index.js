@@ -120,7 +120,19 @@ module.exports = function (gulp, swig) {
       }
     };
 
-    const { proxy = null, port = null } = ((swig.pkg.swig || {})['hot-reload'] || {});
+    // Destructure a possible `swig.pkg.swig['hot-reload']` property, and get the `proxy` and `port`
+    const {
+      // Proxy defaults to 'http://localhost.com'
+      proxy = 'http://localhost.com',
+      // Port defaults to 8080
+      port = 8080
+    } = (
+      // Check for a `swig` property inside the consumer package.json
+      // If found, return the `"hot-reload"` property
+      // If neither `swig` nor its `"hot-reload"` property are found, return an empty object
+      (swig.pkg.swig || {})['hot-reload'] || {}
+    );
+
     // Init BrowserSync
     swig.watch.browserSync = bs.create(swig.target.name);
     swig.watch.browserSync.init(Object.assign({}, cfg, { proxy }, { port }));
