@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-assets",
   "description": "Deploys assets to S3.",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-assets",
   "keywords": [
     "gulp",
