@@ -16,10 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "co": "^4.0.0",
+    "execa": "^0.6.0",
     "gulp-util": "^3.0.8",
     "inquirer": "^3.0.1",
     "mustache": "^2.3.0",
     "prettyjson": "^1.2.1",
+    "split2": "^2.1.1",
     "through2": "^2.0.3",
     "underscore": "^1.8.3"
   },

@@ -16,6 +16,8 @@ module.exports = function (gulp, swig) {
   const _ = require('underscore');
   const path = require('path');
   const co = require('co');
+  const execa = require('execa');
+  const split = require('split2');
   const prettyjson = require('prettyjson');
   const stubs = require('./lib/stubs');
   const inquirer = require('inquirer');
@@ -62,11 +64,15 @@ module.exports = function (gulp, swig) {
           swig.log();
 
           swig.log.info('', 'Starting `npm install`...\n');
-          result = yield swig.exec(`cd ${destPath}; ${installCommand}`, null, {
-            stdout: function (out) {
-              swig.log(out.trim().grey);
-            }
+
+          const installProcess = execa.shell(`cd ${destPath}; ${installCommand}`);
+
+          // Remap stdout with some swig.log love
+          installProcess.stdout.pipe(split()).on('data', (line) => {
+            swig.log(line.trim().grey);
           });
+
+          result = yield installProcess;
 
           swig.log();
 

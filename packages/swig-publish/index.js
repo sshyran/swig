@@ -21,6 +21,8 @@ Manually change the package.json version is considered bad practice.
 module.exports = function (gulp, swig) {
   const _ = require('underscore');
   const fs = require('fs');
+  const execa = require('execa');
+  const split = require('split2');
   const path = require('path');
   const glob = require('globby');
   const rimraf = require('rimraf');
@@ -203,8 +205,6 @@ module.exports = function (gulp, swig) {
   gulp.task('publish-npm', ['publish-check-version'], co.wrap(function* () {
     const tempPath = path.join(swig.temp, '/publish/', swig.target.name);
     let tagFlag = '';
-    let result;
-    let streamResult;
     let contents;
 
     if (fs.existsSync(tempPath)) {
@@ -239,7 +239,7 @@ module.exports = function (gulp, swig) {
 
     _.each(files, co.wrap(function* (file) {
       swig.log.info('', file.replace(tempPath, '').grey);
-      result = yield swig.exec(`xattr -c ${file}`);
+      yield execa.shell(`xattr -c ${file}`);
     }));
 
     yield checkPublisher(tempPath);
@@ -250,7 +250,7 @@ module.exports = function (gulp, swig) {
       isBetaPublish = true;
 
       // Fetch existing beta tag, if any
-      const npmInfo = yield swig.exec(`npm info ${swig.pkg.name} --json`);
+      const npmInfo = yield execa.shell(`npm info ${swig.pkg.name} --json`);
       let betaVer = JSON.parse(npmInfo.stdout)['dist-tags'].beta;
 
       // Check if we have to increment the beta version or release a totally new
@@ -312,33 +312,27 @@ module.exports = function (gulp, swig) {
 
       swig.log.info('', 'Publishing Module');
 
-      result = yield swig.exec(npmCommand, null, {
-        stdout(data) {
-          streamResult += data;
-          if (swig.argv.verbose) {
-            console.log(data);
-          }
-        }
-      });
+      const publishProcess = execa.shell(npmCommand);
+
+      if (swig.argv.verbose) {
+        publishProcess.stdout.pipe(split()).on('data', (line) => {
+          console.log(line);
+        });
+      }
+
+      const result = yield publishProcess;
 
       if (!result.stdout.indexOf('npm info ok')) {
         swig.log.error('', 'Sad Pandas. Publish Failed.');
-
-        if (streamResult) {
-          swig.log.info('', `Command Output:\n    ${
-              streamResult.split('\n').join('\n    ').grey}`);
-        }
+        swig.log.info('', `Command Output:\n    ${result.stdout}\n    ${result.stderr}`.grey);
       } else {
         swig.log.success('', 'Module published to npm successfully.');
       }
     } catch (e) {
       swig.log();
       swig.log.error('', 'Sad Pandas. Publish Failed:');
+      swig.log.error('', e.message || e);
       swig.log.error('', e.stack);
-      if (streamResult) {
-        swig.log.info('', `Command Output:\n    ${
-            streamResult.split('\n').join('\n    ').grey}`);
-      }
       process.exit(1);
     }
   }));
