@@ -250,7 +250,9 @@ module.exports = function (gulp, swig) {
       isBetaPublish = true;
 
       // Fetch existing beta tag, if any
-      const npmInfo = yield execa.shell(`npm info ${swig.pkg.name} --json`);
+      const npmInfo = yield execa.shell(`npm info ${swig.pkg.name} --json`, {
+        preferLocal: false
+      });
       let betaVer = JSON.parse(npmInfo.stdout)['dist-tags'].beta;
 
       // Check if we have to increment the beta version or release a totally new
@@ -312,7 +314,9 @@ module.exports = function (gulp, swig) {
 
       swig.log.info('', 'Publishing Module');
 
-      const publishProcess = execa.shell(npmCommand);
+      const publishProcess = execa.shell(npmCommand, {
+        preferLocal: false
+      });
 
       if (swig.argv.verbose) {
         publishProcess.stdout.pipe(split()).on('data', (line) => {

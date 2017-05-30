@@ -65,7 +65,9 @@ module.exports = function (gulp, swig) {
 
           swig.log.info('', 'Starting `npm install`...\n');
 
-          const installProcess = execa.shell(`cd ${destPath}; ${installCommand}`);
+          const installProcess = execa.shell(`cd ${destPath}; ${installCommand}`, {
+            preferLocal: false
+          });
 
           // Remap stdout with some swig.log love
           installProcess.stdout.pipe(split()).on('data', (line) => {

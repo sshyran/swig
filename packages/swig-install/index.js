@@ -119,7 +119,9 @@ module.exports = function (gulp, swig) {
       return;
     }
 
-    const installProcess = execa.shell(installCommand);
+    const installProcess = execa.shell(installCommand, {
+      preferLocal: false
+    });
     installProcess.stdout.pipe(split()).on('data', (line) => {
       processNpmLine(line);
     });
@@ -153,7 +155,9 @@ module.exports = function (gulp, swig) {
       installCommand + (swig.argv.useYarn ? ' --no-lockfile' : '')
     ];
 
-    const installProcess = execa.shell(commands.join('; '));
+    const installProcess = execa.shell(commands.join('; '), {
+      preferLocal: false
+    });
     installProcess.stdout.pipe(split()).on('data', (line) => {
       processNpmLine(line);
     });

@@ -146,7 +146,9 @@ module.exports = function (gulp, swig) {
       `cd ${swig.temp}`,
       `npm la --json --quiet${name || ''}`
     ];
-    const raw = yield execa.shell(commands.join('; '));
+    const raw = yield execa.shell(commands.join('; '), {
+      preferLocal: false
+    });
     const result = JSON.parse(raw.stdout);
 
     cleanTree(result);
