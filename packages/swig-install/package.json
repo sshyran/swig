@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-install",
   "description": "Installs and organizes front-end assets.",
-  "version": "2.5.0",
+  "version": "2.5.3",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-install",
   "keywords": [
     "gulp",
@@ -18,15 +18,14 @@
     "adm-zip": "^0.4.7",
     "co": "^4.0.0",
     "co-exec": "^1.1.0",
+    "execa": "^0.6.0",
     "glob": "^7.1.1",
     "globby": "^6.1.0",
     "gulp-rimraf": "^0.2.1",
     "gulp-util": "^3.0.8",
-    "execa": "^0.6.0",
     "rimraf": "^2.6.0",
     "split2": "^2.1.1",
     "thunkify": "^2.1.2",
     "underscore": "^1.8.3"
-  },
-  "devDependencies": {}
+  }
 }
