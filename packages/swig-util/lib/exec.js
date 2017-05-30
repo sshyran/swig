@@ -17,7 +17,6 @@ module.exports = function (swig) {
   *  copied from https://raw.githubusercontent.com/visionmedia/co-exec/master/index.js
   *  since they don't support returning stderr just yet.
   */
-
   const _ = require('underscore');
   const exec = require('child_process').exec;
 
@@ -52,6 +51,8 @@ module.exports = function (swig) {
 
   // return a thunk for yield/generator functionality
   swig.exec = function swigExec(cmd, opts, options) {
+    console.log('DEPRECATED: swig.exec is deprecated as of v2.5.3. Please switch to something better like `execa` by Sindre Sorhus http://github.com/sindresorhus/execa');
+
     opts = _.extend(opts || {}, { maxBuffer: 20 * 1024 * 1024 }); // increase max buffer to 20mb
 
     return function swigExecThunk(done) {

@@ -22,7 +22,9 @@
     "globby": "^6.1.0",
     "gulp-rimraf": "^0.2.1",
     "gulp-util": "^3.0.8",
+    "execa": "^0.6.0",
     "rimraf": "^2.6.0",
+    "split2": "^2.1.1",
     "thunkify": "^2.1.2",
     "underscore": "^1.8.3"
   },

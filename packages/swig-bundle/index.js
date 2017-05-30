@@ -63,6 +63,7 @@ module.exports = function (gulp, swig) {
   const path = require('path');
   const globby = require('globby');
   const fs = require('fs');
+  const execa = require('execa');
   const merge = require('merge-stream');
   const concat = require('./lib/concat-experience');
   const sourcemaps = require('gulp-sourcemaps');
@@ -145,7 +146,7 @@ module.exports = function (gulp, swig) {
       `cd ${swig.temp}`,
       `npm la --json --quiet${name || ''}`
     ];
-    const raw = yield swig.exec(commands.join('; '));
+    const raw = yield execa.shell(commands.join('; '));
     const result = JSON.parse(raw.stdout);
 
     cleanTree(result);

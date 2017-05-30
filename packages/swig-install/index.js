@@ -18,13 +18,15 @@ module.exports = function (gulp, swig) {
   const _ = require('underscore');
   const path = require('path');
   const co = require('co');
+  const execa = require('execa');
+  const split = require('split2');
   const installCommand = swig.argv.useYarn
       ? 'yarn install --json'
       : 'npm install --loglevel=info --parseable=true 2>&1';
 
   const regex = {
-    requested: /npm http[s]? request GET (.+)/,
-    installed: /npm info lifecycle (.+)~install: (@gilt-tech\/(.+)@([\d|.]+))$/,
+    requested: /npm https? request GET (.+)/,
+    installed: /npm info (?:lifecycle )?(.+)~?install:? (@gilt-tech\/(.+)@([\d|.]+))$/,
     error: /npm ERR! code (.+)/,
     fourohfour: /npm ERR! 404 Not found : (@gilt-tech\/.+)/,
     noversion: /npm ERR! No compatible version found: (.+)/,
@@ -53,7 +55,7 @@ module.exports = function (gulp, swig) {
   }
 
   // processes output from npm install commands
-  function process(line) {
+  function processNpmLine(line) {
     if (swig.argv.useYarn) {
       try {
         processYarnLine(line);
@@ -117,17 +119,18 @@ module.exports = function (gulp, swig) {
       return;
     }
 
-    const output = yield swig.exec(installCommand, null, {
-      stdout: function (data) {
-        process(data);
-      }
+    const installProcess = execa.shell(installCommand);
+    installProcess.stdout.pipe(split()).on('data', (line) => {
+      processNpmLine(line);
     });
+
+    const result = yield installProcess;
 
     if (!downloaded.length) {
       swig.log.info(null, 'Node Modules are up to date.');
     }
 
-    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1) {
+    if (result.stdout.indexOf('not ok') > -1 || result.stdout.indexOf('ERR!') > -1) {
       swig.log.error('install:local', `One or more modules failed to install from npm.\n ${
         swig.log.padLeft(`For more info, look here: ${path.join(swig.target.path, 'npm_debug.log').grey}`, 7)}`);
     }
@@ -150,13 +153,14 @@ module.exports = function (gulp, swig) {
       installCommand + (swig.argv.useYarn ? ' --no-lockfile' : '')
     ];
 
-    const output = yield swig.exec(commands.join('; '), null, {
-      stdout: function (data) {
-        process(data);
-      }
+    const installProcess = execa.shell(commands.join('; '));
+    installProcess.stdout.pipe(split()).on('data', (line) => {
+      processNpmLine(line);
     });
 
-    if (output.stdout.indexOf('not ok') > -1 || output.stdout.indexOf('ERR!') > -1) {
+    const result = yield installProcess;
+
+    if (result.stdout.indexOf('not ok') > -1 || result.stdout.indexOf('ERR!') > -1) {
       swig.log.error('install:ui', `One or more modules failed to install from npm.\n ${
         swig.log.padLeft(`For more info, look here: ${path.join(swig.temp, 'npm_debug.log').grey}`, 7)}`);
     }
