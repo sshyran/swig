@@ -151,6 +151,7 @@ module.exports = function (gulp, swig) {
 
     const commands = [
       `cd ${swig.temp}`,
+      'rm package-lock.json',
       'rm -rf node_modules',
       installCommand + (swig.argv.useYarn ? ' --no-lockfile' : '')
     ];
