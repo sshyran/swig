@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "2.5.2",
+  "version": "2.6.2",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-run",
   "keywords": [
     "gulp",
@@ -20,6 +20,5 @@
     "browser-sync": "^2.18.8",
     "forever": "^0.15.1",
     "underscore": "^1.8.3"
-  },
-  "devDependencies": {}
+  }
 }
