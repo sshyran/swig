@@ -141,7 +141,7 @@ module.exports = function (gulp, swig) {
     if (swig.watch.watchers.length > 0) swig.log.success(null, 'File watching enabled.');
   });
 
-  gulp.task('run', ['init'], (cb) => {
+  gulp.task('run', ['init'], (done) => {
     let errors;
 
     swig.log();
@@ -156,7 +156,7 @@ module.exports = function (gulp, swig) {
 
         swig.log.task('Running app');
         swig.log();
-        run(cb);
+        run(done);
       } else {
         swig.log.error('swig-app', `Couldn't start your app due to the following:\n${errors.join('\n')}`);
       }
@@ -165,8 +165,9 @@ module.exports = function (gulp, swig) {
     }
   });
 
-  gulp.task('init', () => {
+  gulp.task('init', (done) => {
     // Initialise scripts and stylesheets, setup watchers when done.
-    swig.seq(['init-scripts', 'init-styles'], 'watch');
+    // Once all tasks complete, callback - this is required to make swig.seq blocking
+    swig.seq(['init-scripts', 'init-styles'], 'watch', done);
   });
 };
