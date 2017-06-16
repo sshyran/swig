@@ -68,7 +68,8 @@ module.exports = function (gulp, swig) {
   const concat = require('./lib/concat-experience');
   const sourcemaps = require('gulp-sourcemaps');
 
-  const basePublicPath = path.join(swig.target.path, '/public');
+  // Leaving path.join to protect from delimeters
+  const basePublicPath = path.join(swig.srcPath(swig));
   const basePath = path.join(basePublicPath, '/js', swig.target.name);
 
   const modules = {
@@ -159,16 +160,16 @@ module.exports = function (gulp, swig) {
   function examineModules() {
     const bundles = [];
     const glob = [
-      path.join(swig.target.path, '/public/js/**/*.js'),
+      path.join(basePublicPath, '/js/**/*.js'),
 
       // NOTE: exlcuding src/ as we want to fetch from the new app/ folder
-      `!${path.join(swig.target.path, '/public/js/**/src/**/*.js')}`,
+      `!${path.join(basePublicPath, '/js/**/src/**/*.js')}`,
 
-      `!${path.join(swig.target.path, '/public/js/**/internal/**/*.js')}`,
-      `!${path.join(swig.target.path, '/public/js/**/vendor/**/*.js')}`,
-      `!${path.join(swig.target.path, '/public/js/**/{main,bundles}*.js')}`,
-      `!${path.join(swig.target.path, '/public/js/**/*{src,min}.js')}`,
-      `!${path.join(swig.target.path, '/public/js/**/templates/**/*.js')}`,
+      `!${path.join(basePublicPath, '/js/**/internal/**/*.js')}`,
+      `!${path.join(basePublicPath, '/js/**/vendor/**/*.js')}`,
+      `!${path.join(basePublicPath, '/js/**/{main,bundles}*.js')}`,
+      `!${path.join(basePublicPath, '/js/**/*{src,min}.js')}`,
+      `!${path.join(basePublicPath, '/js/**/templates/**/*.js')}`,
     ];
 
     _.each(globby.sync(glob), (file) => {
