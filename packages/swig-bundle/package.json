@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-bundle",
   "description": "Bundles JavaScript assets.",
-  "version": "2.5.4",
+  "version": "2.6.3",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-bundle",
   "keywords": [
     "gulp",
