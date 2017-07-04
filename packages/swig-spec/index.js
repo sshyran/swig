@@ -94,6 +94,8 @@ module.exports = function (gulp, swig) {
       mainJsPath = path.join(swig.temp, 'install', packageName, 'public/js', packageName, 'main.js');
     }
 
+    scripts = scripts.concat(glob.sync(path.join(__dirname, 'lib/polyfills/*.js')));
+
     scripts.push(mainJsPath);
 
     requireBasePath = path.join(srcPath, '/js/', packageName);

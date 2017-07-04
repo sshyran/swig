@@ -456,6 +456,8 @@ module.exports = function (gulp, swig) {
         } else {
           isNewBuild = true;
         }
+      } else {
+        isNewBuild = true;
       }
 
       if (isNewBuild) {
