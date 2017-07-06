@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-minify",
   "description": "Minifies front-end assets.",
-  "version": "2.3.0",
+  "version": "2.6.4",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-minify",
   "keywords": [
     "gulp",
@@ -15,7 +15,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-merge-css": "^2.3.0",
+    "@gilt-tech/swig-merge-css": "^2.6.4",
     "glob": "^7.1.1",
     "gulp-clean-css": "^3.0.0",
     "gulp-handlebars": "^4.0.0",
