@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-assets",
   "description": "Deploys assets to S3.",
-  "version": "2.6.4",
+  "version": "2.6.6",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-assets",
   "keywords": [
     "gulp",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@gilt-tech/swig-bundle": "^2.6.3",
     "@gilt-tech/swig-install": "^2.6.1",
-    "@gilt-tech/swig-minify": "^2.6.4",
+    "@gilt-tech/swig-minify": "^2.6.6",
     "@gilt-tech/swig-spec": "^2.6.3",
     "@gilt-tech/swig-transpile-scripts": "^2.3.0",
     "async-waterfall": "^0.1.5",
