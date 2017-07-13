@@ -51,10 +51,10 @@ module.exports = function (gulp, swig) {
         paths: [cssPath],
         relativeUrls: false
       }))
-      .pipe(postcss(
+      .pipe(postcss([
         inlineImports,
-        autoprefixer({ browsers: swig.browserslist }))
-      )
+        autoprefixer({ browsers: swig.browserslist })
+      ]))
       .pipe(rename({ suffix: '.src' }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(cssPath))
