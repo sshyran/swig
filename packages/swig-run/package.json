@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-run",
   "description": "",
-  "version": "2.6.7",
+  "version": "2.6.9",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-run",
   "keywords": [
     "gulp",
@@ -15,7 +15,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-merge-css": "^2.6.7",
+    "@gilt-tech/swig-merge-css": "^2.6.9",
     "@gilt-tech/swig-transpile-scripts": "^2.3.0",
     "browser-sync": "^2.18.8",
     "forever": "^0.15.1",
