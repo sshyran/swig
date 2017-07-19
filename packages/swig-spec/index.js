@@ -311,12 +311,8 @@ module.exports = function (gulp, swig) {
     // Use Case: An app uses a different test framework/mechanics and npm scripts set for the task
     if (swig.argv.spec === false) return done();
 
-<<<<<<< HEAD
     const specPath = getSpecDirectory();
     let _specsPath = path.join(specPath, '/', packageName);
-=======
-    let _specsPath = path.join(swig.target.path, 'public/spec/', packageName);
->>>>>>> ce7437140522d8b2cd934aad755bf4cb5cc5c41a
     let installTask = 'install-noop';
 
     if (swig.project.type !== 'webapp') {
