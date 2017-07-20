@@ -553,6 +553,16 @@ module.exports = function (gulp, swig) {
     execSync(`nova deploy ${argConfig.env} ${argConfig.stack} ${deployVersion}`, execSyncOpts.pipeOutput);
   });
 
+  gulp.task('npm-call-build-nova', () => {
+    if (swig.pkg.scripts && swig.pkg.scripts['build:nova']) {
+      swig.log.info('Found an npm "build:nova" script. Running it now.');
+      execSync('npm run build:nova', {
+        cwd: process.cwd(),
+        stdio: 'inherit'
+      });
+    }
+  });
+
   gulp.task('nova-deploy', (done) => {
     if (argv.h || argv.help) {    // --help
       outputHelp();
@@ -565,6 +575,7 @@ module.exports = function (gulp, swig) {
       'pull-latest-tags',
       'nova-new-version',
       'nova-specified-version',
+      'npm-call-build-nova',
       'assets-deploy',
       'nova-build-docker',
       'nova-version-cleanup',
