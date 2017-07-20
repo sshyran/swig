@@ -167,14 +167,6 @@ module.exports = function (gulp, swig) {
       // to send incompatible code to old browsers
       `!${path.join(basePublicPath, '/js/**/src/**/*.js')}`,
 
-      // NOTE: Modern apps which want to leverage on smarter bundling mechanics, i.e. webpack based
-      // Can and should produce their artifacts in folder ignored by the swig bundling system,
-      // which could inadvertently nullify any possible dynamic loading strategy or similar.
-      // Choose one of the following: vue-app/ | artifacts/ | build/
-      `!${path.join(basePublicPath, '/js/**/vue-app/**/*.js')}`,
-      `!${path.join(basePublicPath, '/js/**/artifacts/**/*.js')}`,
-      `!${path.join(basePublicPath, '/js/**/build/**/*.js')}`,
-
       `!${path.join(basePublicPath, '/js/**/internal/**/*.js')}`,
       `!${path.join(basePublicPath, '/js/**/vendor/**/*.js')}`,
       `!${path.join(basePublicPath, '/js/**/{main,bundles}*.js')}`,

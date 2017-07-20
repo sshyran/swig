@@ -129,7 +129,7 @@ module.exports = function (gulp, swig) {
     swig.log.info('', 'Assets @ https://s3.amazonaws.com/gilt-assets/');
 
     const basePath = path.join(swig.target.path, '/public/{{dir}}', swig.target.name);
-    const directories = ['css', 'img', 'js', 'templates'];
+    const directories = ['css', 'img', 'js', 'templates', 'vue-assets'];
     const client = s3.createClient({
       s3Options: {
         accessKeyId: swig.rc.s3.accessKey,
