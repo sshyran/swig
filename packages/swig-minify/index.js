@@ -44,7 +44,7 @@ module.exports = function (gulp, swig) {
         loadMaps: true
       }))
       .pipe(uglify())
-      .on('error', (err) => {
+      .on('error', function (err) {
         gutil.log(gutil.colors.red('[Error]'), err.toString());
         this.emit('end');
       })
