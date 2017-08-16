@@ -21,6 +21,7 @@ const cleancss = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
 const tap = require('gulp-tap');
 const handlebars = require('gulp-handlebars');
+const gutil = require('gulp-util');
 
 module.exports = function (gulp, swig) {
   const basePath = path.join(swig.target.path, '/public/');
@@ -43,6 +44,10 @@ module.exports = function (gulp, swig) {
         loadMaps: true
       }))
       .pipe(uglify())
+      .on('error', function(err) {
+        gutil.log(gutil.colors.red('[Error]'), err.toString());
+        this.emit('end');
+      })
       .pipe(rename(renameFile))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(path.dirname(glob)));
