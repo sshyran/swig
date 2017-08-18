@@ -22,6 +22,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const tap = require('gulp-tap');
 const handlebars = require('gulp-handlebars');
 const gutil = require('gulp-util');
+const babel = require('gulp-babel');
 
 module.exports = function (gulp, swig) {
   const basePath = path.join(swig.target.path, '/public/');
@@ -30,7 +31,25 @@ module.exports = function (gulp, swig) {
     return file;
   }
 
-  gulp.task('minify-js', () => {
+  // This is a temporary fix to transpile const and lets and other ES2015 features
+  // in modules and apps to cope with iOS9
+  // Should be superceded by the move to webpack.
+  gulp.task('transpile-js', () => {
+    const glob = path.join(basePath, '/js/', swig.target.name, '/*.src.js');
+    swig.log('');
+    swig.log.task('Transpiling to ES5');
+
+    return gulp.src(glob)
+      .pipe(tap((file) => {
+        swig.log.info('', `Transpiling: ${path.basename(file.path).grey}`);
+      }))
+      .pipe(babel({
+        presets: [['es2015', { modules: false }]]
+      }))
+      .pipe(gulp.dest(path.dirname(glob)));
+  });
+
+  gulp.task('minify-js', ['transpile-js'], () => {
     const glob = path.join(basePath, '/js/', swig.target.name, '/*.src.js');
 
     swig.log('');
