@@ -37,7 +37,7 @@ module.exports = function (gulp, swig) {
   gulp.task('transpile-js', () => {
     const glob = path.join(basePath, '/js/', swig.target.name, '/*.src.js');
     swig.log('');
-    swig.log.task('Transpiling to ES2015');
+    swig.log.task('Transpiling to ES5');
 
     return gulp.src(glob)
       .pipe(tap((file) => {
