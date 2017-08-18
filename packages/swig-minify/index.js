@@ -44,7 +44,7 @@ module.exports = function (gulp, swig) {
         swig.log.info('', `Transpiling: ${path.basename(file.path).grey}`);
       }))
       .pipe(babel({
-        presets: [[ 'es2015', { modules: false } ]]
+        presets: [['es2015', { modules: false }]]
       }))
       .pipe(gulp.dest(path.dirname(glob)));
   });
