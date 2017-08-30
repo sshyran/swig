@@ -196,6 +196,5 @@ module.exports = function (gulp, swig) {
     if (swig.argv.transpile) {
       transpilePublic();
     }
-
   }));
 };

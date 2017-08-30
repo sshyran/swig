@@ -14,13 +14,13 @@
 
 // Handles babel transpile of installed modules, Reason being that when we
 // deploy to canary etc the minification step transpiles everything, but locally
-// there's no transpilation, which causes issues in IE11. 
+// there's no transpilation, which causes issues in IE11.
 module.exports = function (gulp, swig) {
   return function transpilePublic() {
     const path = require('path');
     const babel = require('gulp-babel');
     const tap = require('gulp-tap');
-    const paths =  [
+    const paths = [
       './public/js/**/*.js',
       '!./public/js/src/**/*'
     ];
@@ -36,6 +36,5 @@ module.exports = function (gulp, swig) {
         presets: [['es2015', { modules: false }]]
       }))
       .pipe(gulp.dest('./public/js/'));
-
   };
 };
