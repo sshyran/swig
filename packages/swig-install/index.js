@@ -185,11 +185,16 @@ module.exports = function (gulp, swig) {
     const processPublic = require('./lib/public-directory')(gulp, swig);
     const packageMerge = require('./lib/package-merge')(gulp, swig);
     const mergeModules = require('./lib/merge-modules')(gulp, swig);
+    const transpilePublic = require('./lib/transpile-public')(gulp, swig);
 
     packageMerge();
     yield local();
     yield ui();
     mergeModules();
     processPublic();
+
+    if (swig.argv.transpile) {
+      transpilePublic();
+    }
   }));
 };
