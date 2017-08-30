@@ -16,11 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.4.7",
-    "co": "^4.0.0",
     "co-exec": "^1.1.0",
+    "co": "^4.0.0",
     "execa": "^0.6.0",
     "glob": "^7.1.1",
     "globby": "^6.1.0",
+    "gulp-babel": "^7.0.0",
     "gulp-rimraf": "^0.2.1",
     "gulp-util": "^3.0.8",
     "rimraf": "^2.6.0",
