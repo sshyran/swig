@@ -22,7 +22,7 @@ module.exports = function (gulp, swig) {
     const tap = require('gulp-tap');
     const paths = [
       './public/js/**/*.js',
-      '!./public/js/src/**/*'
+      '!./public/js/*/src/**/*'
     ];
 
     swig.log.task('Transpiling installed packages in /public/js (excluding /public/js/src)');
