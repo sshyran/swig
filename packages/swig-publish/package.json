@@ -1,7 +1,7 @@
 {
   "name": "@gilt-tech/swig-publish",
   "description": "Publishes a UI Module, providing linting and spec automation.",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "repository": "https://github.com/gilt/swig/tree/master/packages/swig-publish",
   "keywords": [
     "gulp",
@@ -15,7 +15,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@gilt-tech/swig-spec": "^2.8.0",
+    "@gilt-tech/swig-spec": "^2.8.1",
     "co": "^4.0.0",
     "execa": "^0.6.0",
     "globby": "^6.1.0",
