@@ -256,6 +256,7 @@ try {
   } else {
     // well sounds like a real trouble, let's just show the error and run...
     swig.log.error(`An error occurred: ${e}`);
-    process.exit(1);
   }
+  swig.log.verbose(e);
+  process.exit(1);
 }
