@@ -22,10 +22,10 @@ module.exports = function (gulp, swig) {
     const tap = require('gulp-tap');
     const paths = [
       './public/js/**/*.js',
-      '!./public/js/*/src/**/*'
+      `!./public/js/${swig.pkg.name}/src/**/*`
     ];
 
-    swig.log.task('Transpiling installed packages in /public/js (excluding /public/js/src)');
+    swig.log.task(`Transpiling installed packages in /public/js (excluding ./public/js/${swig.pkg.name}/src/**/*)`);
     swig.log.warn('You only need to do this for local IE11 development/fixes');
 
     return gulp.src(paths)
