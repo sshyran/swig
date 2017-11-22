@@ -103,8 +103,9 @@ function setupPaths() {
   swig.cwd = process.cwd();
 
   // Set random folder incase of multiple deploys
-  const random = new Date().getTime() + Math.random();
-  swig.temp = path.join(os.tmpdir(), `swig-${random}`);
+  const packageName = swig.pkg ? swig.pkg.name : '';
+  console.log(packageName);
+  swig.temp = path.join(os.tmpdir(), `swig-${packageName}`);
 }
 
 function findSwigRc() {
