@@ -101,11 +101,6 @@ function setupPaths() {
 
   swig.home = swigPath;
   swig.cwd = process.cwd();
-
-  // Set random folder incase of multiple deploys
-  const packageName = swig.pkg ? swig.pkg.name : '';
-  console.log(packageName);
-  swig.temp = path.join(os.tmpdir(), `swig-${packageName}`);
 }
 
 function findSwigRc() {
@@ -166,6 +161,9 @@ function findTarget() {
     name: swig.argv.module || (swig.pkg && swig.pkg.name) || path.basename(target),
     repo: swig.argv.repo || path.basename(swig.cwd)
   };
+
+  // Set random folder incase of multiple deploys
+  swig.temp = path.join(os.tmpdir(), `swig-${swig.target.name}`);
 }
 
 // allows a task to tell swig about itself
