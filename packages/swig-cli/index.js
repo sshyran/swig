@@ -162,7 +162,7 @@ function findTarget() {
     repo: swig.argv.repo || path.basename(swig.cwd)
   };
 
-  // Set random folder incase of multiple deploys
+  // Set the package name for the tmp folder incase of multiple deploys
   swig.temp = path.join(os.tmpdir(), `swig-${swig.target.name}`);
 }
 
