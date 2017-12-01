@@ -101,7 +101,6 @@ function setupPaths() {
 
   swig.home = swigPath;
   swig.cwd = process.cwd();
-  swig.temp = path.join(os.tmpdir(), 'swig');
 }
 
 function findSwigRc() {
@@ -162,6 +161,9 @@ function findTarget() {
     name: swig.argv.module || (swig.pkg && swig.pkg.name) || path.basename(target),
     repo: swig.argv.repo || path.basename(swig.cwd)
   };
+
+  // Set the package name for the tmp folder incase of multiple deploys
+  swig.temp = path.join(os.tmpdir(), `swig-${swig.target.name}`);
 }
 
 // allows a task to tell swig about itself
